@@ -25,11 +25,9 @@ import {
   Edit2,
   Shield,
   Bell,
-  Bell,
   Tag,
   Clock,
   CheckCircle2,
-  Shield,
   Lock
 } from 'lucide-react';
 import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
