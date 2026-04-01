@@ -447,7 +447,7 @@ export default function AdminDashboard() {
       <div className={`no-print admin-sidebar ${isSidebarOpen ? 'open' : ''}`} style={{ width: '300px', background: colors.surfaceSolid, borderRight: `1px solid ${colors.border}`, padding: '2.5rem 0', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
         <div style={{ padding: '0 2.5rem', marginBottom: '3.5rem' }}>
           <h1 style={{ color: colors.text, fontSize: '2.2rem', fontWeight: 800, letterSpacing: '-1px', fontFamily: 'var(--font-outfit), sans-serif', margin: 0 }}>
-            ECO<span style={{ color: colors.accent }}>ZERO</span>
+            ECO<span style={{ color: colors.accent }}>ZERO ADMIN</span>
           </h1>
           <p style={{ color: colors.accent, fontSize: '0.8rem', marginTop: '0.4rem', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}>Command Center</p>
         </div>
