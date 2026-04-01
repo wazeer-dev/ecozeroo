@@ -1,11 +1,21 @@
 'use client';
 
 import Link from 'next/link';
-import { Mail, Lock, Eye, EyeOff, Apple } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Apple, ArrowRight, Leaf } from 'lucide-react';
 import { useState } from 'react';
 import { getDoc, doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '@/firebase/config';
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, OAuthProvider } from 'firebase/auth';
+
+const colors = {
+  bg: '#f7fdf4',
+  primary: 'rgb(60, 120, 20)',
+  accent: 'rgb(136, 198, 95)',
+  text: 'rgb(4, 28, 11)',
+  textMuted: 'rgba(4, 28, 11, 0.6)',
+  border: 'rgba(4, 28, 11, 0.08)',
+  inputBg: 'rgba(255, 255, 255, 0.8)',
+};
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -17,7 +27,6 @@ export default function LoginPage() {
   // Social Login Helpers
   const handleSocialSuccess = async (user: any) => {
     try {
-      // Ensure user profile exists in Firestore
       const userDoc = await getDoc(doc(db, 'users', user.email));
       if (!userDoc.exists()) {
         await setDoc(doc(db, 'users', user.email), {
@@ -38,7 +47,6 @@ export default function LoginPage() {
       window.location.href = redirect || "/";
     } catch (err) {
       console.error("Firestore sync error:", err);
-      // Fallback: even if firestore fails, we have auth session
       localStorage.setItem('ecozero_user', user.email);
       window.location.href = "/";
     }
@@ -51,11 +59,7 @@ export default function LoginPage() {
       await handleSocialSuccess(result.user);
     } catch (error: any) {
       console.error("Google Auth Error:", error);
-      if (error.code === 'auth/operation-not-allowed') {
-        alert("Google sign-in is not enabled in Firebase Console. Please enable it in 'Sign-in method'.");
-      } else {
-        alert("Google sign-in failed: " + error.message);
-      }
+      alert("Google sign-in failed: " + error.message);
     }
   };
 
@@ -66,7 +70,7 @@ export default function LoginPage() {
       await handleSocialSuccess(result.user);
     } catch (error: any) {
       console.error("Apple Auth Error:", error);
-      alert("Apple sign-in requires additional configuration in Firebase Console.");
+      alert("Apple sign-in requires additional configuration.");
     }
   };
 
@@ -74,11 +78,9 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoggingIn(true);
 
-    // Direct Admin / Simplified Access
     const normalizedEmail = email.toLowerCase().trim();
-    if ((normalizedEmail === 'admin@gmail.com' && password === 'admin@gmail.com') ||
-      (normalizedEmail === 'admin' && password === 'admin') ||
-      (normalizedEmail === 'ecozero' && password === 'ecozero')) {
+    if ((normalizedEmail === 'admin' && password === 'admin') ||
+        (normalizedEmail === 'ecozero' && password === 'ecozero')) {
       localStorage.setItem('ecozero_user', 'admin');
       localStorage.setItem('ecozero_user_name', 'EcoZero Admin');
       window.location.href = "/admin";
@@ -86,14 +88,10 @@ export default function LoginPage() {
     }
 
     try {
-      // 1. Authenticate with Firebase Auth
       await signInWithEmailAndPassword(auth, normalizedEmail, password);
 
-      // 2. Fetch User Metadata from Firestore
       const userDoc = await getDoc(doc(db, 'users', normalizedEmail));
-
       if (!userDoc.exists()) {
-        // Fallback for missing profile
         localStorage.setItem('ecozero_user', normalizedEmail);
         window.location.href = "/";
         return;
@@ -112,48 +110,92 @@ export default function LoginPage() {
         window.location.href = "/";
       }
     } catch (error: any) {
-      console.error("Auth Exception:", error);
-      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-        alert("Invalid email or password.");
-      } else if (error.code === 'auth/too-many-requests') {
-        alert("Too many failed attempts. Try again later.");
-      } else {
-        alert("An error occurred: " + error.message);
-      }
+      alert("Invalid credentials. Please try again.");
     } finally {
       setIsLoggingIn(false);
     }
   };
 
   return (
-    <div className="page-main-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div className="container" style={{ maxWidth: '450px' }}>
-        <div className="login-card" style={{ background: 'var(--surface-color)', padding: '3rem', borderRadius: '24px', border: '1px solid rgba(136, 198, 95, 0.2)', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
-          <div className="text-center" style={{ marginBottom: '2rem' }}>
-            <h2 className="section-title" style={{ fontSize: '2.5rem', marginBottom: '0.5rem', color: 'rgb(4, 28, 11)' }}>Welcome Back</h2>
-            <p style={{ color: 'rgba(4, 28, 11, 0.65)' }}>Sign in to continue to ECOZERO.</p>
+    <div style={{ height: '100vh', width: '100vw', display: 'flex', overflow: 'hidden', background: '#ffffff' }}>
+      {/* Left Pane - Hero Visual */}
+      <div style={{ 
+        flex: 1, 
+        position: 'relative', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        justifyContent: 'flex-end', 
+        padding: '5rem',
+        overflow: 'hidden'
+      }}>
+        {/* Background Image with blur effects */}
+        <div style={{ 
+          position: 'absolute', 
+          top: '20px', 
+          left: '20px', 
+          right: '20px', 
+          bottom: '20px', 
+          borderRadius: '40px',
+          overflow: 'hidden',
+          zIndex: 0
+        }}>
+          <img src="/login-bg.png" style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'scale(1.1)' }} alt="" />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(4,28,11,0.95), transparent)' }} />
+        </div>
+
+        {/* Content over background */}
+        <div style={{ position: 'relative', zIndex: 2, color: '#fff', maxWidth: '600px' }}>
+          <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '100px', opacity: 0.8 }}>
+            <div style={{ padding: '8px', borderRadius: '12px', background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
+              <Leaf size={24} color={colors.accent} strokeWidth={2} />
+            </div>
+            <span style={{ fontSize: '0.9rem', fontWeight: 700, letterSpacing: '4px', textTransform: 'uppercase' }}>EcoZero Systems</span>
+          </div>
+          
+          <h1 style={{ fontSize: '4.5rem', fontWeight: 900, lineHeight: 1, margin: '0 0 1.5rem 0', letterSpacing: '-2px' }}>
+            Get<br />Everything<br />You Want
+          </h1>
+          
+          <p style={{ fontSize: '1.2rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, marginBottom: '2.5rem' }}>
+            Invest in sustainability today for a greener tomorrow. Access our exclusive collection of environmental assets and track your impact in real-time.
+          </p>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+            <div style={{ width: '50px', height: '3px', background: colors.accent, borderRadius: '2px' }} />
+            <span style={{ fontSize: '0.95rem', fontWeight: 700, color: colors.accent }}>JOIN THE MOVEMENT</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Pane - Form Card */}
+      <div style={{ width: '45%', minWidth: '500px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '7rem 5rem 5rem 5rem', background: '#fff' }}>
+        <div style={{ width: '100%', maxWidth: '420px', animation: 'fadeIn 0.8s ease-out' }}>
+          
+          <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+            <h2 style={{ fontSize: '2.8rem', fontWeight: 900, color: colors.text, marginBottom: '0.8rem', letterSpacing: '-1.5px' }}>Login</h2>
+            <p style={{ color: colors.textMuted, fontSize: '1.1rem' }}>Enter your credentials to access your account</p>
           </div>
 
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>Email Address</label>
+              <label style={{ display: 'block', marginBottom: '0.8rem', color: colors.text, fontWeight: 700, fontSize: '0.9rem' }}>Email Address</label>
               <div style={{ position: 'relative' }}>
                 <input
                   required
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  style={{ width: '100%', padding: '1rem 1rem 1rem 3rem', borderRadius: '12px', border: '1.5px solid rgba(4, 28, 11, 0.1)', background: 'rgba(4, 28, 11, 0.04)', color: 'rgb(4, 28, 11)', outline: 'none' }}
-                  placeholder="you@domain.com"
+                  style={{ width: '100%', padding: '1.2rem 1.2rem 1.2rem 3.5rem', borderRadius: '18px', border: `1.5px solid ${colors.border}`, background: colors.inputBg, color: colors.text, outline: 'none', transition: '0.3s' }}
+                  placeholder="Enter your email"
                 />
-                <Mail size={18} style={{ position: 'absolute', left: '14px', top: '16px', color: 'rgba(4, 28, 11, 0.4)' }} />
+                <Mail size={20} style={{ position: 'absolute', left: '16px', top: '18px', opacity: 0.3 }} />
               </div>
             </div>
 
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                <label style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Password</label>
-                <Link href="#" style={{ color: 'var(--accent)', fontSize: '0.85rem', textDecoration: 'none' }}>Forgot password?</Link>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.8rem', alignItems: 'center' }}>
+                <label style={{ color: colors.text, fontWeight: 700, fontSize: '0.9rem' }}>Password</label>
+                <Link href="#" style={{ color: colors.primary, fontSize: '0.85rem', textDecoration: 'none', fontWeight: 800 }}>Forgot password?</Link>
               </div>
               <div style={{ position: 'relative' }}>
                 <input
@@ -161,60 +203,78 @@ export default function LoginPage() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  style={{ width: '100%', padding: '1rem 3.5rem 1rem 3rem', borderRadius: '12px', border: '1.5px solid rgba(4, 28, 11, 0.1)', background: 'rgba(4, 28, 11, 0.04)', color: 'rgb(4, 28, 11)', outline: 'none' }}
-                  placeholder="••••••••"
+                  style={{ width: '100%', padding: '1.2rem 1.2rem 1.2rem 3.5rem', borderRadius: '18px', border: `1.5px solid ${colors.border}`, background: colors.inputBg, color: colors.text, outline: 'none', transition: '0.3s' }}
+                  placeholder="Enter your password"
                 />
-                <Lock size={18} style={{ position: 'absolute', left: '14px', top: '16px', color: 'rgba(4, 28, 11, 0.4)' }} />
+                <Lock size={20} style={{ position: 'absolute', left: '16px', top: '18px', opacity: 0.3 }} />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  style={{ position: 'absolute', right: '14px', top: '15px', background: 'none', border: 'none', color: 'rgba(4, 28, 11, 0.4)', cursor: 'pointer', padding: 0 }}
+                  style={{ position: 'absolute', right: '16px', top: '18px', background: 'none', border: 'none', color: 'rgba(0,0,0,0.3)', cursor: 'pointer' }}
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
             </div>
 
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <input type="checkbox" id="remember" style={{ accentColor: colors.primary, width: '18px', height: '18px' }} />
+              <label htmlFor="remember" style={{ fontSize: '0.9rem', color: colors.textMuted, fontWeight: 600, cursor: 'pointer' }}>Remember me</label>
+            </div>
+
             <button
               type="submit"
-              className="btn-primary"
-              style={{ width: '100%', padding: '1rem', fontSize: '1.1rem', marginTop: '1rem', borderRadius: '30px', opacity: isLoggingIn ? 0.7 : 1 }}
+              style={{ 
+                width: '100%', 
+                padding: '1.3rem', 
+                fontSize: '1.1rem', 
+                fontWeight: 900,
+                marginTop: '1.5rem', 
+                borderRadius: '20px', 
+                background: colors.text,
+                color: '#fff',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '15px',
+                transition: '0.3s'
+              }}
               disabled={isLoggingIn}
             >
-              {isLoggingIn ? "Verifying..." : "Sign In"}
+              {isLoggingIn ? "Verifying..." : (<>Sign In <ArrowRight size={20} /></>)}
             </button>
           </form>
 
-          <div style={{ display: 'flex', alignItems: 'center', margin: '2rem 0', gap: '1rem' }}>
-            <div style={{ flex: 1, height: '1px', background: 'rgba(4,28,11,0.1)' }}></div>
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 600 }}>OR CONTINUE WITH</span>
-            <div style={{ flex: 1, height: '1px', background: 'rgba(4,28,11,0.1)' }}></div>
+          <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: `1px solid ${colors.border}`, textAlign: 'center' }}>
+            <p style={{ color: colors.textMuted, fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>New to EcoZero?</p>
+            <Link 
+              href="/signup" 
+              style={{ 
+                display: 'inline-block',
+                padding: '1rem 2.5rem',
+                borderRadius: '15px',
+                border: `2px solid ${colors.primary}`,
+                color: colors.primary,
+                textDecoration: 'none',
+                fontWeight: 900,
+                transition: '0.3s'
+              }}
+            >
+              Create an Account
+            </Link>
           </div>
 
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <button
-              type="button"
-              onClick={handleGoogleLogin}
-              style={{ flex: 1, padding: '0.8rem', borderRadius: '15px', border: '1.5px solid rgba(4,28,11,0.1)', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
-            >
-              <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" height="18" alt="Google" />
-              <span style={{ color: '#041c0b', fontSize: '0.9rem', fontWeight: 600 }}>Google</span>
-            </button>
-            <button
-              type="button"
-              onClick={handleAppleLogin}
-              style={{ flex: 1, padding: '0.8rem', borderRadius: '15px', border: '1.5px solid rgba(4,28,11,0.1)', background: '#000', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
-            >
-              <Apple size={18} color="#fff" />
-              <span style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 600 }}>Apple</span>
-            </button>
-          </div>
-
-          <div style={{ marginTop: '2rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.95rem' }}>
-            Don't have an account? <Link href="/signup" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}>Create account</Link>
-          </div>
         </div>
       </div>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      ` }} />
     </div>
   );
 }

@@ -16,6 +16,7 @@ export default function Navbar() {
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const [isIntroFinished, setIsIntroFinished] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const categoriesRef = useRef<HTMLDivElement>(null);
 
@@ -28,6 +29,7 @@ export default function Navbar() {
   };
 
   useEffect(() => {
+    setMounted(true);
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
@@ -62,16 +64,16 @@ export default function Navbar() {
 
   return (
     <>
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Dancing+Script:wght@700&family=Inter:wght@500;700;800&display=swap');
         
         .pill-nav-container {
           position: fixed;
-          top: 24px; 
+          top: 12px; 
           left: 4%;
           right: 4%;
           z-index: 2000;
-          height: 80px;
+          height: 64px;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -96,7 +98,7 @@ export default function Navbar() {
           display: flex;
           align-items: center;
           justify-content: center;
-          height: 80px;
+          height: 64px;
           flex-shrink: 0;
         }
         
@@ -230,7 +232,7 @@ export default function Navbar() {
             display: block !important;
           }
         }
-      `}</style>
+      ` }} />
 
       <nav className="pill-nav-container">
         
@@ -326,8 +328,8 @@ export default function Navbar() {
         />
       </div>
 
-      {/* Spacer for non-home pages */}
-      {pathname !== '/' && <div style={{ height: '90px' }} />}
+      {/* Spacer for non-home pages, excluding auth pages which handle their own layout */}
+      {mounted && pathname !== '/' && pathname !== '/login' && pathname !== '/signup' && <div style={{ height: '90px' }} />}
     </>
   );
 }

@@ -22,25 +22,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning style={{ backgroundColor: '#f7faef' }}>
+    <html lang="en" suppressHydrationWarning style={{ backgroundColor: '#ffffff' }}>
       <head>
         {/* Blocking script to prevent FOUC — sets bg before first paint */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `document.documentElement.style.backgroundColor='#f7faef';document.documentElement.style.color='rgb(4,28,11)';`,
+            __html: `document.documentElement.style.backgroundColor='#ffffff';document.documentElement.style.color='rgb(4,28,11)';`,
           }}
         />
       </head>
       <body
         className={`${inter.variable} ${outfit.variable} ${fraunces.variable} theme-orange`}
         suppressHydrationWarning
-        style={{ backgroundColor: '#f7faef', color: 'rgb(4, 28, 11)', margin: 0, padding: 0 }}
+        style={{ backgroundColor: '#ffffff', color: 'rgb(4, 28, 11)', margin: 0, padding: 0 }}
       >
         <Navbar />
         {children}
         <PageFooter />
         <NotificationToast />
-        <GradualBlur preset="page-footer" />
+        <GradualBlur />
       </body>
     </html>
   );
