@@ -1,0 +1,69 @@
+/* ECOZERO RESPONSIVE OVERRIDES */
+
+@media (max-width: 900px) {
+  /* Fix main content padding to account for fixed navbar */
+  .main-content {
+    padding-top: 140px !important;
+  }
+  
+  /* Standardize mobile container padding */
+  .container {
+    padding: 0 20px !important;
+  }
+
+  /* Force Bento Grid to strictly stack vertically on mobile */
+  .bento-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    grid-auto-rows: auto !important;
+    gap: 20px !important;
+  }
+  
+  .bento-card, .card-blue, .card-pink, .card-chart, .card-green, .card-yellow, .card-typo {
+     grid-column: span 1 !important;
+     grid-row: auto !important;
+     min-height: 350px !important;
+  }
+
+  .card-chart {
+    min-height: 500px !important;
+  }
+
+  /* Stack metrics vertically (About Page) */
+  .metrics-container, .metrics-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 40px !important;
+    align-items: center !important;
+  }
+  
+  /* Scale down colossal headings */
+  h1 {
+    font-size: clamp(2.2rem, 10vw, 3.5rem) !important;
+  }
+
+  /* Stack product action buttons (Add to Cart / Checkout) */
+  .action-buttons {
+    flex-direction: column !important;
+    gap: 15px !important;
+  }
+
+  /* Increase padding on the product detail page */
+  .buy-page {
+    padding-top: 150px !important;
+  }
+
+  /* Ensure the footer brand text doesn't overflow */
+  footer h2 {
+    font-size: clamp(4rem, 20vw, 12rem) !important;
+  }
+}
+
+/* Adjust docking navigation for mobile */
+@media (max-width: 600px) {
+  .dock-container {
+    bottom: 20px !important;
+    width: 90% !important;
+    left: 5% !important;
+  }
+}
