@@ -28,7 +28,8 @@ import {
   Tag,
   Clock,
   CheckCircle2,
-  Lock
+  Lock,
+  ChevronDown
 } from 'lucide-react';
 import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/firebase/config';
