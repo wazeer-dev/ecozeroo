@@ -217,10 +217,10 @@ export default function Navbar() {
         @media (max-width: 768px) {
           .nav-center { display: none; }
           .pill-nav-container { 
-            display: ${pathname === '/' ? 'none !important' : 'flex'};
+            display: flex;
           }
           .nav-spacer {
-            display: ${pathname === '/' ? 'none !important' : 'block'};
+            display: block;
           }
           .brand-logo {
             width: 160px;
