@@ -16,44 +16,52 @@ export default function Home() {
 
   return (
     <>
-      <main className="main-content visible" style={{ paddingTop: '100px', backgroundColor: 'var(--bg-color)', minHeight: '100vh', paddingBottom: '100px' }}>
+      <main className="main-content visible" style={{ paddingTop: '100px', backgroundColor: '#fcf7de', minHeight: '100vh', paddingBottom: '100px' }}>
         
         {/* 1. HERO SECTION */}
-        <section style={{ position: 'relative', marginTop: '20px', width: '100vw', padding: '0 5%' }}>
-          <div style={{ backgroundColor: 'var(--secondary-color)', borderRadius: '60px', padding: '60px', display: 'flex', flexWrap: 'wrap', position: 'relative', overflow: 'hidden', minHeight: '600px', alignItems: 'center' }}>
+        <section style={{ position: 'relative', marginTop: '20px', width: '100%', padding: '0 4%', overflow: 'visible' }}>
+          <div style={{ backgroundColor: '#cde6ae', borderRadius: '80px', padding: '100px 80px', display: 'flex', flexWrap: 'wrap', position: 'relative', overflow: 'hidden', minHeight: '650px', alignItems: 'center' }}>
              
              {/* Left Content */}
-             <div style={{ flex: '1 1 400px', zIndex: 2, display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingRight: '40px' }}>
-                <div style={{ display: 'inline-block', backgroundColor: 'transparent', border: '1.5px solid rgba(26, 60, 38, 0.2)', borderRadius: '30px', padding: '6px 20px', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '30px', alignSelf: 'flex-start' }}>
+             <div style={{ flex: '1 1 500px', zIndex: 10, display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative' }}>
+                <div style={{ display: 'inline-block', backgroundColor: 'transparent', border: '1.5px solid rgba(26, 60, 38, 0.2)', borderRadius: '30px', padding: '8px 24px', fontSize: '0.9rem', fontWeight: 700, color: '#1a3c26', marginBottom: '40px', alignSelf: 'flex-start' }}>
                    Eco-Friendly Living
                 </div>
-                <h1 style={{ fontSize: 'clamp(3rem, 5vw, 4.5rem)', lineHeight: 1.1, fontWeight: 800, color: 'var(--text-primary)', marginBottom: '24px', letterSpacing: '-0.03em', fontFamily: 'var(--font-heading), sans-serif' }}>
+                <h1 style={{ fontSize: 'clamp(3.5rem, 6vw, 6rem)', lineHeight: 0.95, fontWeight: 900, color: '#1a3c26', marginBottom: '32px', letterSpacing: '-3px', fontFamily: 'var(--font-heading), sans-serif' }}>
                   Achieve balance in <br /> mind, body, and earth.
                 </h1>
-                <p style={{ fontSize: '1.15rem', color: 'var(--text-secondary)', lineHeight: 1.6, maxWidth: '450px' }}>
+                <p style={{ fontSize: '1.25rem', color: 'rgba(26, 60, 38, 0.7)', lineHeight: 1.5, maxWidth: '480px', fontWeight: 500 }}>
                   Discover EcoZero — premium organic blends and eco-friendly products crafted for your well-being and the planet's future.
                 </p>
              </div>
              
              {/* Right Image/Graphic Area */}
-             <div style={{ flex: '1 1 400px', position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 0' }}>
+             <div style={{ flex: '1 1 400px', position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                  {/* Curved text SVG */}
-                 <svg viewBox="0 0 500 500" style={{ position: 'absolute', width: '160%', height: '160%', left: '-30%', top: '-30%', animation: 'spin 40s linear infinite', zIndex: 0 }}>
-                   <path id="hero-curve" d="M 50, 250 a 200,200 0 1,1 400,0 a 200,200 0 1,1 -400,0" fill="transparent" />
-                   <text width="500" style={{ fontSize: '20px', fill: 'var(--primary-color)', opacity: 0.4, fontWeight: 700, letterSpacing: '2.5px' }}>
-                     <textPath href="#hero-curve">
-                       CARBON NEUTRAL PRODUCTS • ORGANIC BLENDS • SUSTAINABILITY • 
-                     </textPath>
-                   </text>
-                 </svg>
+                 <div style={{ position: 'absolute', width: '700px', height: '700px', right: '-150px', top: '50%', transform: 'translateY(-50%)', zIndex: 0 }}>
+                    <svg viewBox="0 0 500 500" style={{ width: '100%', height: '100%', animation: 'spin 40s linear infinite' }}>
+                      <path id="hero-curve" d="M 50, 250 a 200,200 0 1,1 400,0 a 200,200 0 1,1 -400,0" fill="transparent" />
+                      <text width="500" style={{ fontSize: '18px', fill: '#1a3c26', opacity: 0.4, fontWeight: 800, letterSpacing: '4px' }}>
+                        <textPath href="#hero-curve">
+                          CARBON NEUTRAL PRODUCTS • ORGANIC BLENDS • SUSTAINABILITY • 
+                        </textPath>
+                      </text>
+                    </svg>
+                 </div>
                  
-                 {/* Circular backdrop to anchor the image (optional, gives the cutout a nicer base) */}
-                 <div style={{ position: 'absolute', width: '380px', height: '380px', backgroundColor: 'var(--white)', opacity: 0.4, borderRadius: '50%', zIndex: 1 }}></div>
+                 {/* Circular backdrop */}
+                 <div style={{ position: 'absolute', width: '450px', height: '450px', backgroundColor: '#e2f4c9', borderRadius: '50%', zIndex: 1 }}></div>
 
-                 {/* Subject Image (Using Unsplash placeholder for an eco/healthy person) */}
-                 <img src="https://images.unsplash.com/photo-1545205597-3d9d02c29597?q=80&w=800&auto=format&fit=crop" alt="Eco Living" style={{ width: '300px', height: '450px', objectFit: 'cover', borderRadius: '40px', position: 'relative', zIndex: 2, transform: 'rotate(4deg)', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }} />
+                 {/* Subject Image */}
+                 <div style={{ position: 'relative', zIndex: 5, width: '340px', height: '520px', borderRadius: '50px', overflow: 'hidden', boxShadow: '0 40px 80px rgba(0,0,0,0.1)' }}>
+                    <img src="https://images.unsplash.com/photo-1545205597-3d9d02c29597?q=80&w=800&auto=format&fit=crop" alt="Eco Living" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                 </div>
              </div>
           </div>
+          
+          <style dangerouslySetInnerHTML={{ __html: `
+            @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+          ` }} />
         </section>
 
 
@@ -128,17 +136,17 @@ export default function Home() {
             
             <div className="bento-grid">
                
-               {/* CARD 1: Soft Blue (Home Essentials) */}
-               <div className="bento-card blue card-blue" style={{ background: 'linear-gradient(135deg, #e0f2fe, #bae6fd)' }}>
+               {/* CARD 1: Soft Pearl (Home Essentials) */}
+               <div className="bento-card blue card-blue" style={{ background: 'linear-gradient(135deg, #fdfcf3, #fcf7de)' }}>
                   <h3 style={{ fontSize: 'clamp(3rem, 5vw, 4.5rem)', fontWeight: 800, letterSpacing: '-2px', color: '#0f172a', lineHeight: 1, position: 'relative', zIndex: 10 }}>
                      eco<br/>essentials
                   </h3>
                   <div style={{ position: 'absolute', bottom: '-20px', right: '-20px', width: '80%', height: '70%', background: 'url(https://images.unsplash.com/photo-1618220179428-22790b461013?q=80&w=600&auto=format&fit=crop) center/cover', borderRadius: '32px', border: '8px solid rgba(255,255,255,0.4)', transform: 'rotate(-4deg)' }} />
                </div>
 
-               {/* CARD 2: Soft Pink (Self Care / Tag) */}
-               <div className="bento-card pink card-pink" style={{ background: 'linear-gradient(135deg, #fce7f3, #fbcfe8)', alignItems: 'center', justifyContent: 'center' }}>
-                  <h3 style={{ fontSize: '3rem', fontWeight: 800, letterSpacing: '-1px', color: '#1e293b', textShadow: '4px 4px 0px rgba(0,0,0,0.08)' }}>
+               {/* CARD 2: Jewel (Self Care / Tag) */}
+               <div className="bento-card pink card-pink" style={{ background: 'var(--primary-color)', alignItems: 'center', justifyContent: 'center' }}>
+                  <h3 style={{ fontSize: '3rem', fontWeight: 800, letterSpacing: '-1px', color: '#fcf7de', textShadow: '4px 4px 0px rgba(0,0,0,0.08)' }}>
                      # selfcare
                   </h3>
                </div>
@@ -147,7 +155,7 @@ export default function Home() {
                <div className="bento-card chart card-chart" style={{ background: 'linear-gradient(to bottom, #dcfce7 0%, #ffffff 80%)', padding: '24px' }}>
                   <div style={{ textAlign: 'center', marginBottom: '20px', zIndex: 10 }}>
                      <h4 style={{ fontSize: '1.5rem', fontWeight: 800 }}>#Impact</h4>
-                     <p style={{ color: '#15803d', fontWeight: 700, fontSize: '0.9rem' }}>+57k (eco-points) Today</p>
+                     <p style={{ color: 'var(--primary-color)', fontWeight: 700, fontSize: '0.9rem' }}>+57k (eco-points) Today</p>
                   </div>
                   
                   {/* The Chart Area */}
@@ -163,7 +171,7 @@ export default function Home() {
                         {/* Fill area */}
                         <path d="M 0 60 L 25 75 L 50 40 L 75 55 L 100 20 L 100 100 L 0 100 Z" fill="url(#chartFade)" />
                         {/* Solid line stroke */}
-                        <polyline points="0,60 25,75 50,40 75,55 100,20" fill="none" stroke="#22c55e" strokeWidth="2.5" vectorEffect="non-scaling-stroke" />
+                        <polyline points="0,60 25,75 50,40 75,55 100,20" fill="none" stroke="var(--primary-color)" strokeWidth="2.5" vectorEffect="non-scaling-stroke" />
                      </svg>
 
                      {/* Avatar Nodes matching the SVG path vertices */}
@@ -192,7 +200,7 @@ export default function Home() {
                                  </div>
                               )}
 
-                              <img src={node.t.img} style={{ width: '32px', height: '32px', borderRadius: '50%', border: isActive ? '2px solid #fff' : '2px solid #22c55e', objectFit: 'cover', background: '#fff', position: 'relative', zIndex: 1, transition: 'all 0.2s ease' }} alt={node.t.name} />
+                              <img src={node.t.img} style={{ width: '32px', height: '32px', borderRadius: '50%', border: isActive ? '2px solid #fff' : '2px solid var(--primary-color)', objectFit: 'cover', background: '#fff', position: 'relative', zIndex: 1, transition: 'all 0.2s ease' }} alt={node.t.name} />
 
                               {/* Tooltip Card */}
                               <div 
@@ -230,26 +238,26 @@ export default function Home() {
                      })}
                   </div>
 
-                  <button style={{ width: '100%', padding: '14px', background: '#0ea5e9', color: '#fff', border: 'none', borderRadius: '20px', fontWeight: 700, marginTop: '20px', cursor: 'pointer', zIndex: 10, boxShadow: '0 4px 15px rgba(14,165,233,0.3)' }}>
+                  <button style={{ width: '100%', padding: '14px', background: 'var(--primary-color)', color: '#fff', border: 'none', borderRadius: '20px', fontWeight: 700, marginTop: '20px', cursor: 'pointer', zIndex: 10, boxShadow: '0 4px 15px rgba(14,165,233,0.3)' }}>
                      View Testimonials
                   </button>
                </div>
 
-               {/* CARD 4: Strong Green (Pill scatter) */}
-               <div className="bento-card green card-green" style={{ backgroundColor: '#4ade80', position: 'relative' }}>
-                  <div className="scatter-pill" style={{ top: '20%', left: '10%', transform: 'rotate(-5deg)' }}>Community</div>
-                  <div className="scatter-pill" style={{ top: '45%', right: '15%', transform: 'rotate(8deg)' }}>Zero-Waste</div>
-                  <div className="scatter-pill" style={{ bottom: '25%', left: '30%', transform: 'rotate(-2deg)' }}>Active Users</div>
-                  <div className="scatter-pill" style={{ top: '15%', right: '10%', transform: 'rotate(12deg)' }}>2025</div>
-                  <div className="scatter-pill" style={{ bottom: '15%', left: '8%', transform: 'rotate(-10deg)' }}>Organic</div>
+               {/* CARD 4: Jewel Green (Pill scatter) */}
+               <div className="bento-card green card-green" style={{ backgroundColor: 'var(--primary-color)', position: 'relative' }}>
+                  <div className="scatter-pill" style={{ top: '20%', left: '10%', transform: 'rotate(-5deg)', color: 'var(--primary-color)' }}>Community</div>
+                  <div className="scatter-pill" style={{ top: '45%', right: '15%', transform: 'rotate(8deg)', color: 'var(--primary-color)' }}>Zero-Waste</div>
+                  <div className="scatter-pill" style={{ bottom: '25%', left: '30%', transform: 'rotate(-2deg)', color: 'var(--primary-color)' }}>Active Users</div>
+                  <div className="scatter-pill" style={{ top: '15%', right: '10%', transform: 'rotate(12deg)', color: 'var(--primary-color)' }}>2025</div>
+                  <div className="scatter-pill" style={{ bottom: '15%', left: '8%', transform: 'rotate(-10deg)', color: 'var(--primary-color)' }}>Organic</div>
                </div>
 
                {/* CARD 5: Bright Yellow CTA */}
-               <div className="bento-card yellow card-yellow" style={{ backgroundColor: '#fef08a', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  <h4 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#854d0e', marginBottom: '16px', lineHeight: 1.1 }}>Share<br/>Moments</h4>
+               <div className="bento-card yellow card-yellow" style={{ backgroundColor: 'var(--bg-color)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <h4 style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--primary-color)', marginBottom: '16px', lineHeight: 1.1 }}>Share<br/>Moments</h4>
                   <div style={{ display: 'flex', gap: '8px' }}>
-                     <input type="email" placeholder="Your email..." style={{ flex: 1, padding: '12px 20px', borderRadius: '30px', border: 'none', outline: 'none', fontSize: '1rem', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)' }} />
-                     <button style={{ background: '#1e293b', color: '#fff', padding: '12px 24px', borderRadius: '30px', border: 'none', fontWeight: 700, cursor: 'pointer' }}>Join</button>
+                     <input type="email" placeholder="Your email..." style={{ flex: 1, padding: '12px 20px', borderRadius: '30px', border: '1px solid rgba(20, 104, 69, 0.1)', outline: 'none', fontSize: '1rem', background: '#fcf7de' }} />
+                     <button style={{ background: 'var(--primary-color)', color: '#fff', padding: '12px 24px', borderRadius: '30px', border: 'none', fontWeight: 700, cursor: 'pointer' }}>Join</button>
                   </div>
                </div>
                

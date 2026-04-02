@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { doc, getDoc, collection, getDocs, query, where, addDoc } from 'firebase/firestore';
 import { db } from '@/firebase/config';
-import { Loader2, Star, ChevronDown, ChevronUp } from 'lucide-react';
+import { Loader2, Star, ChevronDown, ChevronUp, ShoppingCart, Zap, Heart } from 'lucide-react';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -27,6 +27,7 @@ export default function ProductDetailPage() {
   
   const [activeAccordion, setActiveAccordion] = useState<number>(0);
   const [selectedColor, setSelectedColor] = useState<number>(1);
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     if (id) fetchProductData();
@@ -58,9 +59,9 @@ export default function ProductDetailPage() {
     const cart = JSON.parse(localStorage.getItem('ecozero_cart') || '[]');
     const existingIndex = cart.findIndex((item: any) => item.id === product.id);
     if (existingIndex > -1) {
-      cart[existingIndex].quantity += 1;
+      cart[existingIndex].quantity += quantity;
     } else {
-      cart.push({ ...product, quantity: 1 });
+      cart.push({ ...product, quantity: quantity });
     }
     localStorage.setItem('ecozero_cart', JSON.stringify(cart));
     setAddedPopup(true);
@@ -69,7 +70,7 @@ export default function ProductDetailPage() {
 
   const handleBuyNow = () => {
     if (!product) return;
-    localStorage.setItem('ecozero_checkout_item', JSON.stringify({ ...product, quantity: 1 }));
+    localStorage.setItem('ecozero_checkout_item', JSON.stringify({ ...product, quantity: quantity }));
     const user = localStorage.getItem('ecozero_user');
     if (!user) {
       localStorage.setItem('redirect_after_login', '/checkout');
@@ -557,17 +558,101 @@ export default function ProductDetailPage() {
         }
         
         @media (max-width: 900px) {
-          .buy-page { padding: 160px 20px 80px; }
-          .main-grid { grid-template-columns: 1fr; gap: 40px; }
+          .buy-page { padding: 0 !important; background: #fff !important; }
+          .buy-container { width: 100% !important; padding: 0 !important; }
+          .main-grid { grid-template-columns: 1fr; gap: 0 !important; }
+          .image-showcase { background: #fff; padding: 60px 20px 20px; position: relative; }
+          .main-image { padding: 0 !important; box-shadow: none !important; border-radius: 0 !important; height: auto !important; aspect-ratio: auto !important; }
+          .main-image img { max-height: 40vh; object-fit: contain; }
+          .thumbnails { display: none !important; }
+          
+          .mobile-header {
+            position: fixed; top: 0; left: 0; right: 0; 
+            padding: 15px 20px; display: flex !important;
+            justify-content: space-between; align-items: center;
+            background: #fff; z-index: 1000;
+          }
+          .mobile-header-title { font-weight: 700; font-size: 1.1rem; color: #111; }
+          .circle-btn {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: #fff; border: 1.5px solid #eee;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.03);
+            cursor: pointer;
+          }
+          
+          .mobile-details-body { padding: 20px 25px 120px; position: relative; }
+          .product-title { font-size: 1.5rem !important; font-family: 'Inter', sans-serif !important; text-transform: none !important; font-weight: 800 !important; letter-spacing: -0.5px !important; margin-bottom: 6px !important; }
+          .product-subtitle { margin-bottom: 20px !important; font-size: 0.85rem !important; display: flex; align-items: center; gap: 6px; }
+          
+          .quantity-capsule {
+            display: flex !important; width: fit-content; margin: 0 auto 20px;
+            background: #fff; border: 1.5px solid #eee; border-radius: 40px;
+            padding: 6px 6px; align-items: center; gap: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.03);
+          }
+          .qty-btn { width: 34px; height: 34px; border-radius: 50%; border: none; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+          .qty-btn-minus { background: #f8f8f8; color: #111; }
+          .qty-btn-plus { background: #000; color: #fff; }
+          
+          .info-pills-row { display: flex; align-items: center; gap: 10px; margin-top: 15px; }
+          .new-price { font-size: 1.5rem !important; }
+          .old-price { font-size: 1rem !important; }
+          .discount-badge { background: #000 !important; color: #fff !important; font-size: 0.7rem !important; padding: 4px 10px !important; }
+          
+          .promo-banner {
+            display: flex !important; padding: 16px; border-radius: 12px;
+            background: linear-gradient(to right, #FFEDD5, #FEF9C3);
+            margin: 25px 0; gap: 12px; align-items: flex-start;
+          }
+          .promo-banner p { font-size: 0.8rem; margin: 0; line-height: 1.4; color: #78350F; opacity: 0.8; }
+          
+          .description-section { margin-top: 25px; }
+          .description-title { font-weight: 800; font-size: 1rem; margin-bottom: 12px; display: block; }
+          .description-text { font-size: 0.85rem; line-height: 1.6; color: #555; }
+          
+          .mobile-footer-cta {
+             position: fixed; bottom: 0; left: 0; right: 0;
+             padding: 24px 25px 40px; background: #fff; border-top: 1px solid #eee; z-index: 1000;
+          }
+          .mobile-btn-cart {
+            width: 100%; padding: 20px; border-radius: 40px;
+            background: #111; color: #fff; border: none;
+            font-weight: 750; font-size: 1.05rem;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            cursor: pointer;
+          }
+
+          .desktop-only { display: none !important; }
+
+          .reviews-section { padding: 40px 25px; border-top: 8px solid #f8f8f8; margin-top: 0; }
           .reviews-grid { grid-template-columns: 1fr; gap: 40px; }
-          .review-cards-grid { grid-template-columns: 1fr; }
-          .product-title { font-size: 2.2rem; }
-          .empty-reviews-state { grid-column: span 1; }
-          .action-buttons { flex-direction: column; }
+          .review-cards-grid { grid-template-columns: 1fr; gap: 20px; }
+          .reviews-title { font-size: 1.4rem; margin-bottom: 25px; }
+          .big-rating-number { font-size: 4rem; }
+          .big-rating-slash { font-size: 1.2rem; }
+          .progress-bars { max-width: 100%; }
+          .review-card { padding: 20px; border: 1.5px solid #eee; }
+          .empty-reviews-state { grid-column: span 1 !important; }
+        }
+        @media (min-width: 901px) {
+          .mobile-only { display: none !important; }
         }
       `}} />
 
       <div className="buy-page">
+        {/* MOBILE HEADER */}
+        <div className="mobile-header mobile-only">
+           <button className="circle-btn" onClick={() => router.back()}>
+             <span style={{ fontSize: '1.2rem', fontWeight: 400 }}>&minus;&minus;</span>
+           </button>
+           <div className="mobile-header-title">Product Details</div>
+           <button className="circle-btn" style={{ position: 'relative' }} onClick={() => router.push('/cart')}>
+             <ShoppingCart size={18} />
+             <div style={{ position: 'absolute', top: '-4px', right: '-4px', background: '#FF5733', color: '#fff', fontSize: '10px', width: '16px', height: '16px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', border: '2px solid #fff' }}>1</div>
+           </button>
+        </div>
+
         <div className="buy-container">
           
           <div className="main-grid">
@@ -577,23 +662,28 @@ export default function ProductDetailPage() {
                 <img src={images[activeImageIdx]} alt={product.name} />
               </div>
               
-              {images.length > 1 && (
-                <div className="thumbnails">
-                  {images.slice(0, 3).map((img, i) => (
-                    <div 
-                      key={i} 
-                      className={'thumb-box ' + (activeImageIdx === i ? 'active' : '')} 
-                      onClick={() => setActiveImageIdx(i)}
-                    >
-                      <img src={img} alt="" />
-                    </div>
-                  ))}
-                </div>
-              )}
+              <div className="thumbnails desktop-only">
+                {images.slice(0, 3).map((img, i) => (
+                  <div 
+                    key={i} 
+                    className={'thumb-box ' + (activeImageIdx === i ? 'active' : '')} 
+                    onClick={() => setActiveImageIdx(i)}
+                  >
+                    <img src={img} alt="" />
+                  </div>
+                ))}
+              </div>
+
+              {/* QUANTITY PICKER MOBILE */}
+              <div className="quantity-capsule mobile-only">
+                 <button className="qty-btn qty-btn-minus" onClick={() => setQuantity(Math.max(1, quantity - 1))}>&minus;</button>
+                 <span style={{ fontWeight: 800, fontSize: '1.1rem' }}>{quantity < 10 ? `0${quantity}` : quantity}</span>
+                 <button className="qty-btn qty-btn-plus" onClick={() => setQuantity(quantity + 1)}>+</button>
+              </div>
             </div>
             
-            {/* RIGHT: DETAILS */}
-            <div>
+            {/* RIGHT DETAILS (DESKTOP) */}
+            <div className="desktop-only text-content-col">
               <h1 className="product-title">{product.name}</h1>
               <p className="product-subtitle">{product.category} &bull; Minimalist design for everyday living</p>
               
@@ -610,8 +700,6 @@ export default function ProductDetailPage() {
                 <span className="review-count-text">({averageRating}) {reviews.length} Reviews &bull; {Math.max(product.stock * 5, 230)} Sold</span>
               </div>
               
-              {/* Color section removed as requested */}
-              
               <div className="accordions-container">
                 <div className="accordion">
                   <button className="accordion-header" onClick={() => setActiveAccordion(1)}>
@@ -619,47 +707,65 @@ export default function ProductDetailPage() {
                   </button>
                   {activeAccordion === 1 && (
                     <div className="accordion-content">
-                      {product.description || "A Versatile Backpack for Everyday Activities. This backpack is designed to meet high-mobility needs with a modern and functional design. Made from water-resistant polyester, this backpack has multiple compartments for a laptop, books, water bottle, and other personal items."}
-                      <span style={{ color: '#111', fontWeight: 800, cursor: 'pointer', marginLeft: '6px' }}>Read More.</span>
-                    </div>
-                  )}
-                </div>
-                
-                <div className="accordion">
-                  <button className="accordion-header" onClick={() => setActiveAccordion(2)}>
-                    Spesification <ChevronDown size={18} style={{ transform: activeAccordion === 2 ? 'rotate(180deg)' : 'none', transition: '0.2s' }} />
-                  </button>
-                  {activeAccordion === 2 && (
-                    <div className="accordion-content">
-                      {product.specifications || "Materials used are 100% eco-friendly and sustainably sourced. Weight: 1.2 lbs. Max Capacity: 25L."}
-                    </div>
-                  )}
-                </div>
-                
-                <div className="accordion">
-                  <button className="accordion-header" onClick={() => setActiveAccordion(3)}>
-                    Feature <ChevronDown size={18} style={{ transform: activeAccordion === 3 ? 'rotate(180deg)' : 'none', transition: '0.2s' }} />
-                  </button>
-                  {activeAccordion === 3 && (
-                    <div className="accordion-content">
-                      {product.features ? product.features.split('\n').map((f: string, k: number) => (
-                        <div key={k}>&bull; {f}</div>
-                      )) : (
-                        <>
-                          &bull; Deep interior pockets<br />
-                          &bull; Ergonomically padded back<br />
-                          &bull; Water repellent finish
-                        </>
-                      )}
+                      {product.description || "Designed for the modern professional, this minimalist aesthetic focuses on quality materials and sustainable practices."}
                     </div>
                   )}
                 </div>
               </div>
               
               <div className="action-buttons">
-                <button className="btn-add" onClick={handleAddToCart}>{addedPopup ? 'Added!' : 'Add To Chart'}</button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginRight: '20px', border: '1px solid #ddd', borderRadius: '12px', padding: '5px 15px' }}>
+                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer' }}>-</button>
+                  <span style={{ fontWeight: 700, minWidth: '20px', textAlign: 'center' }}>{quantity}</span>
+                  <button onClick={() => setQuantity(quantity + 1)} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer' }}>+</button>
+                </div>
+                <button className="btn-add" onClick={handleAddToCart}>{addedPopup ? 'Added!' : 'Add To Cart'}</button>
                 <button className="btn-checkout" onClick={handleBuyNow}>Checkout Now</button>
               </div>
+            </div>
+
+            {/* MOBILE DETAILS BODY */}
+            <div className="mobile-details-body mobile-only">
+               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                 <div style={{ flex: 1 }}>
+                    <h1 className="product-title">{product.name}</h1>
+                    <div className="product-subtitle" style={{ color: '#aaa', fontWeight: 600 }}>
+                      <Zap size={14} fill="#8BC34A" stroke="#8BC34A" /> Available on fast delivery
+                    </div>
+                 </div>
+                 <button style={{ background: 'none', border: 'none', color: '#ff5733', padding: '10px 0 0 10px' }}>
+                    <Heart size={24} fill="#ff5733" />
+                 </button>
+               </div>
+
+               <div className="info-pills-row" style={{ marginTop: '20px' }}>
+                  <span className="new-price">${parseFloat(product.price).toFixed(2)}</span>
+                  <span className="old-price">${originalPrice.toFixed(2)}</span>
+                  <div className="discount-badge" style={{ verticalAlign: 'middle', display: 'inline-flex', padding: '2px 8px' }}>20%</div>
+                  <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 700, fontSize: '0.9rem' }}>
+                    <Star size={16} fill="#F5B800" color="#F5B800" /> {averageRating} Rating
+                  </div>
+               </div>
+
+               <div className="promo-banner">
+                  <div style={{ minWidth: '22px', height: '22px', borderRadius: '50%', backgroundColor: 'transparent', border: '1.5px solid #78350F', color: '#78350F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold', opacity: 0.6 }}>i</div>
+                  <p>This promo is limited and may change at any time depending on product availability.</p>
+               </div>
+
+               <div className="description-section">
+                 <span className="description-title">Description</span>
+                 <p className="description-text">
+                   {product.description || "The high-quality ingredients and sustainable production make this a must-have for the eco-conscious consumer."}
+                   <span style={{ fontWeight: 800, color: '#111', marginLeft: '5px', cursor: 'pointer' }}>Read More</span>
+                 </p>
+               </div>
+
+               <div className="mobile-footer-cta">
+                 <button className="mobile-btn-cart" onClick={handleAddToCart}>
+                    {addedPopup ? <Loader2 className="animate-spin" size={20} /> : <ShoppingCart size={20} />}
+                    {addedPopup ? 'Added To Cart!' : 'Add To Cart'}
+                 </button>
+               </div>
             </div>
           </div>
           

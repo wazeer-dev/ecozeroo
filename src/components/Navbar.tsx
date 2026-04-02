@@ -112,69 +112,72 @@ export default function Navbar() {
         
         .nav-pill {
           background: #fff;
-          color: #111;
+          color: #1a3c26;
           border-radius: 40px;
-          padding: 6px 16px;
-          font-size: 0.70rem;
+          padding: 8px 18px;
+          font-size: 0.75rem;
           font-weight: 800;
           text-transform: uppercase;
           text-decoration: none;
-          box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-          transition: 0.2s;
+          box-shadow: 0 4px 15px rgba(20, 104, 69, 0.05);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           cursor: pointer;
           display: flex;
           align-items: center;
           gap: 6px;
-          border: none;
+          border: 1px solid rgba(20, 104, 69, 0.05);
         }
         .nav-pill:hover {
           transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+          background: #f8faf2;
+          box-shadow: 0 8px 25px rgba(20, 104, 69, 0.1);
         }
         
         .nav-circle {
           background: #fff;
-          color: #111;
-          width: 36px;
-          height: 36px;
+          color: #1a3c26;
+          width: 38px;
+          height: 38px;
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-          transition: 0.2s;
+          box-shadow: 0 4px 15px rgba(20, 104, 69, 0.05);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           cursor: pointer;
-          border: none;
+          border: 1px solid rgba(20, 104, 69, 0.05);
           text-decoration: none;
         }
         .nav-circle:hover {
           transform: translateY(-2px);
-          background: #f0f0f0;
+          background: #f8faf2;
         }
         
         .quote-pill {
           background: #fff;
           border-radius: 40px;
-          padding: 6px 6px 6px 20px;
+          padding: 4px 4px 4px 18px;
           display: flex;
           align-items: center;
-          gap: 15px;
-          box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+          gap: 12px;
+          box-shadow: 0 4px 15px rgba(20, 104, 69, 0.05);
           text-decoration: none;
-          color: #111;
+          color: #1a3c26;
           font-weight: 800;
-          font-size: 0.8rem;
-          transition: 0.2s;
+          font-size: 0.85rem;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           cursor: pointer;
+          border: 1px solid rgba(20, 104, 69, 0.05);
         }
         .quote-pill:hover {
           transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(20, 104, 69, 0.1);
         }
         .quote-btn-icon {
-          background: #73B541;
+          background: #146845;
           color: #fff;
-          width: 32px;
-          height: 32px;
+          width: 34px;
+          height: 34px;
           border-radius: 50%;
           display: flex;
           align-items: center;
@@ -184,34 +187,35 @@ export default function Navbar() {
         /* DROPDOWN */
         .ez-dropdown {
           position: absolute;
-          top: calc(100% + 8px);
+          top: calc(100% + 12px);
           left: 50%;
           transform: translateX(-50%);
           width: 220px;
           background: #fff;
           border-radius: 16px;
           padding: 8px;
-          box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+          box-shadow: 0 10px 40px rgba(20, 104, 69, 0.1);
           display: flex;
           flex-direction: column;
           gap: 4px;
           z-index: 100;
+          border: 1px solid rgba(20, 104, 69, 0.05);
         }
         .ez-dd-item {
           padding: 10px 15px;
           border-radius: 10px;
           font-size: 0.85rem;
           font-weight: 700;
-          color: #333;
+          color: #1a3c26;
           text-decoration: none;
           display: flex;
           align-items: center;
           gap: 10px;
-          transition: 0.1s;
+          transition: 0.2s;
         }
         .ez-dd-item:hover {
-          background: rgba(115, 181, 65, 0.1);
-          color: #73B541;
+          background: #fcf7de;
+          color: #146845;
         }
         
         @media (max-width: 768px) {
@@ -228,8 +232,13 @@ export default function Navbar() {
             padding: 10px 16px;
           }
           .mobile-dock-wrapper {
-            display: block !important;
+            display: flex !important;
           }
+        }
+
+        /* Default state: hide on desktop */
+        .mobile-dock-wrapper {
+          display: none;
         }
       ` }} />
 
@@ -305,24 +314,17 @@ export default function Navbar() {
       </nav>
 
       {/* Mobile Dock — shown only on small screens */}
-      <div style={{
-        display: 'none',
-        position: 'fixed',
-        bottom: '16px',
-        left: '12px',
-        right: '12px',
-        zIndex: 9999,
-      }} className="mobile-dock-wrapper">
+      <div className="mobile-dock-wrapper">
         <Dock
           panelHeight={64}
           baseItemSize={44}
           magnification={58}
           items={[
-            { icon: <HomeIcon size={22} strokeWidth={1.5} />, label: 'Home', onClick: () => handleDockClick('/') },
-            { icon: <Grid size={22} strokeWidth={1.5} />, label: 'Products', onClick: () => handleDockClick('/menu') },
-            { icon: <Heart size={22} strokeWidth={1.5} />, label: 'Wishlist', onClick: () => handleDockClick('/wishlist') },
-            { icon: <Package size={22} strokeWidth={1.5} />, label: 'Orders', onClick: () => handleDockClick('/orders') },
-            { icon: <User size={22} strokeWidth={1.5} />, label: 'Profile', onClick: () => handleDockClick('/profile') },
+            { icon: <HomeIcon size={22} strokeWidth={1.5} />, label: 'Home', onClick: () => handleDockClick('/'), isActive: pathname === '/' },
+            { icon: <Grid size={22} strokeWidth={1.5} />, label: 'Products', onClick: () => handleDockClick('/menu'), isActive: pathname === '/menu' },
+            { icon: <Heart size={22} strokeWidth={1.5} />, label: 'Wishlist', onClick: () => handleDockClick('/wishlist'), isActive: pathname === '/wishlist' },
+            { icon: <Package size={22} strokeWidth={1.5} />, label: 'Orders', onClick: () => handleDockClick('/orders'), isActive: pathname === '/orders' },
+            { icon: <User size={22} strokeWidth={1.5} />, label: 'Profile', onClick: () => handleDockClick('/profile'), isActive: pathname === '/profile' },
           ]}
         />
       </div>

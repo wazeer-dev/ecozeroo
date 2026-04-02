@@ -34,13 +34,13 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${outfit.variable} ${fraunces.variable} theme-orange`}
         suppressHydrationWarning
-        style={{ backgroundColor: '#ffffff', color: 'rgb(4, 28, 11)', margin: 0, padding: 0 }}
+        style={{ backgroundColor: '#ffffff', color: 'rgb(4, 28, 11)', margin: 0, padding: 0, overflowX: 'hidden' }}
       >
         <Navbar />
         {children}
         <PageFooter />
         <NotificationToast />
-        <GradualBlur position="bottom" height="180px" strength={10} />
+        <GradualBlur preset="footer" target="page" strength={2.5} />
       </body>
     </html>
   );
