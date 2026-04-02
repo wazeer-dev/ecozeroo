@@ -187,7 +187,7 @@ export default function LoginPage() {
                 <input
                   required
                   type="email"
-                  value={email}
+                  value={email || ''}
                   onChange={(e) => setEmail(e.target.value)}
                   style={{ width: '100%', padding: '1.2rem 1.2rem 1.2rem 3.5rem', borderRadius: '18px', border: `1.5px solid ${colors.border}`, background: colors.inputBg, color: colors.text, outline: 'none', transition: '0.3s' }}
                   placeholder="Enter your email"
@@ -205,7 +205,7 @@ export default function LoginPage() {
                 <input
                   required
                   type={showPassword ? "text" : "password"}
-                  value={password}
+                  value={password || ''}
                   onChange={(e) => setPassword(e.target.value)}
                   style={{ width: '100%', padding: '1.2rem 1.2rem 1.2rem 3.5rem', borderRadius: '18px', border: `1.5px solid ${colors.border}`, background: colors.inputBg, color: colors.text, outline: 'none', transition: '0.3s' }}
                   placeholder="Enter your password"
@@ -225,7 +225,7 @@ export default function LoginPage() {
               <input 
                 type="checkbox" 
                 id="remember" 
-                checked={rememberMe}
+                checked={!!rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
                 style={{ accentColor: colors.primary, width: '18px', height: '18px' }} 
               />

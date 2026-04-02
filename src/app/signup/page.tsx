@@ -256,7 +256,7 @@ export default function SignupPage() {
             <div>
               <label style={{ display: 'block', marginBottom: '0.6rem', color: colors.text, fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Full Name</label>
               <div style={{ position: 'relative' }}>
-                <input required value={name} onChange={e=>setName(e.target.value)} type="text" style={{ width: '100%', padding: '1.1rem 1.1rem 1.1rem 3.5rem', borderRadius: '18px', border: `1.5px solid ${colors.border}`, background: colors.inputBg, color: colors.text, outline: 'none' }} placeholder="John Doe" />
+                <input required value={name || ''} onChange={e=>setName(e.target.value)} type="text" style={{ width: '100%', padding: '1.1rem 1.1rem 1.1rem 3.5rem', borderRadius: '18px', border: `1.5px solid ${colors.border}`, background: colors.inputBg, color: colors.text, outline: 'none' }} placeholder="John Doe" />
                 <UserIcon size={20} style={{ position: 'absolute', left: '16px', top: '16px', opacity: 0.3 }} />
               </div>
             </div>
@@ -264,7 +264,7 @@ export default function SignupPage() {
             <div>
               <label style={{ display: 'block', marginBottom: '0.6rem', color: colors.text, fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Email Address</label>
               <div style={{ position: 'relative' }}>
-                <input required value={email} onChange={e=>setEmail(e.target.value)} type="email" style={{ width: '100%', padding: '1.1rem 1.1rem 1.1rem 3.5rem', borderRadius: '18px', border: `1.5px solid ${colors.border}`, background: colors.inputBg, color: colors.text, outline: 'none' }} placeholder="you@domain.com" />
+                <input required value={email || ''} onChange={e=>setEmail(e.target.value)} type="email" style={{ width: '100%', padding: '1.1rem 1.1rem 1.1rem 3.5rem', borderRadius: '18px', border: `1.5px solid ${colors.border}`, background: colors.inputBg, color: colors.text, outline: 'none' }} placeholder="you@domain.com" />
                 <Mail size={20} style={{ position: 'absolute', left: '16px', top: '16px', opacity: 0.3 }} />
               </div>
             </div>
@@ -272,7 +272,7 @@ export default function SignupPage() {
             <div>
               <label style={{ display: 'block', marginBottom: '0.6rem', color: colors.text, fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Password</label>
               <div style={{ position: 'relative' }}>
-                <input required value={password} onChange={e=>setPassword(e.target.value)} type="password" style={{ width: '100%', padding: '1.1rem 1.1rem 1.1rem 3.5rem', borderRadius: '18px', border: `1.5px solid ${colors.border}`, background: colors.inputBg, color: colors.text, outline: 'none' }} placeholder="••••••••" />
+                <input required value={password || ''} onChange={e=>setPassword(e.target.value)} type="password" style={{ width: '100%', padding: '1.1rem 1.1rem 1.1rem 3.5rem', borderRadius: '18px', border: `1.5px solid ${colors.border}`, background: colors.inputBg, color: colors.text, outline: 'none' }} placeholder="••••••••" />
                 <Lock size={20} style={{ position: 'absolute', left: '16px', top: '16px', opacity: 0.3 }} />
               </div>
             </div>
@@ -280,7 +280,7 @@ export default function SignupPage() {
             <div>
               <label style={{ display: 'block', marginBottom: '0.6rem', color: colors.text, fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Mobile Number</label>
               <div style={{ position: 'relative' }}>
-                <input required value={phone} onChange={e=>setPhone(e.target.value)} type="tel" style={{ width: '100%', padding: '1.1rem 1.1rem 1.1rem 3.5rem', borderRadius: '18px', border: `1.5px solid ${colors.border}`, background: colors.inputBg, color: colors.text, outline: 'none' }} placeholder="Your mobile number" />
+                <input required value={phone || ''} onChange={e=>setPhone(e.target.value)} type="tel" style={{ width: '100%', padding: '1.1rem 1.1rem 1.1rem 3.5rem', borderRadius: '18px', border: `1.5px solid ${colors.border}`, background: colors.inputBg, color: colors.text, outline: 'none' }} placeholder="Your mobile number" />
                 <Phone size={20} style={{ position: 'absolute', left: '16px', top: '16px', opacity: 0.3 }} />
               </div>
             </div>
