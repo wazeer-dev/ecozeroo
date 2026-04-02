@@ -246,7 +246,20 @@ export default function SignupPage() {
 
       {/* Right Pane - Form Card */}
       <div className="login-form-container" style={{ width: '45%', minWidth: '500px', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '2.5rem 5rem', background: '#fff', overflowY: 'auto' }}>
-        <div style={{ width: '100%', maxWidth: '420px', animation: 'fadeIn 0.8s ease-out' }}>
+        <div style={{ width: '100%', maxWidth: '420px', animation: 'fadeIn 0.8s ease-out', position: 'relative' }}>
+          <Link href="/" style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '8px', 
+            color: colors.textMuted, 
+            textDecoration: 'none', 
+            fontSize: '0.9rem', 
+            fontWeight: 700, 
+            marginBottom: '1rem',
+            transition: '0.3s'
+          }}>
+            <ArrowRight size={18} style={{ transform: 'rotate(180deg)' }} /> Back to Home
+          </Link>
           
           <div style={{ textAlign: 'center', marginBottom: '1.2rem' }}>
             <h2 style={{ fontSize: '2.5rem', fontWeight: 900, color: colors.text, marginBottom: '0.5rem', letterSpacing: '-1.5px' }}>Create Account</h2>

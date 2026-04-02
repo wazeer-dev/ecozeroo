@@ -173,7 +173,20 @@ export default function LoginPage() {
 
       {/* Right Pane - Form Card */}
       <div className="login-form-container" style={{ width: '45%', minWidth: '500px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3.5rem 5rem', background: '#fff' }}>
-        <div style={{ width: '100%', maxWidth: '420px', animation: 'fadeIn 0.8s ease-out' }}>
+        <div style={{ width: '100%', maxWidth: '420px', animation: 'fadeIn 0.8s ease-out', position: 'relative' }}>
+          <Link href="/" style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '8px', 
+            color: colors.textMuted, 
+            textDecoration: 'none', 
+            fontSize: '0.9rem', 
+            fontWeight: 700, 
+            marginBottom: '1.5rem',
+            transition: '0.3s'
+          }}>
+            <ArrowRight size={18} style={{ transform: 'rotate(180deg)' }} /> Back to Home
+          </Link>
           
           <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
             <h2 style={{ fontSize: '2.8rem', fontWeight: 900, color: colors.text, marginBottom: '0.8rem', letterSpacing: '-1.5px' }}>Login</h2>
