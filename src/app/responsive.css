@@ -57,6 +57,24 @@
   footer h2 {
     font-size: clamp(4rem, 20vw, 12rem) !important;
   }
+
+  /* LOGIN PAGE RESPONSIVE */
+  .login-root {
+    flex-direction: column !important;
+    height: auto !important;
+    overflow-y: auto !important;
+  }
+
+  .login-hero {
+    display: none !important; /* Hide massive hero on mobile for faster login */
+  }
+
+  .login-form-container {
+    width: 100% !important;
+    min-width: 100% !important;
+    padding: 100px 20px 60px 20px !important;
+    height: 100vh !important;
+  }
 }
 
 /* Adjust docking navigation for mobile */

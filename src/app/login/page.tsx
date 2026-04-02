@@ -117,9 +117,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div style={{ height: '100vh', width: '100vw', display: 'flex', overflow: 'hidden', background: '#ffffff' }}>
+    <div className="login-root" style={{ height: '100vh', width: '100vw', display: 'flex', overflow: 'hidden', background: '#ffffff' }}>
       {/* Left Pane - Hero Visual */}
-      <div style={{ 
+      <div className="login-hero" style={{ 
         flex: 1, 
         position: 'relative', 
         display: 'flex', 
@@ -168,7 +168,7 @@ export default function LoginPage() {
       </div>
 
       {/* Right Pane - Form Card */}
-      <div style={{ width: '45%', minWidth: '500px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '7rem 5rem 5rem 5rem', background: '#fff' }}>
+      <div className="login-form-container" style={{ width: '45%', minWidth: '500px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '7rem 5rem 5rem 5rem', background: '#fff' }}>
         <div style={{ width: '100%', maxWidth: '420px', animation: 'fadeIn 0.8s ease-out' }}>
           
           <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
