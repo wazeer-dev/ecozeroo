@@ -58,8 +58,10 @@ export default function LoginPage() {
       const result = await signInWithPopup(auth, provider);
       await handleSocialSuccess(result.user);
     } catch (error: any) {
-      console.error("Google Auth Error:", error);
-      alert("Google sign-in failed: " + error.message);
+      if (error.code !== 'auth/popup-closed-by-user') {
+        console.error("Google Auth Error:", error);
+        alert("Google sign-in failed: " + error.message);
+      }
     }
   };
 
