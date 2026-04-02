@@ -5,7 +5,7 @@ import { Mail, Lock, Eye, EyeOff, Apple, ArrowRight, Leaf } from 'lucide-react';
 import { useState } from 'react';
 import { getDoc, doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '@/firebase/config';
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, OAuthProvider } from 'firebase/auth';
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, OAuthProvider, setPersistence, browserLocalPersistence, browserSessionPersistence } from 'firebase/auth';
 
 const colors = {
   bg: '#f7fdf4',
@@ -23,6 +23,7 @@ export default function LoginPage() {
 
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
 
   // Social Login Helpers
   const handleSocialSuccess = async (user: any) => {
@@ -90,6 +91,7 @@ export default function LoginPage() {
     }
 
     try {
+      await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
       await signInWithEmailAndPassword(auth, normalizedEmail, password);
 
       const userDoc = await getDoc(doc(db, 'users', normalizedEmail));
@@ -220,7 +222,13 @@ export default function LoginPage() {
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <input type="checkbox" id="remember" style={{ accentColor: colors.primary, width: '18px', height: '18px' }} />
+              <input 
+                type="checkbox" 
+                id="remember" 
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                style={{ accentColor: colors.primary, width: '18px', height: '18px' }} 
+              />
               <label htmlFor="remember" style={{ fontSize: '0.9rem', color: colors.textMuted, fontWeight: 600, cursor: 'pointer' }}>Remember me</label>
             </div>
 
