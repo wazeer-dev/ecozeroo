@@ -217,13 +217,10 @@ export default function Navbar() {
         @media (max-width: 768px) {
           .nav-center { display: none; }
           .pill-nav-container { 
-            top: 12px !important;
-            left: 12px !important;
-            right: 12px !important;
-            padding-left: 12px !important;
-            padding-right: 12px !important;
-            height: 64px;
-            justify-content: space-between; 
+            display: none !important;
+          }
+          .nav-spacer {
+            display: none !important;
           }
           .brand-logo {
             width: 160px;
@@ -331,7 +328,7 @@ export default function Navbar() {
       </div>
 
       {/* Spacer for non-home pages, excluding auth pages which handle their own layout */}
-      {mounted && pathname !== '/' && pathname !== '/login' && pathname !== '/signup' && <div style={{ height: '90px' }} />}
+      {mounted && pathname !== '/' && pathname !== '/login' && pathname !== '/signup' && <div className="nav-spacer" style={{ height: '90px' }} />}
     </>
   );
 }
