@@ -172,15 +172,15 @@ export default function LoginPage() {
       </div>
 
       {/* Right Pane - Form Card */}
-      <div className="login-form-container" style={{ width: '45%', minWidth: '500px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '7rem 5rem 5rem 5rem', background: '#fff' }}>
+      <div className="login-form-container" style={{ width: '45%', minWidth: '500px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3.5rem 5rem', background: '#fff' }}>
         <div style={{ width: '100%', maxWidth: '420px', animation: 'fadeIn 0.8s ease-out' }}>
           
-          <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+          <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
             <h2 style={{ fontSize: '2.8rem', fontWeight: 900, color: colors.text, marginBottom: '0.8rem', letterSpacing: '-1.5px' }}>Login</h2>
             <p style={{ color: colors.textMuted, fontSize: '1.1rem' }}>Enter your credentials to access your account</p>
           </div>
 
-          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div>
               <label style={{ display: 'block', marginBottom: '0.8rem', color: colors.text, fontWeight: 700, fontSize: '0.9rem' }}>Email Address</label>
               <div style={{ position: 'relative' }}>
@@ -259,7 +259,7 @@ export default function LoginPage() {
           </form>
 
           {/* Social Divider */}
-          <div style={{ display: 'flex', alignItems: 'center', margin: '2rem 0', gap: '15px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', margin: '1.2rem 0', gap: '15px' }}>
             <div style={{ flex: 1, height: '1px', background: colors.border }} />
             <span style={{ fontSize: '0.85rem', color: colors.textMuted, fontWeight: 700 }}>OR</span>
             <div style={{ flex: 1, height: '1px', background: colors.border }} />
@@ -288,7 +288,7 @@ export default function LoginPage() {
             </button>
           </div>
 
-          <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: `1px solid ${colors.border}`, textAlign: 'center' }}>
+          <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: `1px solid ${colors.border}`, textAlign: 'center' }}>
             <p style={{ color: colors.textMuted, fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>New to EcoZero?</p>
             <Link 
               href="/signup" 

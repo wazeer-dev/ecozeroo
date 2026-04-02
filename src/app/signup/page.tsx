@@ -244,15 +244,15 @@ export default function SignupPage() {
       </div>
 
       {/* Right Pane - Form Card */}
-      <div className="login-form-container" style={{ width: '45%', minWidth: '500px', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '4rem 5rem 3rem 5rem', background: '#fff', overflowY: 'auto' }}>
+      <div className="login-form-container" style={{ width: '45%', minWidth: '500px', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '2.5rem 5rem', background: '#fff', overflowY: 'auto' }}>
         <div style={{ width: '100%', maxWidth: '420px', animation: 'fadeIn 0.8s ease-out' }}>
           
-          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <div style={{ textAlign: 'center', marginBottom: '1.2rem' }}>
             <h2 style={{ fontSize: '2.5rem', fontWeight: 900, color: colors.text, marginBottom: '0.5rem', letterSpacing: '-1.5px' }}>Create Account</h2>
             <p style={{ color: colors.textMuted, fontSize: '1rem' }}>Join the EcoZero community today!</p>
           </div>
 
-          <form onSubmit={handleSignup} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+          <form onSubmit={handleSignup} style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
             <div>
               <label style={{ display: 'block', marginBottom: '0.6rem', color: colors.text, fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Full Name</label>
               <div style={{ position: 'relative' }}>
@@ -291,7 +291,7 @@ export default function SignupPage() {
           </form>
 
           {/* Social Divider */}
-          <div style={{ display: 'flex', alignItems: 'center', margin: '1.5rem 0', gap: '15.2px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', margin: '1rem 0', gap: '15.2px' }}>
             <div style={{ flex: 1, height: '1px', background: colors.border }}></div>
             <span style={{ color: colors.textMuted, fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase' }}>OR JOIN WITH</span>
             <div style={{ flex: 1, height: '1px', background: colors.border }}></div>
@@ -322,7 +322,7 @@ export default function SignupPage() {
             </button>
           </div>
 
-          <div style={{ marginTop: '2.5rem', textAlign: 'center', color: colors.textMuted, fontSize: '1rem', fontWeight: 600, paddingBottom: '3rem' }}>
+          <div style={{ marginTop: '1.5rem', textAlign: 'center', color: colors.textMuted, fontSize: '1rem', fontWeight: 600, paddingBottom: '2rem' }}>
             Already have an account? <Link href="/login" style={{ color: colors.primary, textDecoration: 'none', fontWeight: 900, marginLeft: '8px' }}>Sign in</Link>
           </div>
         </div>
