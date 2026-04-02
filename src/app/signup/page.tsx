@@ -181,9 +181,10 @@ export default function SignupPage() {
       const redirect = localStorage.getItem('redirect_after_login');
       window.location.href = redirect || "/";
     } catch (error: any) {
-      console.error("Signup Error:", error);
+      console.error("Signup Error:", error.code, error.message);
       if (error.code === 'auth/email-already-in-use') {
-        alert("This email is already in use.");
+        alert("This email is already registered. Please login instead.");
+        window.location.href = '/login';
       } else {
         alert("Signup failed: " + error.message);
       }
