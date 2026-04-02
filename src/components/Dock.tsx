@@ -113,7 +113,7 @@ export default function Dock({
       onMouseMove={(e) => mouseX.set(e.pageX)}
       onMouseLeave={() => mouseX.set(Infinity)}
       style={{ height: panelHeight }}
-      className={`mx-auto flex items-center gap-4 rounded-2xl border border-white/10 bg-black/40 px-4 backdrop-blur-xl ${className}`}
+      className={`mx-auto flex items-center gap-2 sm:gap-4 rounded-2xl border border-white/10 bg-black/40 px-3 sm:px-4 backdrop-blur-xl ${className}`}
     >
       {items.map((item, index) => (
         <DockItem
