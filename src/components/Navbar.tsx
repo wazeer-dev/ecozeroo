@@ -62,6 +62,8 @@ export default function Navbar() {
     window.location.reload();
   };
 
+  if (pathname === '/login' || pathname === '/signup') return null;
+
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: `
