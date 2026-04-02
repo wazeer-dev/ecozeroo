@@ -34,7 +34,7 @@ import {
 import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 
-// Premium ECOZERO Color Palette - Light Mode Overhaul
+// Premium ECOZERO LIVE Color Palette - Light Mode Overhaul
 const colors = {
   bg: '#D7E8BC',          // Light Sage (User Request)
   surface: 'rgba(4, 28, 11, 0.05)', 
