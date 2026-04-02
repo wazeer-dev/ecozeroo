@@ -1,4 +1,6 @@
+'use client';
 import React, { CSSProperties, useMemo } from 'react';
+import { usePathname } from 'next/navigation';
 
 type GradualBlurProps = {
   position?: 'top' | 'bottom' | 'left' | 'right';
@@ -23,6 +25,9 @@ const GradualBlur: React.FC<GradualBlurProps> = ({
   zIndex = 1,
   opacity = 1,
 }) => {
+  const pathname = usePathname();
+  if (pathname === '/login' || pathname === '/signup') return null;
+
   const divs = useMemo(() => {
     const layers = [];
     for (let i = 0; i < divCount; i++) {
