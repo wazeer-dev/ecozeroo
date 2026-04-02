@@ -18,7 +18,7 @@ type GradualBlurProps = {
 const GradualBlur: React.FC<GradualBlurProps> = ({
   position = 'bottom',
   strength = 1,
-  height = '100%',
+  height = '150px',
   width = '100%',
   divCount = 10,
   exponential = true,
@@ -71,7 +71,7 @@ const GradualBlur: React.FC<GradualBlurProps> = ({
   }, [position, strength, divCount, exponential, zIndex, opacity]);
 
   const containerStyle: CSSProperties = {
-    position: 'absolute',
+    position: 'fixed',
     top: position === 'top' || position === 'left' || position === 'right' ? 0 : 'auto',
     bottom: position === 'bottom' ? 0 : 'auto',
     left: position === 'left' || position === 'top' || position === 'bottom' ? 0 : 'auto',

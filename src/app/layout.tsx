@@ -40,7 +40,7 @@ export default function RootLayout({
         {children}
         <PageFooter />
         <NotificationToast />
-        <GradualBlur />
+        <GradualBlur position="bottom" height="180px" strength={10} />
       </body>
     </html>
   );
