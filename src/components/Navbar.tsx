@@ -98,10 +98,10 @@ export default function Navbar() {
           align-items: center;
           justify-content: space-between;
           padding: 0 4%;
-          background: rgba(252, 247, 222, 0.75);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-          border-bottom: 1px solid rgba(20, 104, 69, 0.05);
+          background: rgba(252, 247, 222, 0.45);
+          backdrop-filter: blur(25px) saturate(180%);
+          -webkit-backdrop-filter: blur(25px) saturate(180%);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.3);
           transition: all 0.3s ease;
           font-family: 'Inter', sans-serif;
           pointer-events: none;
@@ -131,21 +131,21 @@ export default function Navbar() {
         }
         
         .nav-pill {
-          background: #fff;
-          color: #1a3c26;
+          background: rgb(20, 104, 69);
+          color: #fcf7de;
           border-radius: 40px;
           padding: 8px 18px;
           font-size: 0.75rem;
           font-weight: 800;
           text-transform: uppercase;
           text-decoration: none;
-          box-shadow: 0 4px 15px rgba(20, 104, 69, 0.05);
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           cursor: pointer;
           display: flex;
           align-items: center;
           gap: 6px;
-          border: 1px solid rgba(20, 104, 69, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .nav-pill:hover {
           transform: translateY(-2px);
@@ -154,18 +154,18 @@ export default function Navbar() {
         }
         
         .nav-circle {
-          background: #fff;
-          color: #1a3c26;
+          background: rgb(20, 104, 69);
+          color: #fcf7de;
           width: 38px;
           height: 38px;
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 4px 15px rgba(20, 104, 69, 0.05);
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           cursor: pointer;
-          border: 1px solid rgba(20, 104, 69, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
           text-decoration: none;
         }
         .nav-circle:hover {
@@ -174,28 +174,28 @@ export default function Navbar() {
         }
         
         .quote-pill {
-          background: #fff;
+          background: rgb(20, 104, 69);
           border-radius: 40px;
           padding: 4px 4px 4px 18px;
           display: flex;
           align-items: center;
           gap: 12px;
-          box-shadow: 0 4px 15px rgba(20, 104, 69, 0.05);
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
           text-decoration: none;
-          color: #1a3c26;
+          color: #fcf7de;
           font-weight: 800;
           font-size: 0.85rem;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           cursor: pointer;
-          border: 1px solid rgba(20, 104, 69, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .quote-pill:hover {
           transform: translateY(-2px);
           box-shadow: 0 8px 25px rgba(20, 104, 69, 0.1);
         }
         .quote-btn-icon {
-          background: #146845;
-          color: #fff;
+          background: #fcf7de;
+          color: rgb(20, 104, 69);
           width: 34px;
           height: 34px;
           border-radius: 50%;
@@ -238,30 +238,24 @@ export default function Navbar() {
           color: #146845;
         }
         
-        @media (max-width: 768px) {
-          .nav-center { display: none; }
-          .pill-nav-container { 
-            display: flex;
-          }
-          .nav-spacer {
-            display: block;
-          }
-          .brand-logo {
-            width: 160px;
-            height: 64px;
-            padding: 10px 16px;
-          }
           .mobile-dock-wrapper {
             display: flex !important;
             position: fixed;
-            bottom: 25px;
+            bottom: 0; /* Anchored directly to the bottom as requested */
             left: 0;
             right: 0;
             justify-content: center;
-            z-index: 1000;
+            z-index: 99999 !important;
             pointer-events: none;
+            padding-bottom: 12px; /* Providing a safety-zone for ergonomics */
           }
           .mobile-dock-wrapper > * { pointer-events: auto; }
+        }
+        
+        @media (max-width: 1024px) {
+          .pill-nav-container { display: flex; }
+          .nav-center { display: none; }
+          .mobile-dock-wrapper { display: flex !important; }
         }
 
         /* Default state: hide on desktop */
@@ -302,8 +296,15 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* CENTER LINKS */}
-        <div className="nav-center">
+        <div className="nav-main-group" style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '8px', /* Tight consistent gap */
+          flex: 1,
+          justifyContent: 'flex-end',
+          pointerEvents: 'auto'
+        }}>
+          {/* CENTER LINKS */}
           <Link href="/" className="nav-pill">HOME</Link>
           <Link href="/about" className="nav-pill">ABOUT US</Link>
           
@@ -323,14 +324,11 @@ export default function Navbar() {
           <Link href="/menu" className="nav-pill">PRODUCTS</Link>
           <Link href="/contact" className="nav-pill">FAQ</Link>
           
-          <Link href="#" className="nav-circle" style={{ marginLeft: '10px' }}><Search size={16} strokeWidth={2.5} /></Link>
+          {/* Social Links & Search */}
+          <Link href="#" className="nav-circle"><Search size={16} strokeWidth={2.5} /></Link>
           <Link href="#" className="nav-circle"><Facebook size={16} fill="currentColor" strokeWidth={0} /></Link>
           <Link href="#" className="nav-circle"><Instagram size={16} strokeWidth={2.5} /></Link>
-        </div>
-        
-        {/* RIGHT SIDE */}
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexShrink: 0, whiteSpace: 'nowrap' }}>
-          
+
           {!user ? (
             <Link href="/login" className="nav-circle">
               <User size={16} strokeWidth={2.5} />
@@ -339,7 +337,7 @@ export default function Navbar() {
             <div ref={dropdownRef} style={{ position: 'relative' }}>
               <button className="nav-circle" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
                 {avatar ? (
-                  <img src={avatar} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                  <img src={avatar} alt="User" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
                 ) : (
                   <User size={16} strokeWidth={2.5} />
                 )}
@@ -392,21 +390,24 @@ export default function Navbar() {
           </Link>
         </div>
       </nav>
-      {/* Mobile Dock — shown only on small screens, except on product pages to avoid CTA overlap */}
-      {mounted && !pathname.startsWith('/product/') && (
+      {/* Mobile Dock Overlay — hidden on orders as per protocol */}
+      {!pathname.startsWith('/product/') && pathname !== '/orders' && (
         <div className="mobile-dock-wrapper">
-          <Dock
-            panelHeight={64}
-            baseItemSize={44}
-            magnification={58}
-            items={[
+          {mounted && (
+            <Dock
+              panelHeight={68}
+              baseItemSize={48}
+              magnification={72}
+              gap={6} 
+              items={[
               { icon: <HomeIcon />, label: 'Home', onClick: () => handleDockClick('/'), isActive: pathname === '/' },
               { icon: <LayoutGrid />, label: 'Products', onClick: () => handleDockClick('/menu'), isActive: pathname === '/menu' },
               { icon: <Heart />, label: 'Wishlist', onClick: () => handleDockClick('/wishlist'), isActive: pathname === '/wishlist' },
               { icon: <User />, label: 'Profile', onClick: () => handleDockClick('/profile'), isActive: pathname === '/profile' },
               { icon: <ShoppingCart />, label: 'Cart', onClick: () => handleDockClick('/cart'), isActive: pathname === '/cart', badge: cartCount > 0 ? cartCount : undefined },
             ]}
-          />
+            />
+          )}
         </div>
       )}
 

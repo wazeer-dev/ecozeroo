@@ -28,6 +28,7 @@ export type DockProps = {
   baseItemSize?: number;
   magnification?: number;
   spring?: SpringOptions;
+  gap?: number;
 };
 
 type DockItemProps = {
@@ -49,10 +50,10 @@ function DockItem({
   className = '',
   onClick,
   mouseX,
-  spring,
   distance,
   magnification,
   baseItemSize,
+  spring,
   isActive = false,
   badge
 }: DockItemProps) {
@@ -84,6 +85,8 @@ function DockItem({
         position: 'relative'
       }}
       onClick={onClick}
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
       className={`shrink-0 cursor-pointer ${className}`}
     >
       <AnimatePresence>
@@ -95,11 +98,11 @@ function DockItem({
             exit={{ scale: 0.8, opacity: 0 }}
             style={{
               position: 'absolute',
-              inset: '-2px',
-              background: 'linear-gradient(135deg, #146845 0%, #2a9d8f 100%)',
-              borderRadius: '20px',
+              inset: '4px',
+              background: '#fcf7de', // Premium Creme accent
+              borderRadius: '24px',
               zIndex: 0,
-              boxShadow: '0 8px 20px rgba(20, 104, 69, 0.25)'
+              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)'
             }}
             transition={{ type: 'spring', bounce: 0.4, duration: 0.6 }}
           />
@@ -108,8 +111,8 @@ function DockItem({
 
       <motion.div 
         animate={{ 
-          scale: isActive ? 1.15 : 1,
-          y: isActive ? -2 : 0
+          scale: isActive ? 1.1 : 1,
+          color: isActive ? 'rgb(20, 104, 69)' : '#FFFFFF'
         }}
         transition={{ type: 'spring', stiffness: 400, damping: 10 }}
         style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
@@ -117,7 +120,7 @@ function DockItem({
         {React.cloneElement(icon as React.ReactElement, { 
           size: 24, 
           strokeWidth: isActive ? 3 : 2,
-          color: isActive ? '#FFFFFF' : '#666666'
+          color: 'currentColor'
         })}
         
         {badge !== undefined && badge !== 0 && (
@@ -129,20 +132,20 @@ function DockItem({
               exit={{ scale: 1.5, opacity: 0 }}
               style={{
                 position: 'absolute',
-                top: '-12px',
-                right: '-12px',
-                backgroundColor: isActive ? '#FFFFFF' : '#146845',
-                color: isActive ? '#146845' : '#FFFFFF',
+                top: '-15px',
+                right: '-15px',
+                backgroundColor: '#fcf7de',
+                color: 'rgb(20, 104, 69)',
                 borderRadius: '50%',
-                width: '20px',
-                height: '20px',
+                width: '18px',
+                height: '18px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '0.7rem',
+                fontSize: '0.65rem',
                 fontWeight: 900,
-                border: '2px solid transparent',
-                boxShadow: '0 4px 10px rgba(0,0,0,0.15)',
+                border: '2px solid rgb(20, 104, 69)',
+                boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
                 zIndex: 10
               }}
             >
@@ -160,9 +163,10 @@ export default function Dock({
   className = '',
   spring = { mass: 0.1, stiffness: 220, damping: 22 },
   magnification = 60,
-  distance = 140,
-  panelHeight = 70,
-  baseItemSize = 52,
+  distance = 120,
+  panelHeight = 68,
+  baseItemSize = 48,
+  gap = 6
 }: DockProps) {
   const mouseX = useMotionValue(Infinity);
 
@@ -172,18 +176,19 @@ export default function Dock({
       onMouseLeave={() => mouseX.set(Infinity)}
       style={{ 
         height: panelHeight,
-        background: '#FFFFFF',
-        borderRadius: '50px',
-        padding: '0 12px',
-        boxShadow: '0 15px 40px rgba(0,0,0,0.12)',
+        background: 'rgb(20, 104, 69)', // High-Impact Forest Green
+        borderRadius: '40px',
+        padding: '0 10px',
+        boxShadow: '0 20px 50px rgba(20, 104, 69, 0.3)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: '8px',
+        gap: `${gap}px`,
         width: 'max-content',
-        maxWidth: 'calc(100vw - 32px)',
-        border: '1px solid rgba(0,0,0,0.03)',
-        margin: '0 auto'
+        maxWidth: 'calc(100vw - 40px)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        margin: '0 auto',
+        backdropFilter: 'blur(20px)'
       }}
       className={className}
     >

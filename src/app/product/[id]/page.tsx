@@ -733,11 +733,11 @@ export default function ProductDetailPage() {
           }
           .mobile-btn-cart {
             width: 100%; padding: 18px; border-radius: 50px;
-            background: #111; color: #fff; border: none;
+            background: rgb(20, 104, 69); color: #fff; border: none;
             font-weight: 800; font-size: 1.05rem;
             display: flex; align-items: center; justify-content: center; gap: 12px;
             cursor: pointer;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 25px rgba(20, 104, 69, 0.2);
           }
 
           .desktop-only { display: none !important; }
@@ -1039,13 +1039,22 @@ export default function ProductDetailPage() {
                     <div className="empty-reviews-state">
                       <Star size={32} style={{ marginBottom: '12px', opacity: 0.3 }} />
                       <p style={{ fontWeight: 700, marginBottom: '4px' }}>No reviews yet</p>
-                      <p style={{ fontSize: '0.85rem' }}>Be the first one to share your thoughts about this product!</p>
+                      <p style={{ fontSize: '0.85rem', marginBottom: '20px' }}>Be the first one to share your thoughts about this product!</p>
+                      <button 
+                        onClick={() => setShowReviewForm(true)}
+                        style={{ 
+                          background: 'rgb(20, 104, 69)', color: '#fff', border: 'none', 
+                          padding: '10px 22px', borderRadius: '30px', fontWeight: 800, cursor: 'pointer' 
+                        }}
+                      >
+                        Write a Review
+                      </button>
                     </div>
                   )}
                 </div>
                 
-                <button className="load-more-btn" onClick={() => setShowReviewForm(!showReviewForm)}>
-                  {showReviewForm ? 'Cancel Application' : 'Load More'}
+                <button className="load-more-btn" onClick={() => setShowReviewForm(!showReviewForm)} style={{ background: showReviewForm ? '#777' : 'rgb(20, 104, 69)' }}>
+                  {showReviewForm ? 'Cancel Application' : (reviews.length > 0 ? 'Load More / Write Review' : 'New Review')}
                 </button>
 
                 {showReviewForm && (
