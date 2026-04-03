@@ -1,4 +1,4 @@
-'use client';
+'use client'; 
 
 import { useState, useEffect } from 'react';
 import { Search, Loader2, PackageSearch, Filter, Heart, ChevronLeft, SlidersHorizontal, Plus } from 'lucide-react';
@@ -6,6 +6,8 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
+import { useMemo } from 'react';
 
 export default function MenuPage() {
   const router = useRouter();
@@ -76,12 +78,32 @@ export default function MenuPage() {
     setWishlist(newWishlist.map((p: any) => p.id));
   };
 
-  const filtered = products.filter(p => {
-    const matchesSearch = p.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         p.category?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'All' || p.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const quickAddToCart = (e: React.MouseEvent, product: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const cart = JSON.parse(localStorage.getItem('ecozero_cart') || '[]');
+    const existingIndex = cart.findIndex((item: any) => item.id === product.id);
+    
+    if (existingIndex > -1) {
+      cart[existingIndex].quantity += 1;
+    } else {
+      cart.push({ ...product, quantity: 1 });
+    }
+    
+    localStorage.setItem('ecozero_cart', JSON.stringify(cart));
+    // Dispatch custom event for Navbar and Dock to update
+    window.dispatchEvent(new Event('cartUpdated'));
+  };
+
+  const filtered = useMemo(() => {
+    return products.filter(p => {
+      const matchesSearch = p.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                           p.category?.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = selectedCategory === 'All' || p.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [products, searchQuery, selectedCategory]);
 
   return (
     <div className="page-main-wrapper" style={{ paddingTop: '120px', minHeight: '100vh', background: 'var(--bg-color)' }}>
@@ -157,15 +179,14 @@ export default function MenuPage() {
                     }}
                   >
                     <span className="category-name">{cat === 'All' ? 'Full Catalog' : cat}</span>
-                    <img 
-                      src={categoryImages[cat] || 'https://api.iconify.design/lucide:box.svg'} 
-                      className="category-img-placeholder" 
-                      alt="" 
-                      style={{ 
-                        opacity: 0.15, filter: 'grayscale(1) brightness(0)', 
-                        width: '40px', height: '40px', margin: 'auto 0 0 auto' 
-                      }} 
-                    />
+                      <img 
+                        src={categoryImages[cat] || 'https://api.iconify.design/lucide:box.svg'} 
+                        className="category-img-placeholder" 
+                        alt="" 
+                        style={{ 
+                          opacity: 0.25, filter: 'grayscale(1) brightness(0)', 
+                        }} 
+                      />
                   </button>
               ))}
            </div>
@@ -216,8 +237,14 @@ export default function MenuPage() {
                     {/* DESKTOP VIEW CARD */}
                     <div className="desktop-only product-link" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                       <div className="product-image-container" style={{ position: 'relative', borderRadius: '28px', overflow: 'hidden', height: '320px', marginBottom: '1.2rem', background: '#fff', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
-                        <img className="scaled-img" src={product.image || 'https://via.placeholder.com/600x600'} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)' }} />
-                        <div style={{ position: 'absolute', bottom: '15px', left: '15px', background: 'rgba(255,255,255,0.95)', padding: '6px 14px', borderRadius: '30px', fontSize: '0.75rem', fontWeight: 800, color: 'rgb(4, 28, 11)', backdropFilter: 'blur(10px)' }}>ESSENTIAL</div>
+                        <Image 
+                          className="scaled-img" 
+                          src={product.image || 'https://via.placeholder.com/600x600'} 
+                          alt={product.name} 
+                          fill
+                          style={{ objectFit: 'cover', transition: 'transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)' }} 
+                        />
+                        <div style={{ position: 'absolute', bottom: '15px', left: '15px', background: 'rgba(255,255,255,0.95)', padding: '6px 14px', borderRadius: '30px', fontSize: '0.75rem', fontWeight: 800, color: 'rgb(4, 28, 11)', backdropFilter: 'blur(10px)', zIndex: 2 }}>{product.badge || 'ESSENTIAL'}</div>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '0 14px' }}>
                         <div>
@@ -233,17 +260,22 @@ export default function MenuPage() {
 
                     {/* MOBILE VIEW CARD (STANDARD UNIFORM DESIGN) */}
                     <div className="mobile-product-card mobile-only" onClick={() => router.push(`/product/${product.id}`)}>
-                       {product.stock <= 0 && <div className="discount-bubble" style={{ background: '#333' }}>OUT</div>}
-                       <div className="mobile-product-img-wrapper">
-                         <img src={product.image || 'https://via.placeholder.com/600x600'} className="mobile-product-img" alt={product.name} />
-                         <div className="mobile-essential-tag">ESSENTIAL</div>
+                       <div className="mobile-product-img-wrapper" style={{ position: 'relative' }}>
+                         <Image 
+                           src={product.image || 'https://via.placeholder.com/600x600'} 
+                           className="mobile-product-img" 
+                           alt={product.name} 
+                           fill
+                           style={{ objectFit: 'cover', mixBlendMode: 'multiply' }}
+                         />
+                         <div className="mobile-essential-tag" style={{ zIndex: 2 }}>{product.badge || 'ESSENTIAL'}</div>
                        </div>
                        <div className="mobile-product-info">
                           <span className="mobile-product-title">{product.name}</span>
                           <span className="mobile-product-weight">{product.category || 'Eco'} &bull; 68 gm.</span>
                           <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                              <span className="mobile-product-price">₹{product.price}</span>
-                             <button className="mobile-add-btn" onClick={(e) => { e.stopPropagation(); /* Add to cart */ }}>
+                             <button className="mobile-add-btn" onClick={(e) => quickAddToCart(e, product)}>
                                 <Plus size={14} />
                              </button>
                           </div>
@@ -322,17 +354,17 @@ export default function MenuPage() {
           .section-label { font-size: 1rem; font-weight: 800; color: #111; margin: 0; text-transform: none; letter-spacing: 0; }
           
           .category-card {
-            width: 140px; flex-shrink: 0; border-radius: 20px;
-            padding: 12px; display: flex; flex-direction: column;
-            justify-content: space-between; height: 160px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.03);
+            width: 155px; flex-shrink: 0; border-radius: 18px;
+            padding: 10px 15px; display: flex; flex-direction: row;
+            align-items: center; justify-content: space-between; height: 65px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.02);
             text-decoration: none; position: relative; overflow: hidden;
-            border: 1px solid rgba(0,0,0,0.02);
+            border: 1px solid rgba(0,0,0,0.03); gap: 10px;
           }
-          .category-name { font-size: 0.85rem; font-weight: 700; color: #111; z-index: 2; line-height: 1.2; }
+          .category-name { font-size: 0.8rem; font-weight: 800; color: #111; z-index: 2; line-height: 1.1; max-width: 70%; text-align: left; }
           .category-img-placeholder {
-            width: 100%; height: 70px; object-fit: contain; z-index: 2;
-            margin-top: auto;
+            width: 35px; height: 35px; object-fit: contain; z-index: 2;
+            flex-shrink: 0;
           }
           
           .products-grid {

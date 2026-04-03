@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { useMemo } from 'react';
 import { doc, getDoc, collection, getDocs, query, where, addDoc } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 import { Loader2, Star, ChevronDown, ChevronUp, ShoppingCart, Zap, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -30,6 +32,7 @@ export default function ProductDetailPage() {
   const [selectedColor, setSelectedColor] = useState<number>(1);
   const [quantity, setQuantity] = useState(1);
   const [direction, setDirection] = useState(0);
+  const [isWishlisted, setIsWishlisted] = useState(false);
 
   const images: string[] = (product?.images && product.images.length > 0) ? product.images : [product?.image].filter(Boolean);
 
@@ -44,8 +47,31 @@ export default function ProductDetailPage() {
   };
 
   useEffect(() => {
-    if (id) fetchProductData();
+    if (id) {
+      fetchProductData();
+      checkWishlistStatus();
+    }
   }, [id]);
+
+  const checkWishlistStatus = () => {
+    const stored = JSON.parse(localStorage.getItem('ecozero_wishlist') || '[]');
+    if (Array.isArray(stored)) {
+      setIsWishlisted(stored.some((p: any) => p.id === id));
+    }
+  };
+
+  const toggleWishlist = () => {
+    if (!product) return;
+    const stored = JSON.parse(localStorage.getItem('ecozero_wishlist') || '[]');
+    let newList = [];
+    if (isWishlisted) {
+      newList = stored.filter((p: any) => p.id !== product.id);
+    } else {
+      newList = [...stored, product];
+    }
+    localStorage.setItem('ecozero_wishlist', JSON.stringify(newList));
+    setIsWishlisted(!isWishlisted);
+  };
 
   const fetchProductData = async () => {
     try {
@@ -78,6 +104,7 @@ export default function ProductDetailPage() {
       cart.push({ ...product, quantity: quantity });
     }
     localStorage.setItem('ecozero_cart', JSON.stringify(cart));
+    window.dispatchEvent(new Event('cartUpdated'));
     setAddedPopup(true);
     setTimeout(() => setAddedPopup(false), 3000);
   };
@@ -629,19 +656,21 @@ export default function ProductDetailPage() {
         }
         
         @media (max-width: 900px) {
-          .buy-page { padding: 0 !important; background: #fff !important; }
+          .buy-page { padding: 0 !important; background: var(--bg-color) !important; }
           .buy-container { width: 100% !important; padding: 0 !important; }
           .main-grid { grid-template-columns: 1fr; gap: 0 !important; }
-          .image-showcase { background: #fff; padding: 60px 20px 20px; position: relative; }
-          .main-image { padding: 0 !important; box-shadow: none !important; border-radius: 0 !important; height: auto !important; aspect-ratio: auto !important; }
-          .main-image img { max-height: 40vh; object-fit: contain; }
+          .image-showcase { background: #fff; padding: 0; position: relative; border-top-left-radius: 40px; border-top-right-radius: 40px; overflow: hidden; margin: 0; width: 100% !important; max-width: 100% !important; }
+          .main-image { padding: 0 !important; box-shadow: none !important; border-radius: 0 !important; height: auto !important; aspect-ratio: 1 / 1 !important; background: #fff; width: 100% !important; }
+          .main-image-inner { width: 100% !important; height: 100% !important; display: block !important; position: relative !important; }
+          .main-image img { width: 100% !important; height: auto !important; min-height: 40vh; object-fit: contain; mix-blend-mode: multiply; display: block; }
+          .carousel-dots { bottom: 15px !important; }
           .thumbnails { display: none !important; }
           
           .mobile-header {
             position: fixed; top: 0; left: 0; right: 0; 
             padding: 15px 20px; display: flex !important;
             justify-content: space-between; align-items: center;
-            background: #fff; z-index: 1000;
+            background: var(--bg-color); z-index: 1000;
           }
           .mobile-header-title { font-weight: 700; font-size: 1.1rem; color: #111; }
           .circle-btn {
@@ -657,26 +686,28 @@ export default function ProductDetailPage() {
           .product-subtitle { margin-bottom: 20px !important; font-size: 0.85rem !important; display: flex; align-items: center; gap: 6px; }
           
           .quantity-capsule {
-            display: flex !important; width: fit-content; margin: 0 auto 20px;
-            background: #fff; border: 1.5px solid #eee; border-radius: 40px;
-            padding: 6px 6px; align-items: center; gap: 20px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.03);
+            display: flex !important; width: fit-content; margin: 0 auto 24px;
+            background: #fff; border: 1px solid #f0f0f0; border-radius: 40px;
+            padding: 4px; align-items: center; gap: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+            position: relative; z-index: 10;
           }
-          .qty-btn { width: 34px; height: 34px; border-radius: 50%; border: none; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-          .qty-btn-minus { background: #f8f8f8; color: #111; }
-          .qty-btn-plus { background: #000; color: #fff; }
+          .qty-btn { width: 36px; height: 36px; border-radius: 50%; border: none; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; font-weight: 500; }
+          .qty-btn-minus { background: transparent; color: #999; }
+          .qty-btn-plus { background: #000; color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
           
           .info-pills-row { display: flex; align-items: center; gap: 10px; margin-top: 15px; }
-          .new-price { font-size: 1.5rem !important; }
-          .old-price { font-size: 1rem !important; }
-          .discount-badge { background: #000 !important; color: #fff !important; font-size: 0.7rem !important; padding: 4px 10px !important; }
+          .new-price { font-size: 1.6rem !important; font-weight: 900 !important; color: #111; }
+          .old-price { font-size: 1rem !important; color: #ccc !important; text-decoration: line-through; font-weight: 700; }
+          .discount-badge { background: #000 !important; color: #fff !important; font-size: 0.65rem !important; font-weight: 900 !important; padding: 4px 10px !important; border-radius: 10px !important; }
           
           .promo-banner {
-            display: flex !important; padding: 16px; border-radius: 12px;
-            background: linear-gradient(to right, #FFEDD5, #FEF9C3);
-            margin: 25px 0; gap: 12px; align-items: flex-start;
+            display: flex !important; padding: 14px 18px; border-radius: 12px;
+            background: linear-gradient(135deg, #fffbeb 0%, #fff7ed 100%);
+            border: 1px solid #fef3c7;
+            margin: 20px 0; gap: 12px; align-items: flex-start;
           }
-          .promo-banner p { font-size: 0.8rem; margin: 0; line-height: 1.4; color: #78350F; opacity: 0.8; }
+          .promo-banner p { font-size: 0.78rem; margin: 0; line-height: 1.5; color: #92400e; font-weight: 600; }
           
           .description-section { margin-top: 25px; }
           .description-title { font-weight: 800; font-size: 1rem; margin-bottom: 12px; display: block; }
@@ -684,14 +715,16 @@ export default function ProductDetailPage() {
           
           .mobile-footer-cta {
              position: fixed; bottom: 0; left: 0; right: 0;
-             padding: 24px 25px 40px; background: #fff; border-top: 1px solid #eee; z-index: 1000;
+             padding: 15px 20px 35px; background: rgba(252, 247, 222, 0.95); backdrop-filter: blur(10px); 
+             border-top: 1px solid rgba(0,0,0,0.03); z-index: 100;
           }
           .mobile-btn-cart {
-            width: 100%; padding: 20px; border-radius: 40px;
+            width: 100%; padding: 18px; border-radius: 50px;
             background: #111; color: #fff; border: none;
-            font-weight: 750; font-size: 1.05rem;
+            font-weight: 800; font-size: 1.05rem;
             display: flex; align-items: center; justify-content: center; gap: 12px;
             cursor: pointer;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
           }
 
           .desktop-only { display: none !important; }
@@ -712,17 +745,7 @@ export default function ProductDetailPage() {
       `}} />
 
       <div className="buy-page">
-        {/* MOBILE HEADER */}
-        <div className="mobile-header mobile-only">
-           <button className="circle-btn" onClick={() => router.back()}>
-             <span style={{ fontSize: '1.2rem', fontWeight: 400 }}>&minus;&minus;</span>
-           </button>
-           <div className="mobile-header-title">Product Details</div>
-           <button className="circle-btn" style={{ position: 'relative' }} onClick={() => router.push('/cart')}>
-             <ShoppingCart size={18} />
-             <div style={{ position: 'absolute', top: '-4px', right: '-4px', background: '#FF5733', color: '#fff', fontSize: '10px', width: '16px', height: '16px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', border: '2px solid #fff' }}>1</div>
-           </button>
-        </div>
+        {/* Mobile Header Removed to avoid Navbar overlap */}
 
         <div className="buy-container">
           
@@ -731,26 +754,24 @@ export default function ProductDetailPage() {
             <div className="image-showcase">
               <div className="main-image">
                 <AnimatePresence mode="wait" initial={false}>
-                  <motion.div
-                    key={activeImageIdx}
-                    initial={{ opacity: 0, x: direction > 0 ? 100 : -100 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: direction > 0 ? -100 : 100 }}
-                    transition={{ duration: 0.4, type: 'spring', stiffness: 300, damping: 30 }}
-                    drag="x"
-                    dragConstraints={{ left: 0, right: 0 }}
-                    dragElastic={0.4}
-                    onDragEnd={(_, info) => {
-                       const swipe = info.offset.x;
-                       if (swipe < -50) handleNext();
-                       else if (swipe > 50) handlePrev();
-                    }}
-                    className="main-image-inner"
-                    style={{ cursor: 'grab' }}
-                    whileTap={{ cursor: 'grabbing' }}
-                  >
-                    <img src={images[activeImageIdx]} alt={product.name} draggable={false} />
-                  </motion.div>
+                    <motion.div
+                      key={activeImageIdx}
+                      initial={{ opacity: 0, x: direction > 0 ? 100 : -100 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: direction > 0 ? -100 : 100 }}
+                      transition={{ duration: 0.4, type: 'spring', stiffness: 300, damping: 30 }}
+                      className="main-image-inner"
+                      style={{ position: 'relative', width: '100%', height: '100%', minHeight: '350px' }}
+                    >
+                      <Image 
+                        src={images[activeImageIdx] || 'https://via.placeholder.com/800x800?text=Product'} 
+                        alt={product.name} 
+                        fill
+                        priority={true}
+                        style={{ objectFit: 'contain' }}
+                        draggable={false} 
+                      />
+                    </motion.div>
                 </AnimatePresence>
 
                 {images.length > 1 && (
@@ -780,18 +801,20 @@ export default function ProductDetailPage() {
                     key={i} 
                     className={'thumb-box ' + (activeImageIdx === i ? 'active' : '')} 
                     onClick={() => setActiveImageIdx(i)}
+                    style={{ position: 'relative' }}
                   >
-                    <img src={img} alt="" />
+                    <Image src={img} alt="" fill style={{ objectFit: 'cover' }} />
                   </div>
                 ))}
               </div>
 
-              {/* QUANTITY PICKER MOBILE */}
-              <div className="quantity-capsule mobile-only">
-                 <button className="qty-btn qty-btn-minus" onClick={() => setQuantity(Math.max(1, quantity - 1))}>&minus;</button>
-                 <span style={{ fontWeight: 800, fontSize: '1.1rem' }}>{quantity < 10 ? `0${quantity}` : quantity}</span>
-                 <button className="qty-btn qty-btn-plus" onClick={() => setQuantity(quantity + 1)}>+</button>
-              </div>
+            </div>
+            
+            {/* QUANTITY PICKER MOBILE */}
+            <div className="quantity-capsule mobile-only" style={{ marginTop: '20px', marginBottom: '10px' }}>
+                <button className="qty-btn qty-btn-minus" onClick={() => setQuantity(Math.max(1, quantity - 1))}>&minus;</button>
+                <span style={{ fontWeight: 800, fontSize: '1.1rem' }}>{quantity < 10 ? `0${quantity}` : quantity}</span>
+                <button className="qty-btn qty-btn-plus" onClick={() => setQuantity(quantity + 1)}>+</button>
             </div>
             
             {/* RIGHT DETAILS (DESKTOP) */}
@@ -814,7 +837,7 @@ export default function ProductDetailPage() {
               
               <div className="accordions-container">
                 <div className="accordion">
-                  <button className="accordion-header" onClick={() => setActiveAccordion(1)}>
+                  <button className="accordion-header" onClick={() => setActiveAccordion(activeAccordion === 1 ? null : 1)}>
                     Descriptions <ChevronDown size={18} style={{ transform: activeAccordion === 1 ? 'rotate(180deg)' : 'none', transition: '0.2s' }} />
                   </button>
                   {activeAccordion === 1 && (
@@ -831,6 +854,9 @@ export default function ProductDetailPage() {
                   <span style={{ fontWeight: 700, minWidth: '20px', textAlign: 'center' }}>{quantity}</span>
                   <button onClick={() => setQuantity(quantity + 1)} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer' }}>+</button>
                 </div>
+                <button className={isWishlisted ? 'btn-wishlist active' : 'btn-wishlist'} onClick={toggleWishlist} style={{ padding: '0 15px', height: '52px', borderRadius: '12px', border: '1px solid #ddd', background: isWishlisted ? '#fff5f5' : 'white', cursor: 'pointer', transition: '0.3s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Heart size={20} fill={isWishlisted ? "#ff4d4d" : "none"} color={isWishlisted ? "#ff4d4d" : "#ccc"} />
+                </button>
                 <button className="btn-add" onClick={handleAddToCart}>{addedPopup ? 'Added!' : 'Add To Cart'}</button>
                 <button className="btn-checkout" onClick={handleBuyNow}>Checkout Now</button>
               </div>
@@ -840,41 +866,46 @@ export default function ProductDetailPage() {
             <div className="mobile-details-body mobile-only">
                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                  <div style={{ flex: 1 }}>
-                    <h1 className="product-title">{product.name}</h1>
-                    <div className="product-subtitle" style={{ color: '#aaa', fontWeight: 600 }}>
-                      <Zap size={14} fill="#8BC34A" stroke="#8BC34A" /> Available on fast delivery
+                    <h1 className="product-title" style={{ fontSize: '1.4rem', fontWeight: 900 }}>{product.name}</h1>
+                    <div className="product-subtitle" style={{ color: '#aaa', fontWeight: 700, marginTop: '4px' }}>
+                      <Zap size={14} fill="#8BC34A" stroke="#8BC34A" style={{ marginRight: '4px' }} /> Available on fast delivery
                     </div>
                  </div>
-                 <button style={{ background: 'none', border: 'none', color: '#ff5733', padding: '10px 0 0 10px' }}>
-                    <Heart size={24} fill="#ff5733" />
+                 <button onClick={toggleWishlist} style={{ background: 'none', border: 'none', color: isWishlisted ? '#ff4d4d' : '#ccc', padding: '5px' }}>
+                    <Heart size={26} fill={isWishlisted ? "#ff4d4d" : "none"} />
                  </button>
                </div>
 
-               <div className="info-pills-row" style={{ marginTop: '20px' }}>
-                  <span className="new-price">${parseFloat(product.price).toFixed(2)}</span>
-                  <span className="old-price">${originalPrice.toFixed(2)}</span>
-                  <div className="discount-badge" style={{ verticalAlign: 'middle', display: 'inline-flex', padding: '2px 8px' }}>20%</div>
-                  <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 700, fontSize: '0.9rem' }}>
-                    <Star size={16} fill="#F5B800" color="#F5B800" /> {averageRating} Rating
+               <div className="info-pills-row" style={{ marginTop: '18px' }}>
+                  <span className="new-price" style={{ fontSize: '1.6rem', fontWeight: 900 }}>${parseFloat(product.price).toFixed(2)}</span>
+                  <span className="old-price" style={{ fontSize: '1.1rem', fontWeight: 700, color: '#ccc', marginLeft: '8px' }}>${originalPrice.toFixed(2)}</span>
+                  <div className="discount-badge" style={{ marginLeft: '10px' }}>20%</div>
+                  <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 800, fontSize: '0.95rem' }}>
+                    <Star size={18} fill="#F5B800" color="#F5B800" /> {averageRating} Rating
                   </div>
                </div>
 
                <div className="promo-banner">
-                  <div style={{ minWidth: '22px', height: '22px', borderRadius: '50%', backgroundColor: 'transparent', border: '1.5px solid #78350F', color: '#78350F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold', opacity: 0.6 }}>i</div>
-                  <p>This promo is limited and may change at any time depending on product availability.</p>
+                  <div style={{ 
+                    minWidth: '20px', height: '20px', borderRadius: '50%', 
+                    border: '1.5px solid #92400e', color: '#92400e', 
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                    fontSize: '11px', fontWeight: '900' 
+                  }}>!</div>
+                  <p>This promo is limited and may change at anytime depending on product availability.</p>
                </div>
 
                <div className="description-section">
-                 <span className="description-title">Description</span>
-                 <p className="description-text">
-                   {product.description || "The high-quality ingredients and sustainable production make this a must-have for the eco-conscious consumer."}
-                   <span style={{ fontWeight: 800, color: '#111', marginLeft: '5px', cursor: 'pointer' }}>Read More</span>
+                 <span className="description-title" style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '8px' }}>Description</span>
+                 <p className="description-text" style={{ fontSize: '0.88rem', color: '#666', lineHeight: '1.6' }}>
+                   {product.description || "Designed for the modern professional, this minimalist aesthetic focuses on quality materials and sustainable practices."}
+                   <span style={{ fontWeight: 800, color: '#111', marginLeft: '5px', cursor: 'pointer', borderBottom: '1px solid #111' }}>Read More</span>
                  </p>
                </div>
 
                <div className="mobile-footer-cta">
                  <button className="mobile-btn-cart" onClick={handleAddToCart}>
-                    {addedPopup ? <Loader2 className="animate-spin" size={20} /> : <ShoppingCart size={20} />}
+                    {addedPopup ? <Loader2 className="animate-spin" size={22} /> : <ShoppingCart size={22} />}
                     {addedPopup ? 'Added To Cart!' : 'Add To Cart'}
                  </button>
                </div>

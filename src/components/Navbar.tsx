@@ -17,8 +17,19 @@ export default function Navbar() {
   const [isIntroFinished, setIsIntroFinished] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const categoriesRef = useRef<HTMLDivElement>(null);
+
+  const updateCartCount = () => {
+    try {
+      const cart = JSON.parse(localStorage.getItem('ecozero_cart') || '[]');
+      const count = (cart as any[]).reduce((sum, item) => sum + (item.quantity || 1), 0);
+      setCartCount(count);
+    } catch (e) {
+      setCartCount(0);
+    }
+  };
 
   const handleDockClick = (path: string) => {
     router.push(path);
@@ -49,9 +60,15 @@ export default function Navbar() {
     setUserName(localStorage.getItem('ecozero_user_name'));
 
     document.addEventListener('mousedown', handleClickOutside);
+    window.addEventListener('storage', updateCartCount);
+    window.addEventListener('cartUpdated', updateCartCount);
+    updateCartCount();
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('storage', updateCartCount);
+      window.removeEventListener('cartUpdated', updateCartCount);
     };
   }, []);
 
@@ -233,7 +250,15 @@ export default function Navbar() {
           }
           .mobile-dock-wrapper {
             display: flex !important;
+            position: fixed;
+            bottom: 25px;
+            left: 0;
+            right: 0;
+            justify-content: center;
+            z-index: 1000;
+            pointer-events: none;
           }
+          .mobile-dock-wrapper > * { pointer-events: auto; }
         }
 
         /* Default state: hide on desktop */
@@ -244,11 +269,36 @@ export default function Navbar() {
 
       <nav className="pill-nav-container">
         
-        {/* LOGO */}
-        <Link href="/" className="brand-logo">
-          <img src="/logo.png" alt="EcoZero" style={{ height: '56px', width: 'auto', display: 'block', objectFit: 'contain' }} />
-        </Link>
+
         
+        {/* LOGO / BACK BUTTON */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, justifyContent: 'flex-start' }}>
+          {pathname !== '/' && pathname !== '/menu' && (
+            <button 
+              onClick={() => router.back()}
+              className="mobile-only"
+              style={{ 
+                background: '#fff', 
+                border: '1px solid rgba(20, 104, 69, 0.1)', 
+                width: '38px', 
+                height: '38px', 
+                borderRadius: '50%', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                color: '#1a3c26'
+              }}
+            >
+              <ArrowDownRight size={18} style={{ transform: 'rotate(135deg)' }} />
+            </button>
+          )}
+          <Link href="/" className="brand-logo" style={{ height: '48px' }}>
+            <img src="/photo_2026-03-13_20-14-52 (1).png" alt="EcoZero" style={{ height: '40px', width: 'auto', display: 'block', objectFit: 'contain' }} />
+          </Link>
+        </div>
+
         {/* CENTER LINKS */}
         <div className="nav-center">
           <Link href="/" className="nav-pill">HOME</Link>
@@ -276,7 +326,7 @@ export default function Navbar() {
         </div>
         
         {/* RIGHT SIDE */}
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexShrink: 0, whiteSpace: 'nowrap' }}>
           
           {!user ? (
             <Link href="/login" className="nav-circle">
@@ -304,7 +354,7 @@ export default function Navbar() {
             </div>
           )}
           
-          <Link href="/cart" className="quote-pill">
+          <Link href="/cart" className="quote-pill desktop-only">
             Cart
             <div className="quote-btn-icon">
               <ShoppingBag size={18} strokeWidth={3} />
@@ -312,25 +362,35 @@ export default function Navbar() {
           </Link>
         </div>
       </nav>
-
-      {/* Mobile Dock — shown only on small screens */}
-      <div className="mobile-dock-wrapper">
-        <Dock
-          panelHeight={64}
-          baseItemSize={44}
-          magnification={58}
-          items={[
-            { icon: <HomeIcon />, label: 'Home', onClick: () => handleDockClick('/'), isActive: pathname === '/' },
-            { icon: <LayoutGrid />, label: 'Products', onClick: () => handleDockClick('/menu'), isActive: pathname === '/menu' },
-            { icon: <Heart />, label: 'Wishlist', onClick: () => handleDockClick('/wishlist'), isActive: pathname === '/wishlist' },
-            { icon: <User />, label: 'Profile', onClick: () => handleDockClick('/profile'), isActive: pathname === '/profile' },
-            { icon: <ShoppingCart />, label: 'Cart', onClick: () => handleDockClick('/cart'), isActive: pathname === '/cart' },
-          ]}
-        />
-      </div>
+      {/* Mobile Dock — shown only on small screens, except on product pages to avoid CTA overlap */}
+      {mounted && !pathname.startsWith('/product/') && (
+        <div className="mobile-dock-wrapper">
+          <Dock
+            panelHeight={64}
+            baseItemSize={44}
+            magnification={58}
+            items={[
+              { icon: <HomeIcon />, label: 'Home', onClick: () => handleDockClick('/'), isActive: pathname === '/' },
+              { icon: <LayoutGrid />, label: 'Products', onClick: () => handleDockClick('/menu'), isActive: pathname === '/menu' },
+              { icon: <Heart />, label: 'Wishlist', onClick: () => handleDockClick('/wishlist'), isActive: pathname === '/wishlist' },
+              { icon: <User />, label: 'Profile', onClick: () => handleDockClick('/profile'), isActive: pathname === '/profile' },
+              { icon: <ShoppingCart />, label: 'Cart', onClick: () => handleDockClick('/cart'), isActive: pathname === '/cart', badge: cartCount > 0 ? cartCount : undefined },
+            ]}
+          />
+        </div>
+      )}
 
       {/* Spacer for non-home pages, excluding auth pages which handle their own layout */}
-      {mounted && pathname !== '/' && pathname !== '/login' && pathname !== '/signup' && <div className="nav-spacer" style={{ height: '90px' }} />}
+      {mounted && pathname !== '/' && pathname !== '/login' && pathname !== '/signup' && (
+        <div 
+          className="nav-spacer" 
+          style={{ 
+            height: '90px', 
+            background: pathname === '/menu' ? '#ffffff' : 'var(--bg-color)', 
+            width: '100%' 
+          }} 
+        />
+      )}
     </>
   );
 }

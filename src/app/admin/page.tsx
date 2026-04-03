@@ -58,6 +58,7 @@ export default function AdminDashboard() {
   const [category, setCategory] = useState('');
   const [images, setImages] = useState<string[]>([]);
   const [description, setDescription] = useState('');
+  const [badge, setBadge] = useState('');
   const [specifications, setSpecifications] = useState('');
   const [features, setFeatures] = useState('');
   const [expandedProductContent, setExpandedProductContent] = useState<string | null>(null);
@@ -186,6 +187,7 @@ export default function AdminDashboard() {
         image: images[0] || '', // Fallback for old code
         images: images,
         description: description,
+        badge: badge,
         specifications: specifications,
         features: features,
         updatedAt: new Date().toISOString()
@@ -213,6 +215,7 @@ export default function AdminDashboard() {
       setDescription('');
       setSpecifications('');
       setFeatures('');
+      setBadge('');
       setEditingProduct(null);
       setTimeout(() => {
         setSuccessMsg('');
@@ -234,6 +237,7 @@ export default function AdminDashboard() {
     setDescription(product.description || '');
     setSpecifications(product.specifications || '');
     setFeatures(product.features || '');
+    setBadge(product.badge || '');
     setShowAddModal(true);
   };
 
@@ -514,7 +518,7 @@ export default function AdminDashboard() {
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem', background: colors.surfaceSolid, padding: '0.8rem 1.2rem', borderRadius: '18px', border: `1px solid ${colors.border}` }}>
             <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: colors.accent, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <img src="/logo.png" alt="Admin Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img src="/photo_2026-03-13_20-14-52 (1).png" alt="Admin Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
             <div>
               <p style={{ fontSize: '0.9rem', fontWeight: 700, color: colors.text, margin: 0 }}>ECOZERO ADMIN</p>
@@ -613,7 +617,7 @@ export default function AdminDashboard() {
                     {products.map(product => (
                       <tr key={product.id} style={{ borderBottom: `1px solid rgba(255,255,255,0.05)` }}>
                         <td style={{ padding: '1.5rem 2rem' }}>
-                          <img src={product.image} alt="" style={{ width: '56px', height: '56px', borderRadius: '12px', objectFit: 'cover' }} />
+                          <img src={product.image || null} alt="" style={{ width: '56px', height: '56px', borderRadius: '12px', objectFit: 'cover', background: colors.surface }} />
                         </td>
                         <td style={{ padding: '1.5rem 2rem' }}>
                           <div style={{ fontWeight: 700, color: colors.text, fontSize: '1.1rem' }}>{product.name}</div>
@@ -711,8 +715,8 @@ export default function AdminDashboard() {
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem', marginBottom: '1.5rem' }}>
                     <div style={{ width: '50px', height: '50px', borderRadius: '15px', background: colors.accent, color: colors.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem', fontWeight: 800, overflow: 'hidden' }}>
-                      {user.avatar || user.photoURL || user.profileImage ? (
-                        <img src={user.avatar || user.photoURL || user.profileImage} alt={user.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      {(user.avatar || user.photoURL || user.profileImage) ? (
+                        <img src={(user.avatar || user.photoURL || user.profileImage) || null} alt={user.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       ) : (
                         user.name?.charAt(0)
                       )}
@@ -855,7 +859,7 @@ export default function AdminDashboard() {
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                       <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: colors.surface, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                        <img src={product.image} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+                        <img src={product.image || null} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
                       </div>
                       <div>
                         <h4 style={{ margin: 0, fontSize: '1.2rem', color: colors.text, fontWeight: 800 }}>{product.name}</h4>
@@ -869,18 +873,38 @@ export default function AdminDashboard() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', animation: 'fadeIn 0.3s ease' }}>
                     {/* Description Section */}
                     <div>
-                        <label style={{ fontSize: '0.7rem', color: colors.textMuted, fontWeight: 800, textTransform: 'uppercase', marginBottom: '8px', display: 'block' }}>Descriptions</label>
-                        <textarea 
-                          defaultValue={product.description}
-                          placeholder="General product narrative..."
-                          onBlur={async (e) => {
-                            const val = e.target.value;
-                            if (val === product.description) return;
-                            await updateDoc(doc(db, 'products', product.id), { description: val });
-                            setProducts(products.map(p => p.id === product.id ? { ...p, description: val } : p));
-                          }}
-                          style={{ width: '100%', minHeight: '100px', border: '1px solid rgba(0,0,0,0.05)', borderRadius: '12px', padding: '15px', background: '#fcfcfc', fontSize: '0.9rem', color: '#444', outline: 'none' }}
-                        />
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '8px' }}>
+                          <div>
+                            <label style={{ fontSize: '0.7rem', color: colors.textMuted, fontWeight: 800, textTransform: 'uppercase', marginBottom: '8px', display: 'block' }}>Descriptions</label>
+                          </div>
+                          <div>
+                            <label style={{ fontSize: '0.7rem', color: colors.textMuted, fontWeight: 800, textTransform: 'uppercase', marginBottom: '8px', display: 'block' }}>Badge Label (e.g. PREMIUM)</label>
+                          </div>
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                          <textarea 
+                            defaultValue={product.description}
+                            placeholder="General product narrative..."
+                            onBlur={async (e) => {
+                              const val = e.target.value;
+                              if (val === product.description) return;
+                              await updateDoc(doc(db, 'products', product.id), { description: val });
+                              setProducts(products.map(p => p.id === product.id ? { ...p, description: val } : p));
+                            }}
+                            style={{ width: '100%', minHeight: '100px', border: '1px solid rgba(0,0,0,0.05)', borderRadius: '12px', padding: '15px', background: '#fcfcfc', fontSize: '0.9rem', color: '#444', outline: 'none' }}
+                          />
+                          <input 
+                            defaultValue={product.badge}
+                            placeholder="e.g. NEW ARRIVAL"
+                            onBlur={async (e) => {
+                              const val = e.target.value;
+                              if (val === product.badge) return;
+                              await updateDoc(doc(db, 'products', product.id), { badge: val });
+                              setProducts(products.map(p => p.id === product.id ? { ...p, badge: val } : p));
+                            }}
+                            style={{ width: '100%', height: '50px', border: '1px solid rgba(0,0,0,0.05)', borderRadius: '12px', padding: '15px', background: '#fcfcfc', fontSize: '0.9rem', color: '#444', outline: 'none', fontWeight: 800, textTransform: 'uppercase' }}
+                          />
+                        </div>
                         <div style={{ marginTop: '5px' }}>
                            <span style={{ color: '#111', fontWeight: 800, fontSize: '0.85rem' }}>Read More.</span>
                         </div>
@@ -1201,7 +1225,7 @@ export default function AdminDashboard() {
                       {selectedOrder.items?.map((it: any, i: number) => (
                         <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '1.2rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                            <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-                              <img src={it.image} style={{ width: '50px', height: '50px', borderRadius: '10px' }} alt="" />
+                              <img src={it.image || null} style={{ width: '50px', height: '50px', borderRadius: '10px', background: colors.surface }} alt="" />
                               <div>
                                  <p style={{ margin: 0, fontWeight: 700 }}>{it.name}</p>
                                  <p style={{ margin: 0, fontSize: '0.8rem', color: colors.textMuted }}>ID: {it.id || 'SYS-GEN'}</p>
@@ -1234,7 +1258,7 @@ export default function AdminDashboard() {
              <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', marginBottom: '3rem' }}>
                 <div style={{ width: '80px', height: '80px', borderRadius: '24px', background: colors.accent, color: colors.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', fontWeight: 800, overflow: 'hidden' }}>
                   {selectedUser.avatar || selectedUser.photoURL || selectedUser.profileImage ? (
-                    <img src={selectedUser.avatar || selectedUser.photoURL || selectedUser.profileImage} alt={selectedUser.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src={(selectedUser.avatar || selectedUser.photoURL || selectedUser.profileImage) || null} alt={selectedUser.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   ) : (
                     selectedUser.name?.charAt(0)
                   )}
