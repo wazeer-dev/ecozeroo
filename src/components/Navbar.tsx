@@ -99,8 +99,8 @@ export default function Navbar() {
           justify-content: space-between;
           padding: 0 4%;
           background: rgba(252, 247, 222, 0.45);
-          backdrop-filter: blur(25px) saturate(180%);
-          -webkit-backdrop-filter: blur(25px) saturate(180%);
+          backdrop-filter: blur(50px) saturate(180%);
+          -webkit-backdrop-filter: blur(50px) saturate(180%);
           border-bottom: 1px solid rgba(255, 255, 255, 0.3);
           transition: all 0.3s ease;
           font-family: 'Inter', sans-serif;
@@ -238,24 +238,30 @@ export default function Navbar() {
           color: #146845;
         }
         
+        @media (max-width: 768px) {
+          .nav-center { display: none; }
+          .pill-nav-container { 
+            display: flex;
+          }
+          .nav-spacer {
+            display: block;
+          }
+          .brand-logo {
+            width: 160px;
+            height: 64px;
+            padding: 10px 16px;
+          }
           .mobile-dock-wrapper {
             display: flex !important;
             position: fixed;
-            bottom: 0; /* Anchored directly to the bottom as requested */
+            bottom: 25px;
             left: 0;
             right: 0;
             justify-content: center;
-            z-index: 99999 !important;
+            z-index: 1000;
             pointer-events: none;
-            padding-bottom: 12px; /* Providing a safety-zone for ergonomics */
           }
           .mobile-dock-wrapper > * { pointer-events: auto; }
-        }
-        
-        @media (max-width: 1024px) {
-          .pill-nav-container { display: flex; }
-          .nav-center { display: none; }
-          .mobile-dock-wrapper { display: flex !important; }
         }
 
         /* Default state: hide on desktop */
@@ -390,24 +396,21 @@ export default function Navbar() {
           </Link>
         </div>
       </nav>
-      {/* Mobile Dock Overlay — hidden on orders as per protocol */}
-      {!pathname.startsWith('/product/') && pathname !== '/orders' && (
+      {/* Mobile Dock — shown only on small screens, except on product pages to avoid CTA overlap */}
+      {mounted && !pathname.startsWith('/product/') && (
         <div className="mobile-dock-wrapper">
-          {mounted && (
-            <Dock
-              panelHeight={68}
-              baseItemSize={48}
-              magnification={72}
-              gap={6} 
-              items={[
+          <Dock
+            panelHeight={64}
+            baseItemSize={44}
+            magnification={58}
+            items={[
               { icon: <HomeIcon />, label: 'Home', onClick: () => handleDockClick('/'), isActive: pathname === '/' },
               { icon: <LayoutGrid />, label: 'Products', onClick: () => handleDockClick('/menu'), isActive: pathname === '/menu' },
               { icon: <Heart />, label: 'Wishlist', onClick: () => handleDockClick('/wishlist'), isActive: pathname === '/wishlist' },
               { icon: <User />, label: 'Profile', onClick: () => handleDockClick('/profile'), isActive: pathname === '/profile' },
               { icon: <ShoppingCart />, label: 'Cart', onClick: () => handleDockClick('/cart'), isActive: pathname === '/cart', badge: cartCount > 0 ? cartCount : undefined },
             ]}
-            />
-          )}
+          />
         </div>
       )}
 

@@ -111,11 +111,9 @@ export default function Home() {
                   display: flex;
                   flex-direction: column;
                   box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-                  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-                  will-change: transform, opacity;
+                  transition: transform 0.3s;
                }
-               .bento-card:hover { transform: translateY(-8px) scale(1.015); box-shadow: 0 20px 40px rgba(20, 104, 69, 0.08); }
-               .bento-card:active { transform: scale(0.98); }
+               .bento-card:hover { transform: translateY(-4px); }
                
                .scatter-pill {
                   position: absolute;
