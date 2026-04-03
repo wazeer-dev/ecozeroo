@@ -29,21 +29,22 @@ import {
   Clock,
   CheckCircle2,
   Lock,
-  ChevronDown
+  ChevronDown,
+  Grid
 } from 'lucide-react';
 import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 
-// Premium ECOZERO LIVE Color Palette - Light Mode Overhaul
+// Premium ECOZERO LIVE Color Palette - Modern App-Like Design
 const colors = {
-  bg: '#D7E8BC',          // Light Sage (User Request)
-  surface: 'rgba(4, 28, 11, 0.05)', 
-  surfaceSolid: '#e1efc8', // Slightly more saturated sage for cards/sidebar
-  border: 'rgba(4, 28, 11, 0.12)',
-  accent: '#3c7814',      // Deeper forest green for clarity on light bg
-  pale: '#041c0b',        // Darkest green for primary contrast
-  text: '#041c0b',        // Solid dark forest green text
-  textMuted: 'rgba(4, 28, 11, 0.65)'
+  bg: '#fcf7de',          // Base Creme from the main website
+  surface: 'rgba(255, 255, 255, 0.6)', 
+  surfaceSolid: '#ffffff', // Crisp white for cards/widgets
+  border: 'rgba(4, 28, 11, 0.08)',
+  accent: '#146845',      // Sharp modern forest green
+  pale: '#041c0b',        // Darkest green (Sidebar & Headings)
+  text: '#041c0b',        // Solid text
+  textMuted: 'rgba(4, 28, 11, 0.5)'
 };
 
 export default function AdminDashboard() {
@@ -54,6 +55,7 @@ export default function AdminDashboard() {
   const [products, setProducts] = useState<any[]>([]);
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
+  const [oldPrice, setOldPrice] = useState('');
   const [stock, setStock] = useState('');
   const [category, setCategory] = useState('');
   const [images, setImages] = useState<string[]>([]);
@@ -182,6 +184,7 @@ export default function AdminDashboard() {
       const productData = {
         name,
         price: parseFloat(price),
+        oldPrice: parseFloat(oldPrice) || 0,
         stock: parseInt(stock, 10) || 0,
         category: category || 'General',
         image: images[0] || '', // Fallback for old code
@@ -209,6 +212,7 @@ export default function AdminDashboard() {
       
       setName('');
       setPrice('');
+      setOldPrice('');
       setStock('');
       setCategory('');
       setImages([]);
@@ -231,6 +235,7 @@ export default function AdminDashboard() {
     setEditingProduct(product);
     setName(product.name);
     setPrice(product.price.toString());
+    setOldPrice(product.oldPrice ? product.oldPrice.toString() : '');
     setStock(product.stock.toString());
     setCategory(product.category);
     setImages(product.images || (product.image ? [product.image] : []));
@@ -449,12 +454,12 @@ export default function AdminDashboard() {
       )}
 
       {/* Sidebar Navigation */}
-      <div className={`no-print admin-sidebar ${isSidebarOpen ? 'open' : ''}`} style={{ width: '300px', background: colors.surfaceSolid, borderRight: `1px solid ${colors.border}`, padding: '2.5rem 0', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
+      <div className={`no-print admin-sidebar ${isSidebarOpen ? 'open' : ''}`} style={{ width: '300px', background: colors.pale, borderRight: `none`, padding: '2.5rem 0', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
         <div style={{ padding: '0 2.5rem', marginBottom: '3.5rem' }}>
-          <h1 style={{ color: colors.text, fontSize: '2.2rem', fontWeight: 800, letterSpacing: '-1px', fontFamily: 'var(--font-outfit), sans-serif', margin: 0 }}>
-            ECO<span style={{ color: colors.accent }}>ZERO ADMIN</span>
+          <h1 style={{ color: '#fff', fontSize: '2.2rem', fontWeight: 800, letterSpacing: '-1px', fontFamily: 'var(--font-outfit), sans-serif', margin: 0 }}>
+            ECO<span style={{ color: '#88C65F' }}>ZERO ADMIN</span>
           </h1>
-          <p style={{ color: colors.accent, fontSize: '0.8rem', marginTop: '0.4rem', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}>Command Center</p>
+          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', marginTop: '0.4rem', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}>Command Center</p>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', flex: 1, padding: '0 1.2rem' }}>
@@ -464,7 +469,6 @@ export default function AdminDashboard() {
             { id: 'delivery', icon: Truck, label: 'Logistics' },
             { id: 'customers', icon: Users, label: 'CRM Database' },
             { id: 'auth', icon: Shield, label: 'Authentication' },
-            { id: 'descriptions', icon: ClipboardList, label: 'Market Content' },
             { id: 'notifications', icon: Bell, label: 'Push Updates' }
           ].map((tab) => {
             const isActive = activeTab === tab.id;
@@ -475,10 +479,10 @@ export default function AdminDashboard() {
                 style={{ 
                   display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem 1.4rem', width: '100%', 
                   borderRadius: '14px', 
-                  background: isActive ? colors.accent : 'transparent', 
-                  color: isActive ? colors.bg : colors.pale, 
+                  background: isActive ? 'rgba(136, 198, 95, 0.15)' : 'transparent', 
+                  color: isActive ? '#88C65F' : 'rgba(255,255,255,0.7)', 
                   border: 'none', cursor: 'pointer', textAlign: 'left', 
-                  fontWeight: isActive ? 700 : 500, fontSize: '1rem',
+                  fontWeight: isActive ? 800 : 500, fontSize: '1rem',
                   transition: 'all 0.2s ease'
                 }}
               >
@@ -488,8 +492,8 @@ export default function AdminDashboard() {
             )
           })}
           
-          <div style={{ marginTop: 'auto', borderTop: `1px solid ${colors.border}`, paddingTop: '1.5rem', marginBottom: '1rem' }}>
-            <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem 1.4rem', width: '100%', borderRadius: '14px', color: colors.pale, textDecoration: 'none', fontWeight: 500, transition: 'all 0.2s' }}>
+          <div style={{ marginTop: 'auto', borderTop: `1px solid rgba(255,255,255,0.1)`, paddingTop: '1.5rem', marginBottom: '1rem' }}>
+            <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem 1.4rem', width: '100%', borderRadius: '14px', color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontWeight: 500, transition: 'all 0.2s' }}>
               <LogOut size={20} /> Exit Terminal
             </Link>
           </div>
@@ -531,22 +535,22 @@ export default function AdminDashboard() {
         {activeTab === 'overview' && (
           <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
             <div className="stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem', marginBottom: '4rem' }}>
-              <div style={{ background: colors.surfaceSolid, padding: '2.2rem', borderRadius: '28px', border: `1px solid ${colors.border}`, position: 'relative', overflow: 'hidden' }}>
-                <p style={{ color: colors.textMuted, fontSize: '0.9rem', marginBottom: '0.6rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Total Revenue</p>
-                <h3 style={{ fontSize: '2.6rem', fontWeight: 800, margin: 0, color: colors.text }}>₹{totalRevenue.toFixed(0)}</h3>
-                <DollarSign size={60} style={{ position: 'absolute', right: '-10px', bottom: '-10px', opacity: 0.05 }} />
+              <div style={{ background: colors.surfaceSolid, padding: '2.5rem', borderRadius: '32px', border: `1px solid ${colors.border}`, position: 'relative', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.03)' }}>
+                <p style={{ color: colors.textMuted, fontSize: '0.85rem', marginBottom: '0.8rem', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 800 }}>Total Revenue</p>
+                <h3 style={{ fontSize: '3.2rem', fontWeight: 900, margin: 0, color: colors.accent }}>₹{totalRevenue.toFixed(0)}</h3>
+                <DollarSign size={80} style={{ position: 'absolute', right: '-15px', bottom: '-15px', opacity: 0.03 }} />
               </div>
               
-              <div style={{ background: colors.surfaceSolid, padding: '2.2rem', borderRadius: '28px', border: `1px solid ${colors.border}`, position: 'relative', overflow: 'hidden' }}>
-                <p style={{ color: colors.textMuted, fontSize: '0.9rem', marginBottom: '0.6rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Processed Orders</p>
-                <h3 style={{ fontSize: '2.6rem', fontWeight: 800, margin: 0, color: colors.text }}>{orders.length}</h3>
-                <ShoppingBag size={60} style={{ position: 'absolute', right: '-10px', bottom: '-10px', opacity: 0.05 }} />
+              <div style={{ background: colors.surfaceSolid, padding: '2.5rem', borderRadius: '32px', border: `1px solid ${colors.border}`, position: 'relative', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.03)' }}>
+                <p style={{ color: colors.textMuted, fontSize: '0.85rem', marginBottom: '0.8rem', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 800 }}>Processed Orders</p>
+                <h3 style={{ fontSize: '3.2rem', fontWeight: 900, margin: 0, color: colors.accent }}>{orders.length}</h3>
+                <ShoppingBag size={80} style={{ position: 'absolute', right: '-15px', bottom: '-15px', opacity: 0.03 }} />
               </div>
 
-              <div style={{ background: colors.surfaceSolid, padding: '2.2rem', borderRadius: '28px', border: `1px solid ${colors.border}`, position: 'relative', overflow: 'hidden' }}>
-                <p style={{ color: colors.textMuted, fontSize: '0.9rem', marginBottom: '0.6rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Inventory Count</p>
-                <h3 style={{ fontSize: '2.6rem', fontWeight: 800, margin: 0, color: colors.text }}>{products.length}</h3>
-                <PackageSearch size={60} style={{ position: 'absolute', right: '-10px', bottom: '-10px', opacity: 0.05 }} />
+              <div style={{ background: colors.surfaceSolid, padding: '2.5rem', borderRadius: '32px', border: `1px solid ${colors.border}`, position: 'relative', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.03)' }}>
+                <p style={{ color: colors.textMuted, fontSize: '0.85rem', marginBottom: '0.8rem', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 800 }}>Inventory Count</p>
+                <h3 style={{ fontSize: '3.2rem', fontWeight: 900, margin: 0, color: colors.accent }}>{products.length}</h3>
+                <PackageSearch size={80} style={{ position: 'absolute', right: '-15px', bottom: '-15px', opacity: 0.03 }} />
               </div>
             </div>
 
@@ -595,43 +599,50 @@ export default function AdminDashboard() {
         {activeTab === 'products' && (
           <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '2.5rem' }}>
-              <button onClick={() => setShowAddModal(true)} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', padding: '1.1rem 2.2rem', background: colors.accent, color: colors.bg, border: 'none', borderRadius: '35px', fontWeight: 800, fontSize: '1rem', cursor: 'pointer', boxShadow: `0 10px 30px rgba(136, 198, 95, 0.3)` }}>
+              <button onClick={() => setShowAddModal(true)} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', padding: '1.1rem 2.2rem', background: colors.pale, color: '#fff', border: 'none', borderRadius: '35px', fontWeight: 800, fontSize: '1rem', cursor: 'pointer', boxShadow: `0 10px 30px rgba(4, 28, 11, 0.2)` }}>
                 <Plus size={22} /> Add New Asset
               </button>
             </div>
 
-            <div style={{ background: colors.surfaceSolid, borderRadius: '28px', border: `1px solid ${colors.border}`, overflow: 'hidden' }}>
+            <div style={{ background: '#fff', borderRadius: '28px', border: `1px solid ${colors.border}`, overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.03)' }}>
               <div className="admin-table-wrap">
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                   <thead>
-                    <tr style={{ background: 'rgba(255,255,255,0.02)' }}>
-                      <th style={{ padding: '1.5rem 2rem', color: colors.pale, fontWeight: 600 }}>Visual</th>
-                      <th style={{ padding: '1.5rem 2rem', color: colors.pale, fontWeight: 600 }}>Product Metadata</th>
-                      <th style={{ padding: '1.5rem 2rem', color: colors.pale, fontWeight: 600 }}>Category</th>
-                      <th style={{ padding: '1.5rem 2rem', color: colors.pale, fontWeight: 600 }}>Supply</th>
-                      <th style={{ padding: '1.5rem 2rem', color: colors.pale, fontWeight: 600 }}>Price</th>
-                      <th style={{ padding: '1.5rem 2rem', color: colors.pale, fontWeight: 600, textAlign: 'right' }}>Ops</th>
+                    <tr style={{ background: 'rgba(0,0,0,0.02)', borderBottom: `2px solid ${colors.border}` }}>
+                      <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Visual</th>
+                      <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Product Metadata</th>
+                      <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Category</th>
+                      <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Supply</th>
+                      <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Price</th>
+                      <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'right' }}>Ops</th>
                     </tr>
                   </thead>
                   <tbody>
                     {products.map(product => (
-                      <tr key={product.id} style={{ borderBottom: `1px solid rgba(255,255,255,0.05)` }}>
-                        <td style={{ padding: '1.5rem 2rem' }}>
+                      <tr key={product.id} style={{ borderBottom: `1px solid ${colors.border}`, transition: 'background 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(0,0,0,0.01)'} onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
+                        <td style={{ padding: '1.2rem 2rem' }}>
                           <img src={product.image || null} alt="" style={{ width: '56px', height: '56px', borderRadius: '12px', objectFit: 'cover', background: colors.surface }} />
                         </td>
                         <td style={{ padding: '1.5rem 2rem' }}>
                           <div style={{ fontWeight: 700, color: colors.text, fontSize: '1.1rem' }}>{product.name}</div>
                           <div style={{ fontSize: '0.75rem', color: colors.textMuted, marginTop: '4px', fontFamily: 'monospace' }}>{product.id}</div>
                         </td>
-                        <td style={{ padding: '1.5rem 2rem' }}>
-                          <span style={{ padding: '0.4rem 0.8rem', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', fontSize: '0.85rem' }}>{product.category}</span>
+                        <td style={{ padding: '1.2rem 2rem' }}>
+                          <span style={{ padding: '0.4rem 0.8rem', borderRadius: '10px', background: 'rgba(4, 28, 11, 0.05)', color: colors.accent, fontWeight: 700, fontSize: '0.85rem' }}>{product.category}</span>
                         </td>
-                        <td style={{ padding: '1.5rem 2rem', fontWeight: 700, color: product.stock < 10 ? '#ff6b6b' : '#fff' }}>{product.stock}</td>
-                        <td style={{ padding: '1.5rem 2rem', fontWeight: 800, color: colors.accent }}>${parseFloat(product.price).toFixed(2)}</td>
-                        <td style={{ padding: '1.5rem 2rem', textAlign: 'right' }}>
+                        <td style={{ padding: '1.2rem 2rem', fontWeight: 800, fontSize: '1.1rem', color: product.stock < 10 ? '#ef4444' : colors.text }}>{product.stock}</td>
+                        <td style={{ padding: '1.2rem 2rem', fontWeight: 800, color: colors.accent, fontSize: '1.1rem' }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                            {product.oldPrice && (
+                              <span style={{ fontSize: '0.8rem', color: colors.textMuted, textDecoration: 'line-through' }}>₹{product.oldPrice}</span>
+                            )}
+                            <span>₹{parseFloat(product.price).toFixed(0)}</span>
+                          </div>
+                        </td>
+                        <td style={{ padding: '1.2rem 2rem', textAlign: 'right' }}>
                           <div style={{ display: 'flex', gap: '0.8rem', justifyContent: 'flex-end' }}>
-                            <button onClick={() => startEditProduct(product)} style={{ padding: '0.6rem', background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '10px', color: '#fff', cursor: 'pointer' }}><Edit2 size={18} /></button>
-                            <button onClick={() => deleteProduct(product.id)} style={{ padding: '0.6rem', background: 'rgba(255,107,107,0.1)', border: 'none', borderRadius: '10px', color: '#ff6b6b', cursor: 'pointer' }}><Trash2 size={18} /></button>
+                            <button onClick={() => startEditProduct(product)} style={{ padding: '0.6rem', background: 'rgba(4, 28, 11, 0.05)', border: 'none', borderRadius: '10px', color: colors.accent, cursor: 'pointer', transition: '0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(4, 28, 11, 0.1)'} onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(4, 28, 11, 0.05)'}><Edit2 size={18} /></button>
+                            <button onClick={() => deleteProduct(product.id)} style={{ padding: '0.6rem', background: 'rgba(239, 68, 68, 0.1)', border: 'none', borderRadius: '10px', color: '#ef4444', cursor: 'pointer', transition: '0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)'} onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'}><Trash2 size={18} /></button>
                           </div>
                         </td>
                       </tr>
@@ -646,17 +657,17 @@ export default function AdminDashboard() {
         {/* Deliveries Tab */}
         {activeTab === 'delivery' && (
           <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
-            <div style={{ background: colors.surfaceSolid, borderRadius: '28px', border: `1px solid ${colors.border}`, overflow: 'hidden' }}>
+            <div style={{ background: '#fff', borderRadius: '28px', border: `1px solid ${colors.border}`, overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.03)' }}>
               <div className="admin-table-wrap">
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                   <thead>
-                    <tr style={{ background: 'rgba(255,255,255,0.02)' }}>
-                      <th style={{ padding: '1.5rem 2rem', color: colors.pale }}>Order Segment</th>
-                      <th style={{ padding: '1.5rem 2rem', color: colors.pale }}>Recipient</th>
-                      <th style={{ padding: '1.5rem 2rem', color: colors.pale }}>Assets</th>
-                      <th style={{ padding: '1.5rem 2rem', color: colors.pale }}>Total</th>
-                      <th style={{ padding: '1.5rem 2rem', color: colors.pale }}>Status Pipeline</th>
-                      <th style={{ padding: '1.5rem 2rem', color: colors.pale }}>Schedule</th>
+                    <tr style={{ background: 'rgba(0,0,0,0.02)', borderBottom: `2px solid ${colors.border}` }}>
+                      <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Order Segment</th>
+                      <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Recipient</th>
+                      <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Assets</th>
+                      <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Total</th>
+                      <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Status Pipeline</th>
+                      <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Schedule</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -664,32 +675,59 @@ export default function AdminDashboard() {
                       <tr 
                         key={order.id} 
                         onClick={() => { setSelectedOrder(order); setShowOrderDetail(true); }}
-                        style={{ cursor: 'pointer', borderBottom: `1px solid rgba(255,255,255,0.05)` }}
+                        style={{ cursor: 'pointer', borderBottom: `1px solid ${colors.border}`, transition: 'background 0.2s' }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(0,0,0,0.01)'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                       >
-                        <td style={{ padding: '1.5rem 2rem', fontFamily: 'monospace', fontSize: '0.85rem', color: colors.textMuted }}>{order.id?.slice(-8) || 'Order-X'}</td>
-                        <td style={{ padding: '1.5rem 2rem', fontWeight: 600 }}>{order.customer}</td>
-                        <td style={{ padding: '1.5rem 2rem' }}>
-                          <div style={{ color: colors.text, fontSize: '0.9rem', fontWeight: 600 }}>{order.items?.[0]?.name || 'Real Order'}</div>
-                          <div style={{ fontSize: '0.8rem', color: colors.textMuted }}>{order.items?.length > 1 ? `+ ${order.items.length - 1} more items` : 'Single Item Package'}</div>
+                        <td style={{ padding: '1.2rem 2rem', fontFamily: 'monospace', fontSize: '0.9rem', color: colors.textMuted, verticalAlign: 'middle' }}>{order.id?.slice(-8).toUpperCase() || 'ORDER-X'}</td>
+                        <td style={{ padding: '1.2rem 2rem', fontWeight: 700, color: colors.text, verticalAlign: 'middle' }}>{order.customer}</td>
+                        <td style={{ padding: '1.2rem 2rem', verticalAlign: 'middle' }}>
+                          <div style={{ color: colors.text, fontSize: '0.95rem', fontWeight: 700 }}>{order.items?.[0]?.name || 'Real Order'}</div>
+                          <div style={{ fontSize: '0.8rem', color: colors.textMuted, marginTop: '2px' }}>{order.items?.length > 1 ? `+ ${order.items.length - 1} more package(s)` : 'Single Asset Package'}</div>
                         </td>
-                        <td style={{ padding: '1.5rem 2rem', fontWeight: 800, color: colors.accent }}>₹{(order.total || 0).toFixed(0)}</td>
-                        <td style={{ padding: '1.5rem 2rem' }} onClick={(e) => e.stopPropagation()}>
-                          <select 
-                            value={order.status} 
-                            onChange={(e) => updateDelivery(order.id, e.target.value)}
-                            style={{ background: colors.surfaceSolid, color: colors.text, border: `1px solid ${colors.border}`, padding: '0.6rem 1rem', borderRadius: '12px', outline: 'none' }}
-                          >
-                            <option value="Processing">Processing</option>
-                            <option value="Shipped">Shipped</option>
-                            <option value="Delivered">Delivered</option>
-                          </select>
+                        <td style={{ padding: '1.2rem 2rem', fontWeight: 800, color: colors.accent, fontSize: '1.2rem', verticalAlign: 'middle' }}>₹{(order.total || 0).toFixed(0)}</td>
+                        <td style={{ padding: '1.2rem 2rem', verticalAlign: 'middle' }} onClick={(e) => e.stopPropagation()}>
+                          <div style={{ position: 'relative', display: 'inline-block', width: '140px' }}>
+                            <select 
+                              value={order.status} 
+                              onChange={(e) => updateDelivery(order.id, e.target.value)}
+                              style={{ 
+                                width: '100%',
+                                appearance: 'none',
+                                background: '#f8faf2', 
+                                color: colors.accent, 
+                                border: `1.5px solid ${colors.border}`, 
+                                padding: '0.6rem 1rem', 
+                                borderRadius: '12px', 
+                                outline: 'none',
+                                fontWeight: 700,
+                                fontSize: '0.85rem',
+                                cursor: 'pointer'
+                              }}
+                            >
+                              <option value="Processing">Processing</option>
+                              <option value="Shipped">Shipped</option>
+                              <option value="Delivered">Delivered</option>
+                            </select>
+                            <ChevronDown size={14} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: colors.accent, pointerEvents: 'none' }} />
+                          </div>
                         </td>
-                        <td style={{ padding: '1.5rem 2rem' }} onClick={(e) => e.stopPropagation()}>
+                        <td style={{ padding: '1.2rem 2rem', verticalAlign: 'middle' }} onClick={(e) => e.stopPropagation()}>
                            <input 
                             type="date" 
                             value={order.deliveryDate || ''} 
                             onChange={(e) => updateDeliveryDate(order.id, e.target.value)}
-                            style={{ background: colors.surfaceSolid, color: colors.text, border: `1px solid ${colors.border}`, padding: '0.6rem', borderRadius: '12px' }}
+                            style={{ 
+                              background: '#f8faf2', 
+                              color: colors.accent, 
+                              border: `1.5px solid ${colors.border}`, 
+                              padding: '0.55rem 1rem', 
+                              borderRadius: '12px',
+                              fontWeight: 600,
+                              fontSize: '0.85rem',
+                              outline: 'none',
+                              cursor: 'pointer'
+                            }}
                            />
                         </td>
                       </tr>
@@ -838,183 +876,66 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* Market Content / Descriptions Management */}
-        {activeTab === 'descriptions' && (
-          <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))', gap: '2.5rem' }}>
-              {products.map(product => (
-                <div key={product.id} style={{ 
-                  background: '#fff', 
-                  borderRadius: '32px', 
-                  padding: '2rem', 
-                  border: `1px solid ${colors.border}`, 
-                  boxShadow: '0 15px 45px rgba(0,0,0,0.04)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: expandedProductContent === product.id ? '2rem' : '0rem'
-                }}>
-                  <div 
-                    onClick={() => setExpandedProductContent(expandedProductContent === product.id ? null : product.id)}
-                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                      <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: colors.surface, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                        <img src={product.image || null} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
-                      </div>
-                      <div>
-                        <h4 style={{ margin: 0, fontSize: '1.2rem', color: colors.text, fontWeight: 800 }}>{product.name}</h4>
-                        <p style={{ margin: 0, fontSize: '0.75rem', color: colors.accent, fontWeight: 700 }}>CONTENT ASSETS</p>
-                      </div>
-                    </div>
-                    <ChevronDown size={24} color={colors.accent} strokeWidth={2.5} style={{ transform: expandedProductContent === product.id ? 'rotate(180deg)' : 'none', transition: '0.3s' }} />
-                  </div>
-                  
-                  {expandedProductContent === product.id && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', animation: 'fadeIn 0.3s ease' }}>
-                    {/* Description Section */}
-                    <div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '8px' }}>
-                          <div>
-                            <label style={{ fontSize: '0.7rem', color: colors.textMuted, fontWeight: 800, textTransform: 'uppercase', marginBottom: '8px', display: 'block' }}>Descriptions</label>
-                          </div>
-                          <div>
-                            <label style={{ fontSize: '0.7rem', color: colors.textMuted, fontWeight: 800, textTransform: 'uppercase', marginBottom: '8px', display: 'block' }}>Badge Label (e.g. PREMIUM)</label>
-                          </div>
-                        </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-                          <textarea 
-                            defaultValue={product.description}
-                            placeholder="General product narrative..."
-                            onBlur={async (e) => {
-                              const val = e.target.value;
-                              if (val === product.description) return;
-                              await updateDoc(doc(db, 'products', product.id), { description: val });
-                              setProducts(products.map(p => p.id === product.id ? { ...p, description: val } : p));
-                            }}
-                            style={{ width: '100%', minHeight: '100px', border: '1px solid rgba(0,0,0,0.05)', borderRadius: '12px', padding: '15px', background: '#fcfcfc', fontSize: '0.9rem', color: '#444', outline: 'none' }}
-                          />
-                          <input 
-                            defaultValue={product.badge}
-                            placeholder="e.g. NEW ARRIVAL"
-                            onBlur={async (e) => {
-                              const val = e.target.value;
-                              if (val === product.badge) return;
-                              await updateDoc(doc(db, 'products', product.id), { badge: val });
-                              setProducts(products.map(p => p.id === product.id ? { ...p, badge: val } : p));
-                            }}
-                            style={{ width: '100%', height: '50px', border: '1px solid rgba(0,0,0,0.05)', borderRadius: '12px', padding: '15px', background: '#fcfcfc', fontSize: '0.9rem', color: '#444', outline: 'none', fontWeight: 800, textTransform: 'uppercase' }}
-                          />
-                        </div>
-                        <div style={{ marginTop: '5px' }}>
-                           <span style={{ color: '#111', fontWeight: 800, fontSize: '0.85rem' }}>Read More.</span>
-                        </div>
-                    </div>
 
-                    {/* Specs & Features side-by-side */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                       <div>
-                          <label style={{ fontSize: '0.7rem', color: colors.textMuted, fontWeight: 800, textTransform: 'uppercase', marginBottom: '8px', display: 'block' }}>Specifications</label>
-                          <textarea 
-                            defaultValue={product.specifications}
-                            placeholder="Dimensions, Weight..."
-                            onBlur={async (e) => {
-                              const val = e.target.value;
-                              if (val === product.specifications) return;
-                              await updateDoc(doc(db, 'products', product.id), { specifications: val });
-                              setProducts(products.map(p => p.id === product.id ? { ...p, specifications: val } : p));
-                            }}
-                            style={{ width: '100%', minHeight: '80px', border: '1px solid rgba(0,0,0,0.05)', borderRadius: '12px', padding: '12px', background: '#fcfcfc', fontSize: '0.85rem', color: '#444', outline: 'none' }}
-                          />
-                       </div>
-                       <div>
-                          <label style={{ fontSize: '0.7rem', color: colors.textMuted, fontWeight: 800, textTransform: 'uppercase', marginBottom: '8px', display: 'block' }}>Features</label>
-                          <textarea 
-                            defaultValue={product.features}
-                            placeholder="Bullet points (one per line)..."
-                            onBlur={async (e) => {
-                              const val = e.target.value;
-                              if (val === product.features) return;
-                              await updateDoc(doc(db, 'products', product.id), { features: val });
-                              setProducts(products.map(p => p.id === product.id ? { ...p, features: val } : p));
-                            }}
-                            style={{ width: '100%', minHeight: '80px', border: '1px solid rgba(0,0,0,0.05)', borderRadius: '12px', padding: '12px', background: '#fcfcfc', fontSize: '0.85rem', color: '#444', outline: 'none' }}
-                          />
-                       </div>
-                    </div>
-
-                    <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); window.open(`/product/${product.id}`, '_blank'); }}
-                        style={{ flex: 1, background: colors.surfaceSolid, color: colors.text, border: 'none', padding: '12px', borderRadius: '16px', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer' }}
-                      >
-                        Live View
-                      </button>
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); startEditProduct(product); }}
-                        style={{ flex: 1, background: colors.accent, color: colors.bg, border: 'none', padding: '12px', borderRadius: '16px', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer' }}
-                      >
-                        Global Config
-                      </button>
-                    </div>
-                  </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* MODALS SECTION */}
 
       {/* Add/Edit Product Modal */}
       {showAddModal && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 20000, padding: '1rem' }}>
-          <div className="admin-modal" style={{ background: colors.surfaceSolid, border: `1px solid ${colors.border}`, borderRadius: '32px', width: '95%', maxWidth: '550px', maxHeight: '85vh', overflowY: 'auto', position: 'relative' }}>
-            <div className="admin-modal-inner" style={{ padding: '2.5rem' }}>
-              <button onClick={() => setShowAddModal(false)} style={{ position: 'absolute', top: '24px', right: '24px', background: 'none', border: 'none', color: colors.pale, fontSize: '2rem', cursor: 'pointer' }}>&times;</button>
-              <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '2.5rem' }}>{editingProduct ? 'Modify Asset' : 'Register New Asset'}</h2>
+    <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(20, 60, 40, 0.4)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 20000, padding: '1.5rem' }}>
+      <div className="admin-modal" style={{ background: colors.surfaceSolid, border: `1px solid ${colors.border}`, borderRadius: '24px', width: '95%', maxWidth: '750px', maxHeight: '90vh', overflowY: 'auto', position: 'relative', boxShadow: '0 25px 50px -12px rgba(20, 104, 69, 0.25)' }}>
+        <div className="admin-modal-inner" style={{ padding: '2rem' }}>
+          <button onClick={() => setShowAddModal(false)} style={{ position: 'absolute', top: '20px', right: '20px', border: 'none', color: colors.accent, fontSize: '1.5rem', cursor: 'pointer', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255,255,255,0.5)' }}>&times;</button>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 900, marginBottom: '2rem', color: colors.accent, display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Grid size={24} /> {editingProduct ? 'Modify Asset' : 'Register New Asset'}
+          </h2>
               
-              <form onSubmit={handleSaveProduct} style={{ display: 'flex', flexDirection: 'column', gap: '1.8rem' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                   <label style={{ fontSize: '0.9rem', color: colors.accent, fontWeight: 700, textTransform: 'uppercase' }}>Asset Label</label>
-                   <input required value={name} onChange={e=>setName(e.target.value)} style={{ padding: '1.2rem', borderRadius: '16px', background: colors.bg, border: `1px solid ${colors.border}`, color: '#fff', outline: 'none' }} />
-                </div>
-                
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                      <label style={{ fontSize: '0.9rem', color: colors.accent, fontWeight: 700, textTransform: 'uppercase' }}>Price (USD)</label>
-                      <input type="number" step="0.01" required value={price} onChange={e=>setPrice(e.target.value)} style={{ padding: '1.2rem', borderRadius: '16px', background: colors.bg, border: `1px solid ${colors.border}`, color: '#fff', outline: 'none' }} />
-                   </div>
-                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                      <label style={{ fontSize: '0.9rem', color: colors.accent, fontWeight: 700, textTransform: 'uppercase' }}>Product Stock</label>
-                      <input type="number" required value={stock} onChange={e=>setStock(e.target.value)} style={{ padding: '1.2rem', borderRadius: '16px', background: colors.bg, border: `1px solid ${colors.border}`, color: '#fff', outline: 'none' }} />
-                   </div>
-                </div>
+          <form onSubmit={handleSaveProduct} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1rem' }}>
+               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                  <label style={{ fontSize: '0.75rem', color: colors.textMuted, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Asset Label</label>
+                  <input required value={name} onChange={e=>setName(e.target.value)} style={{ padding: '0.9rem', borderRadius: '12px', background: '#fff', border: `1px solid ${colors.border}`, color: colors.accent, fontWeight: 600, outline: 'none' }} />
+               </div>
+               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                  <label style={{ fontSize: '0.75rem', color: colors.textMuted, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Stock</label>
+                  <input type="number" required value={stock} onChange={e=>setStock(e.target.value)} style={{ padding: '0.9rem', borderRadius: '12px', background: '#fff', border: `1px solid ${colors.border}`, color: colors.accent, fontWeight: 600, outline: 'none' }} />
+               </div>
+            </div>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                  <label style={{ fontSize: '0.75rem', color: colors.textMuted, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Price (Live)</label>
+                  <input type="number" step="0.01" required value={price} onChange={e=>setPrice(e.target.value)} style={{ padding: '0.9rem', borderRadius: '12px', background: '#fff', border: `1px solid ${colors.border}`, color: colors.accent, fontWeight: 600, outline: 'none' }} />
+               </div>
+               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                  <label style={{ fontSize: '0.75rem', color: colors.textMuted, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Old Price (Strike)</label>
+                  <input type="number" step="0.01" value={oldPrice} onChange={e=>setOldPrice(e.target.value)} placeholder="Optional" style={{ padding: '0.9rem', borderRadius: '12px', background: '#fff', border: `2px dashed ${colors.border}`, color: colors.accent, fontWeight: 600, outline: 'none' }} />
+               </div>
+               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                  <label style={{ fontSize: '0.75rem', color: colors.textMuted, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Segment/Category</label>
+                  <input required value={category} onChange={e=>setCategory(e.target.value)} style={{ padding: '0.9rem', borderRadius: '12px', background: '#fff', border: `1px solid ${colors.border}`, color: colors.accent, fontWeight: 600, outline: 'none' }} />
+               </div>
+            </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                   <label style={{ fontSize: '0.9rem', color: colors.accent, fontWeight: 700, textTransform: 'uppercase' }}>Segment/Category</label>
-                   <input required value={category} onChange={e=>setCategory(e.target.value)} style={{ padding: '1.2rem', borderRadius: '16px', background: colors.bg, border: `1px solid ${colors.border}`, color: '#fff', outline: 'none' }} />
-                </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+               <label style={{ fontSize: '0.75rem', color: colors.textMuted, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Product Description</label>
+               <textarea value={description} onChange={e=>setDescription(e.target.value)} style={{ padding: '0.9rem', borderRadius: '12px', background: '#fff', border: `1px solid ${colors.border}`, color: colors.accent, outline: 'none', resize: 'vertical', minHeight: '80px', fontSize: '0.9rem' }} placeholder="Enter extended details..." />
+            </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                   <label style={{ fontSize: '0.9rem', color: colors.accent, fontWeight: 700, textTransform: 'uppercase' }}>Product Description</label>
-                   <textarea value={description} onChange={e=>setDescription(e.target.value)} style={{ padding: '1.2rem', borderRadius: '16px', background: colors.bg, border: `1px solid ${colors.border}`, color: colors.text, outline: 'none', resize: 'vertical', minHeight: '100px' }} placeholder="Enter extended details..." />
-                </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                  <label style={{ fontSize: '0.75rem', color: colors.textMuted, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Specifications</label>
+                  <textarea value={specifications} onChange={e=>setSpecifications(e.target.value)} style={{ padding: '0.9rem', borderRadius: '12px', background: '#fff', border: `1px solid ${colors.border}`, color: colors.accent, outline: 'none', resize: 'vertical', minHeight: '60px', fontSize: '0.85rem' }} placeholder="Weight, Capacity, Materials..." />
+               </div>
+               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                  <label style={{ fontSize: '0.75rem', color: colors.textMuted, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Core Features</label>
+                  <textarea value={features} onChange={e=>setFeatures(e.target.value)} style={{ padding: '0.9rem', borderRadius: '12px', background: '#fff', border: `1px solid ${colors.border}`, color: colors.accent, outline: 'none', resize: 'vertical', minHeight: '60px', fontSize: '0.85rem' }} placeholder="Functional highlights..." />
+               </div>
+            </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                      <label style={{ fontSize: '0.9rem', color: colors.accent, fontWeight: 700, textTransform: 'uppercase' }}>Specifications</label>
-                      <textarea value={specifications} onChange={e=>setSpecifications(e.target.value)} style={{ padding: '1.2rem', borderRadius: '16px', background: colors.bg, border: `1px solid ${colors.border}`, color: colors.text, outline: 'none', resize: 'vertical', minHeight: '80px' }} placeholder="Weight, Capacity, Materials..." />
-                   </div>
-                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                      <label style={{ fontSize: '0.9rem', color: colors.accent, fontWeight: 700, textTransform: 'uppercase' }}>Core Features</label>
-                      <textarea value={features} onChange={e=>setFeatures(e.target.value)} style={{ padding: '1.2rem', borderRadius: '16px', background: colors.bg, border: `1px solid ${colors.border}`, color: colors.text, outline: 'none', resize: 'vertical', minHeight: '80px' }} placeholder="Functional highlights..." />
-                   </div>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                   <label style={{ fontSize: '0.9rem', color: colors.accent, fontWeight: 700, textTransform: 'uppercase' }}>Asset Visual Gallery (Carousel)</label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+               <label style={{ fontSize: '0.75rem', color: colors.textMuted, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Asset Visual Gallery (Carousel)</label>
                    
                    {/* Multiple Images Display */}
                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '10px' }}>
@@ -1038,8 +959,8 @@ export default function AdminDashboard() {
                       ))}
                    </div>
 
-                   <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                      <div style={{ flex: 1, position: 'relative' }}>
+                   <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
+                      <div style={{ flex: '0 0 140px' }}>
                         <input 
                           type="file" 
                           id="asset-upload" 
@@ -1053,25 +974,25 @@ export default function AdminDashboard() {
                             display: 'flex', 
                             alignItems: 'center', 
                             justifyContent: 'center', 
-                            gap: '10px',
-                            padding: '1.1rem', 
-                            borderRadius: '16px', 
-                            background: isUploading ? 'rgba(136, 198, 95, 0.1)' : 'rgba(255,255,255,0.05)', 
-                            border: `2px dashed ${isUploading ? colors.accent : colors.border}`, 
-                            color: isUploading ? colors.accent : colors.pale,
+                            gap: '8px',
+                            padding: '0.8rem', 
+                            borderRadius: '12px', 
+                            background: isUploading ? 'rgba(20, 104, 69, 0.1)' : colors.bg, 
+                            border: `1.5px dashed ${isUploading ? colors.accent : colors.border}`, 
+                            color: colors.accent,
                             cursor: 'pointer',
-                            fontSize: '0.9rem',
-                            fontWeight: 600,
+                            fontSize: '0.8rem',
+                            fontWeight: 800,
                             transition: '0.3s'
                           }}
                         >
-                          {isUploading ? `Uploading ${Math.round(uploadProgress)}%...` : <><Plus size={18} /> Add Image</>}
+                          {isUploading ? `${Math.round(uploadProgress)}%` : <><Plus size={16} /> Upload</>}
                         </label>
                       </div>
                       
                       <div style={{ flex: 1 }}>
                         <input 
-                          placeholder="Or paste external URL..."
+                          placeholder="Or paste external URL and hit Enter..."
                           onKeyDown={(e) => {
                             if (e.key === 'Enter') {
                               e.preventDefault();
@@ -1079,35 +1000,33 @@ export default function AdminDashboard() {
                               if (val) {
                                 setImages(prev => [...prev, val]);
                                 (e.currentTarget as HTMLInputElement).value = '';
+                                if (window.dispatchEvent) {
+                                  window.dispatchEvent(new CustomEvent('cartUpdated'));
+                                }
                               }
                             }
                           }}
                           style={{ 
                             width: '100%',
-                            padding: '1.2rem', 
-                            borderRadius: '16px', 
-                            background: colors.bg, 
+                            padding: '0.8rem 1rem', 
+                            borderRadius: '12px', 
+                            background: '#fff', 
                             border: `1px solid ${colors.border}`, 
-                            color: '#fff', 
+                            color: colors.accent, 
                             outline: 'none',
-                            fontSize: '0.9rem'
+                            fontSize: '0.85rem'
                           }} 
                         />
-                        <p style={{ fontSize: '0.7rem', color: colors.pale, marginTop: '5px' }}>Press Enter to add pasted URL</p>
                       </div>
                    </div>
-                   
-                   {images.length > 0 && (
-                     <div style={{ marginTop: '5px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: colors.accent }}></div>
-                        <span style={{ color: colors.accent, fontSize: '0.75rem', fontWeight: 600 }}>{images.length} Image(s) Queued</span>
-                     </div>
-                   )}
                 </div>
 
-                <button type="submit" style={{ padding: '1.4rem', borderRadius: '20px', background: colors.accent, color: colors.bg, border: 'none', fontWeight: 800, fontSize: '1.1rem', cursor: 'pointer', marginTop: '1rem' }}>
-                  {editingProduct ? 'Commit Changes' : 'Execute Registration'}
-                </button>
+                <div style={{ marginTop: '0.5rem', display: 'flex', gap: '1rem', borderTop: `1px solid ${colors.border}`, paddingTop: '1.5rem' }}>
+                   <button type="button" onClick={() => setShowAddModal(false)} style={{ flex: 1, padding: '0.9rem', borderRadius: '12px', border: `1.5px solid ${colors.border}`, background: 'transparent', color: colors.accent, fontWeight: 700, cursor: 'pointer' }}>Cancel</button>
+                   <button type="submit" disabled={isUploading} style={{ flex: 2, padding: '0.9rem', borderRadius: '12px', border: 'none', background: colors.accent, color: '#fff', fontWeight: 800, cursor: isUploading ? 'not-allowed' : 'pointer', opacity: isUploading ? 0.7 : 1 }}>
+                      {editingProduct ? 'Commit Changes' : 'Execute Registration'}
+                   </button>
+                </div>
               </form>
               {successMsg && <p style={{ color: colors.accent, textAlign: 'center', marginTop: '1.5rem', fontWeight: 700 }}>{successMsg}</p>}
             </div>

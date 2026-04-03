@@ -31,6 +31,8 @@ export default function MenuPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [wishlist, setWishlist] = useState<string[]>([]);
+  const [showFilterDrawer, setShowFilterDrawer] = useState(false);
+  const [sortBy, setSortBy] = useState('newest');
 
   useEffect(() => {
     fetchProducts();
@@ -97,16 +99,20 @@ export default function MenuPage() {
   };
 
   const filtered = useMemo(() => {
-    return products.filter(p => {
+    let result = products.filter(p => {
       const matchesSearch = p.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
                            p.category?.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory = selectedCategory === 'All' || p.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
-  }, [products, searchQuery, selectedCategory]);
+    if (sortBy === 'price-asc') result = [...result].sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+    if (sortBy === 'price-desc') result = [...result].sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+    if (sortBy === 'newest') result = [...result].sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+    return result;
+  }, [products, searchQuery, selectedCategory, sortBy]);
 
   return (
-    <div className="page-main-wrapper" style={{ paddingTop: '120px', minHeight: '100vh', background: 'var(--bg-color)' }}>
+    <div className="page-main-wrapper" style={{ paddingTop: '120px', minHeight: '100vh', background: 'rgb(252, 247, 222)' }}>
       <div className="container">
         
         {/* MOBILE HEADER */}
@@ -155,39 +161,27 @@ export default function MenuPage() {
                  style={{ border: 'none', background: 'transparent', width: '100%', marginLeft: '10px', fontSize: '0.9rem', outline: 'none' }}
                />
             </div>
-            <button className="filter-btn">
+            <button className="filter-btn" onClick={() => setShowFilterDrawer(true)}>
                <SlidersHorizontal size={18} />
             </button>
         </div>
 
-        {/* MOBILE: Product types section label */}
-        <div className="section-label-row">
+        {/* MOBILE: Product types label */}
+        <div className="section-label-row" style={{ marginBottom: '1rem' }}>
            <h3 className="section-label">Product types</h3>
         </div>
 
-        {/* MOBILE: Product Category Cards */}
-        <div className="categories-scroll-wrapper mobile-only" style={{ overflowX: 'auto', margin: '0 -20px 2rem', padding: '0 20px 10px', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
-           <div style={{ display: 'flex', gap: '15px', width: 'max-content' }}>
-              {categories.map((cat, i) => (
-                  <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className="category-card"
-                    style={{
-                      background: categoryGradients[cat] || `linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)`,
-                      border: selectedCategory === cat ? '2px solid #111' : '1px solid rgba(0,0,0,0.05)'
-                    }}
-                  >
-                    <span className="category-name">{cat === 'All' ? 'Full Catalog' : cat}</span>
-                      <img 
-                        src={categoryImages[cat] || 'https://api.iconify.design/lucide:box.svg'} 
-                        className="category-img-placeholder" 
-                        alt="" 
-                        style={{ 
-                          opacity: 0.25, filter: 'grayscale(1) brightness(0)', 
-                        }} 
-                      />
-                  </button>
+        {/* MOBILE: Category Pill Chips */}
+        <div className="categories-scroll-wrapper mobile-only" style={{ overflowX: 'auto', margin: '0 -20px 1.5rem', padding: '0 20px 10px', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
+           <div style={{ display: 'flex', gap: '10px', width: 'max-content' }}>
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`cat-chip ${selectedCategory === cat ? 'cat-chip--active' : ''}`}
+                >
+                  {cat === 'All' ? 'All' : cat}
+                </button>
               ))}
            </div>
         </div>
@@ -298,10 +292,41 @@ export default function MenuPage() {
           </div>
         )}
       </div>
+
+      {/* FILTER BOTTOM DRAWER */}
+      {showFilterDrawer && (
+        <>
+          <div onClick={() => setShowFilterDrawer(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 9000, backdropFilter: 'blur(4px)' }} />
+          <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#fff', borderRadius: '28px 28px 0 0', padding: '1.5rem 1.5rem 7rem', zIndex: 9001, boxShadow: '0 -20px 60px rgba(0,0,0,0.15)', animation: 'slideUp 0.25s ease' }}>
+            <div style={{ width: '40px', height: '4px', borderRadius: '4px', background: '#e0e0e0', margin: '0 auto 1.5rem' }} />
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#111', marginBottom: '1.5rem' }}>Sort & Filter</h3>
+            <p style={{ fontSize: '0.72rem', fontWeight: 800, color: '#aaa', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.8rem' }}>Sort by</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '1.5rem' }}>
+              {[
+                { id: 'newest', label: 'Newest First', emoji: '✨' },
+                { id: 'price-asc', label: 'Price: Low to High', emoji: '↑' },
+                { id: 'price-desc', label: 'Price: High to Low', emoji: '↓' },
+              ].map(opt => (
+                <button key={opt.id} onClick={() => setSortBy(opt.id)}
+                  style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 18px', borderRadius: '16px', border: 'none', cursor: 'pointer', background: sortBy === opt.id ? '#041c0b' : '#f5f5f5', color: sortBy === opt.id ? '#fff' : '#111', fontWeight: 700, fontSize: '0.95rem', textAlign: 'left', transition: 'all 0.2s ease' }}
+                >
+                  <span style={{ fontSize: '1.1rem', width: '20px', textAlign: 'center' }}>{opt.emoji}</span>
+                  {opt.label}
+                  {sortBy === opt.id && <span style={{ marginLeft: 'auto' }}>✓</span>}
+                </button>
+              ))}
+            </div>
+            <button onClick={() => setShowFilterDrawer(false)}
+              style={{ width: '100%', padding: '16px', borderRadius: '50px', background: '#146845', color: '#fff', border: 'none', fontWeight: 800, fontSize: '1rem', cursor: 'pointer' }}
+            >Apply</button>
+          </div>
+        </>
+      )}
       
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .animate-spin { animation: spin 1s linear infinite; }
+        @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         
         .product-link:hover .scaled-img {
           transform: scale(1.08);
@@ -317,7 +342,7 @@ export default function MenuPage() {
 
         @media (max-width: 768px) {
           .ez-navbar { display: none !important; }
-          .page-main-wrapper { padding: 0 !important; background: #fff !important; }
+          .page-main-wrapper { padding: 0 !important; background: rgb(252, 247, 222) !important; }
           .container { padding: 0 20px !important; }
           
           .mobile-header {
@@ -353,18 +378,19 @@ export default function MenuPage() {
           }
           .section-label { font-size: 1rem; font-weight: 800; color: #111; margin: 0; text-transform: none; letter-spacing: 0; }
           
-          .category-card {
-            width: 155px; flex-shrink: 0; border-radius: 18px;
-            padding: 10px 15px; display: flex; flex-direction: row;
-            align-items: center; justify-content: space-between; height: 65px;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.02);
-            text-decoration: none; position: relative; overflow: hidden;
-            border: 1px solid rgba(0,0,0,0.03); gap: 10px;
+          .cat-chip {
+            flex-shrink: 0; padding: 10px 20px; border-radius: 50px;
+            border: 1.5px solid rgba(20, 104, 69, 0.2);
+            background: #fff; color: #146845;
+            font-size: 0.8rem; font-weight: 800;
+            text-transform: capitalize; cursor: pointer;
+            white-space: nowrap; transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
           }
-          .category-name { font-size: 0.8rem; font-weight: 800; color: #111; z-index: 2; line-height: 1.1; max-width: 70%; text-align: left; }
-          .category-img-placeholder {
-            width: 35px; height: 35px; object-fit: contain; z-index: 2;
-            flex-shrink: 0;
+          .cat-chip--active {
+            background: #041c0b; color: #fff;
+            border-color: #041c0b;
+            box-shadow: 0 6px 20px rgba(4, 28, 11, 0.2);
           }
           
           .products-grid {

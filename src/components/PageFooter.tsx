@@ -7,9 +7,7 @@ const PageFooter = () => {
   const pathname = usePathname();
   
   // Define routes where the footer should be hidden
-  const hideFooterRoutes = ['/menu', '/products', '/login', '/signup'];
-  
-  if (hideFooterRoutes.includes(pathname || '')) {
+  if (pathname !== '/') {
     return null;
   }
 

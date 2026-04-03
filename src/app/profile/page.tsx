@@ -196,26 +196,27 @@ export default function ProfilePage() {
 
   const cardStyle: React.CSSProperties = {
     background: '#fff',
-    borderRadius: '20px',
-    padding: '1.5rem 2rem',
-    marginBottom: '1rem',
-    boxShadow: '0 2px 12px rgba(60,120,20,0.08)',
+    borderRadius: '28px',
+    padding: '1.8rem 2rem',
+    marginBottom: '1.2rem',
+    boxShadow: '0 10px 30px rgba(60,120,20,0.06)',
+    border: '1px solid rgba(60,120,20,0.03)'
   };
 
   return (
     <div className="profile-page-wrapper">
-      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 20px' }}>
+      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 20px', paddingBottom: '120px' }}>
 
         {/* Profile Header Card */}
-        <div style={{ ...cardStyle, display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap' }}>
+        <div style={{ ...cardStyle, display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap', marginTop: '20px' }}>
           {/* Avatar / Photo Upload */}
           <div style={{ position: 'relative', flexShrink: 0 }}>
             <div style={{
-              width: '80px', height: '80px', borderRadius: '50%',
+              width: '90px', height: '90px', borderRadius: '50%',
               background: 'linear-gradient(135deg, #3c7814, #88c65f)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '2rem', fontWeight: 800, color: '#fff',
-              overflow: 'hidden', boxShadow: '0 8px 25px rgba(60,120,20,0.15)',
+              fontSize: '2.5rem', fontWeight: 800, color: '#fff',
+              overflow: 'hidden', boxShadow: '0 10px 30px rgba(60,120,20,0.15)',
               position: 'relative', cursor: 'pointer'
             }}
             onClick={() => document.getElementById('avatarInput')?.click()}
@@ -339,25 +340,26 @@ export default function ProfilePage() {
         </div>
 
         {/* Quick Stats — real data */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '1.5rem' }}>
           {[
-            { label: 'Total Orders', value: orderCount === null ? '…' : String(orderCount), icon: <Package size={22} color="#3c7814" />, href: '/orders' },
-            { label: 'Wishlist Items', value: String(wishlistCount), icon: <Heart size={22} color="#3c7814" />, href: '/wishlist' },
-            { label: 'Saved Addresses', value: String(addressCount), icon: <MapPin size={22} color="#3c7814" />, href: '/profile/addresses' },
+            { label: 'Orders', value: orderCount === null ? '…' : String(orderCount), icon: <Package size={22} color="#3c7814" />, href: '/orders' },
+            { label: 'Wishlist', value: String(wishlistCount), icon: <Heart size={22} color="#3c7814" />, href: '/wishlist' },
+            { label: 'Addresses', value: String(addressCount), icon: <MapPin size={22} color="#3c7814" />, href: '/profile/addresses' },
           ].map((stat, i) => (
             <Link key={i} href={stat.href} style={{ textDecoration: 'none' }}>
               <div style={{
-                background: '#fff', borderRadius: '16px', padding: '1.4rem 1.5rem',
-                boxShadow: '0 2px 12px rgba(60,120,20,0.08)',
-                display: 'flex', flexDirection: 'column', gap: '8px',
-                transition: '0.2s', cursor: 'pointer',
+                background: '#fff', borderRadius: '24px', padding: '1.6rem 1rem',
+                boxShadow: '0 8px 25px rgba(60,120,20,0.04)', border: '1px solid rgba(60,120,20,0.02)',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', cursor: 'pointer',
               }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = '0 6px 20px rgba(60,120,20,0.15)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = '0 2px 12px rgba(60,120,20,0.08)'; (e.currentTarget as HTMLElement).style.transform = 'none'; }}
+              className="stat-card"
               >
-                {stat.icon}
-                <div style={{ fontSize: '1.4rem', fontWeight: 800, color: 'rgb(4, 28, 11)' }}>{stat.value}</div>
-                <div style={{ fontSize: '0.8rem', color: '#5a7a40', fontWeight: 500 }}>{stat.label}</div>
+                <div style={{ background: 'rgba(60,120,20,0.06)', padding: '14px', borderRadius: '50%', marginBottom: '4px' }}>
+                  {stat.icon}
+                </div>
+                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: 'rgb(4, 28, 11)', lineHeight: 1 }}>{stat.value}</div>
+                <div style={{ fontSize: '0.8rem', color: '#5a7a40', fontWeight: 600 }}>{stat.label}</div>
               </div>
             </Link>
           ))}
@@ -365,34 +367,34 @@ export default function ProfilePage() {
 
         {/* Menu Groups */}
         {menuItems.map((group, gi) => (
-          <div key={gi} style={{ marginBottom: '1.2rem' }}>
-            <p style={{ fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.5px', color: '#5a7a40', margin: '0 0 6px 4px' }}>
+          <div key={gi} style={{ marginBottom: '1.5rem' }}>
+            <p style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', color: '#3c7814', margin: '0 0 10px 10px' }}>
               {group.group}
             </p>
-            <div style={{ background: '#fff', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(60,120,20,0.08)' }}>
+            <div style={{ background: '#fff', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(60,120,20,0.04)', border: '1px solid rgba(60,120,20,0.02)' }}>
               {group.items.map((item, ii) => (
                 <Link key={ii} href={item.href} style={{ textDecoration: 'none' }}>
                   <div style={{
                     display: 'flex', alignItems: 'center', gap: '1.2rem',
-                    padding: '1rem 1.5rem', color: 'rgb(4, 28, 11)', transition: '0.2s',
-                    borderBottom: ii < group.items.length - 1 ? '1px solid rgba(60,120,20,0.08)' : 'none',
+                    padding: '1.2rem 1.5rem', color: 'rgb(4, 28, 11)', transition: 'all 0.2s ease',
+                    borderBottom: ii < group.items.length - 1 ? '1px solid rgba(60,120,20,0.05)' : 'none',
                   }}
-                    onMouseEnter={(e) => (e.currentTarget as HTMLElement).style.background = 'rgba(60,120,20,0.04)'}
-                    onMouseLeave={(e) => (e.currentTarget as HTMLElement).style.background = 'transparent'}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(60,120,20,0.03)'; e.currentTarget.style.paddingLeft = '1.8rem'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.paddingLeft = '1.5rem'; }}
                   >
                     <div style={{
-                      width: '42px', height: '42px', borderRadius: '12px',
-                      background: 'rgba(60,120,20,0.08)',
+                      width: '46px', height: '46px', borderRadius: '14px',
+                      background: 'rgba(60,120,20,0.06)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      flexShrink: 0, color: '#3c7814',
+                      flexShrink: 0, color: '#3c7814', transition: '0.2s'
                     }}>
                       {item.icon}
                     </div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 700, fontSize: '0.92rem', color: 'rgb(4, 28, 11)' }}>{item.label}</div>
-                      <div style={{ fontSize: '0.78rem', color: '#5a7a40', marginTop: '1px' }}>{item.desc}</div>
+                      <div style={{ fontWeight: 800, fontSize: '1rem', color: 'rgb(4, 28, 11)' }}>{item.label}</div>
+                      <div style={{ fontSize: '0.8rem', color: '#5a7a40', marginTop: '2px', fontWeight: 500 }}>{item.desc}</div>
                     </div>
-                    <ChevronRight size={16} color="#5a7a40" />
+                    <ChevronRight size={18} color="#5a7a40" />
                   </div>
                 </Link>
               ))}
@@ -423,9 +425,12 @@ export default function ProfilePage() {
         .avatar-overlay:hover { opacity: 1 !important; }
         .profile-page-wrapper {
           min-height: 100vh;
-          background: rgb(215, 232, 188);
+          background: rgb(215, 232, 188); /* Kept exact user color */
           padding-top: 100px;
-          padding-bottom: 40px;
+        }
+        .stat-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 15px 35px rgba(60,120,20,0.08) !important;
         }
         @media (max-width: 1024px) {
           .profile-page-wrapper {

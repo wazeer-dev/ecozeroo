@@ -103,7 +103,12 @@ export default function WishlistPage() {
                 <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
                     <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: 'rgb(4, 28, 11)' }}>{item.name}</h3>
-                    <span style={{ fontSize: '1.25rem', fontWeight: 850, color: '#3c7814' }}>₹{item.price}</span>
+                    <div style={{ textAlign: 'right' }}>
+                       {item.oldPrice && parseFloat(item.oldPrice) > parseFloat(item.price) && (
+                         <span style={{ display: 'block', fontSize: '0.8rem', color: '#5a7a40', textDecoration: 'line-through', fontWeight: 600 }}>₹{item.oldPrice}</span>
+                       )}
+                       <span style={{ fontSize: '1.25rem', fontWeight: 850, color: '#3c7814' }}>₹{item.price}</span>
+                    </div>
                   </div>
                   <p style={{ color: '#5a7a40', fontSize: '0.85rem', marginBottom: '1.5rem', textTransform: 'capitalize', fontWeight: 500 }}>{item.category}</p>
 

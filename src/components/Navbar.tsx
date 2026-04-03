@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Search, ShoppingBag, User, Package, Heart, ChevronDown, LogOut, Bell, Instagram, Twitter, Facebook, ArrowDownRight, Home as HomeIcon, Menu, Grid, UtensilsCrossed, ShoppingCart, LayoutGrid } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import Dock from '@/components/Dock';
 
 export default function Navbar() {
@@ -79,7 +80,7 @@ export default function Navbar() {
     window.location.reload();
   };
 
-  if (pathname === '/login' || pathname === '/signup') return null;
+  if (pathname === '/login' || pathname === '/signup' || pathname?.startsWith('/admin')) return null;
 
   return (
     <>
@@ -88,15 +89,19 @@ export default function Navbar() {
         
         .pill-nav-container {
           position: fixed;
-          top: 12px; 
-          left: 4%;
-          right: 4%;
+          top: 0; 
+          left: 0;
+          right: 0;
           z-index: 2000;
-          height: 64px;
+          height: 80px;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          background: transparent;
+          padding: 0 4%;
+          background: rgba(252, 247, 222, 0.75);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border-bottom: 1px solid rgba(20, 104, 69, 0.05);
           transition: all 0.3s ease;
           font-family: 'Inter', sans-serif;
           pointer-events: none;
@@ -104,9 +109,7 @@ export default function Navbar() {
 
         @media (max-width: 768px) {
           .pill-nav-container {
-            top: 12px;
-            left: 12px;
-            right: 12px;
+            display: none !important;
           }
         }
         
@@ -354,8 +357,35 @@ export default function Navbar() {
             </div>
           )}
           
-          <Link href="/cart" className="quote-pill desktop-only">
-            Cart
+          <Link href="/cart" className="quote-pill desktop-only" style={{ position: 'relative' }}>
+            <span style={{ marginRight: '4px' }}>Cart</span>
+            <AnimatePresence mode="popLayout">
+              {mounted && cartCount > 0 && (
+                <motion.div
+                  key={cartCount}
+                  initial={{ scale: 0.5, opacity: 0, y: 5 }}
+                  animate={{ scale: 1, opacity: 1, y: 0 }}
+                  exit={{ scale: 0.5, opacity: 0, y: -5 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 25 }}
+                  style={{
+                    position: 'absolute',
+                    top: '-6px',
+                    left: '12px',
+                    background: '#146845',
+                    color: '#fff',
+                    fontSize: '10px',
+                    fontWeight: 900,
+                    padding: '2px 8px',
+                    borderRadius: '20px',
+                    border: '2px solid #fff',
+                    boxShadow: '0 4px 12px rgba(20, 104, 69, 0.2)',
+                    zIndex: 10
+                  }}
+                >
+                  {cartCount}
+                </motion.div>
+              )}
+            </AnimatePresence>
             <div className="quote-btn-icon">
               <ShoppingBag size={18} strokeWidth={3} />
             </div>
@@ -380,17 +410,6 @@ export default function Navbar() {
         </div>
       )}
 
-      {/* Spacer for non-home pages, excluding auth pages which handle their own layout */}
-      {mounted && pathname !== '/' && pathname !== '/login' && pathname !== '/signup' && (
-        <div 
-          className="nav-spacer" 
-          style={{ 
-            height: '90px', 
-            background: pathname === '/menu' ? '#ffffff' : 'var(--bg-color)', 
-            width: '100%' 
-          }} 
-        />
-      )}
     </>
   );
 }

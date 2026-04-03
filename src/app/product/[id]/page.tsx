@@ -46,6 +46,18 @@ export default function ProductDetailPage() {
     setActiveImageIdx((prev) => (prev - 1 + images.length) % images.length);
   };
 
+  const [cartCount, setCartCount] = useState(0);
+
+  useEffect(() => {
+    const updateCount = () => {
+      const cart = JSON.parse(localStorage.getItem('ecozero_cart') || '[]');
+      setCartCount(cart.reduce((total: number, item: any) => total + item.quantity, 0));
+    };
+    updateCount();
+    window.addEventListener('cartUpdated', updateCount);
+    return () => window.removeEventListener('cartUpdated', updateCount);
+  }, []);
+
   useEffect(() => {
     if (id) {
       fetchProductData();
@@ -205,7 +217,9 @@ export default function ProductDetailPage() {
     );
   }
 
-  const originalPrice = parseFloat(product.price) * 1.33;
+  const hasOldPrice = product.oldPrice && product.oldPrice > parseFloat(product.price);
+  const originalPrice = hasOldPrice ? product.oldPrice : parseFloat(product.price) * 1.33;
+  const discountPercentage = Math.round(((originalPrice - parseFloat(product.price)) / originalPrice) * 100);
   const averageRating = reviews.length > 0 ? (reviews.reduce((a, r) => a + r.rating, 0) / reviews.length).toFixed(1) : '0.0';
   const displayRating = averageRating.replace('.', ',');
 
@@ -249,14 +263,13 @@ export default function ProductDetailPage() {
         }
         .main-image {
           position: relative;
-          background: #fff;
-          border-radius: 12px;
+          background: transparent;
+          border-radius: 54px;
           padding: 0;
           aspect-ratio: 1;
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 4px 24px rgba(0,0,0,0.03);
           overflow: hidden;
         }
         .main-image-inner {
@@ -745,7 +758,21 @@ export default function ProductDetailPage() {
       `}} />
 
       <div className="buy-page">
-        {/* Mobile Header Removed to avoid Navbar overlap */}
+        {/* MOBILE OVERRIDE HEADER WITH CLOSE BUTTON & CART */}
+        <div className="mobile-only" style={{ padding: '20px 25px 30px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-color)', position: 'relative', zIndex: 10 }}>
+           <button onClick={() => router.back()} style={{ width: '45px', height: '45px', borderRadius: '50%', background: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 25px rgba(0,0,0,0.06)', cursor: 'pointer' }}>
+             <ChevronLeft size={24} color="#111" strokeWidth={2.5} />
+           </button>
+           
+           <button onClick={() => router.push('/cart')} style={{ position: 'relative', width: '45px', height: '45px', borderRadius: '50%', background: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 25px rgba(0,0,0,0.06)', cursor: 'pointer' }}>
+             <ShoppingCart size={22} color="#111" strokeWidth={2.5} />
+             {cartCount > 0 && (
+               <span style={{ position: 'absolute', top: '-2px', right: '-2px', background: '#FF5A35', color: '#fff', width: '18px', height: '18px', borderRadius: '50%', fontSize: '0.65rem', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid var(--bg-color)' }}>
+                 {cartCount}
+               </span>
+             )}
+           </button>
+        </div>
 
         <div className="buy-container">
           
@@ -768,7 +795,7 @@ export default function ProductDetailPage() {
                         alt={product.name} 
                         fill
                         priority={true}
-                        style={{ objectFit: 'contain' }}
+                        style={{ objectFit: 'cover' }}
                         draggable={false} 
                       />
                     </motion.div>
@@ -848,17 +875,60 @@ export default function ProductDetailPage() {
                 </div>
               </div>
               
-              <div className="action-buttons">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginRight: '20px', border: '1px solid #ddd', borderRadius: '12px', padding: '5px 15px' }}>
-                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer' }}>-</button>
-                  <span style={{ fontWeight: 700, minWidth: '20px', textAlign: 'center' }}>{quantity}</span>
-                  <button onClick={() => setQuantity(quantity + 1)} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer' }}>+</button>
+              <div className="action-buttons-wrap" style={{ marginTop: '40px', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+                <div style={{ 
+                  display: 'flex', alignItems: 'center', gap: '8px', 
+                  background: '#f8f8f8', border: '1px solid #eee', 
+                  borderRadius: '35px', padding: '6px 12px',
+                  boxShadow: '0 4px 10px rgba(0,0,0,0.02)'
+                }}>
+                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#fff', border: '1px solid #eee', color: '#111', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>-</button>
+                  <span style={{ fontWeight: 800, minWidth: '35px', textAlign: 'center', fontSize: '1.1rem', color: '#111' }}>{quantity}</span>
+                  <button onClick={() => setQuantity(quantity + 1)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#fff', border: '1px solid #eee', color: '#111', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>+</button>
                 </div>
-                <button className={isWishlisted ? 'btn-wishlist active' : 'btn-wishlist'} onClick={toggleWishlist} style={{ padding: '0 15px', height: '52px', borderRadius: '12px', border: '1px solid #ddd', background: isWishlisted ? '#fff5f5' : 'white', cursor: 'pointer', transition: '0.3s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Heart size={20} fill={isWishlisted ? "#ff4d4d" : "none"} color={isWishlisted ? "#ff4d4d" : "#ccc"} />
+                
+                <button 
+                  onClick={toggleWishlist} 
+                  style={{ 
+                    width: '56px', height: '56px', borderRadius: '50%', 
+                    border: '1px solid #eee', 
+                    background: isWishlisted ? '#fff5f5' : '#fff', 
+                    cursor: 'pointer', transition: '0.3s', 
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: '0 8px 20px rgba(0,0,0,0.04)'
+                  }}
+                >
+                  <Heart size={22} fill={isWishlisted ? "#ff4d4d" : "none"} color={isWishlisted ? "#ff4d4d" : "#ddd"} />
                 </button>
-                <button className="btn-add" onClick={handleAddToCart}>{addedPopup ? 'Added!' : 'Add To Cart'}</button>
-                <button className="btn-checkout" onClick={handleBuyNow}>Checkout Now</button>
+
+                <button 
+                  className="btn-add-cart-outline" 
+                  onClick={handleAddToCart}
+                  style={{ 
+                    height: '56px', padding: '0 30px', borderRadius: '35px', 
+                    border: '2px solid #146845', background: 'transparent',
+                    color: '#146845', fontWeight: 900, cursor: 'pointer',
+                    fontSize: '1rem', flex: 1, minWidth: '180px',
+                    transition: '0.3s'
+                  }}
+                >
+                  {addedPopup ? 'Linked to Cart!' : 'Add to Collection'}
+                </button>
+                
+                <button 
+                  className="btn-checkout-primary" 
+                  onClick={handleBuyNow}
+                  style={{ 
+                    height: '56px', padding: '0 40px', borderRadius: '35px', 
+                    border: 'none', background: '#146845',
+                    color: '#fff', fontWeight: 900, cursor: 'pointer',
+                    fontSize: '1.2rem', flex: 1.5, minWidth: '220px',
+                    boxShadow: '0 12px 25px rgba(20, 104, 69, 0.15)',
+                    transition: '0.3s'
+                  }}
+                >
+                  Order Now
+                </button>
               </div>
             </div>
 

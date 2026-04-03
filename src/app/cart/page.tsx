@@ -12,8 +12,10 @@ import {
   ChevronLeft,
   Truck,
   ShieldCheck,
-  CreditCard
+  CreditCard,
+  PackageSearch
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 export default function CartPage() {
   const [cart, setCart] = useState<any[]>([]);
@@ -31,7 +33,7 @@ export default function CartPage() {
   const saveCart = (newCart: any[]) => {
     setCart(newCart);
     localStorage.setItem('ecozero_cart', JSON.stringify(newCart));
-    // Also update a global event or something if needed, but for now this works on refresh/navigation
+    window.dispatchEvent(new Event('cartUpdated'));
   };
 
   const updateQuantity = (id: string, delta: number) => {
@@ -55,93 +57,135 @@ export default function CartPage() {
 
   if (isLoading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#041c0b' }}>
-        <div className="animate-spin" style={{ width: '40px', height: '40px', border: '4px solid rgba(136, 198, 95, 0.1)', borderTopColor: '#88c65f', borderRadius: '50%' }}></div>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fcf7de' }}>
+        <div className="animate-spin" style={{ width: '40px', height: '40px', border: '4px solid rgba(20, 104, 69, 0.1)', borderTopColor: '#146845', borderRadius: '50%' }}></div>
       </div>
     );
   }
 
   return (
-    <div className="page-main-wrapper" style={{ background: '#041c0b', color: '#fff' }}>
-      <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
+    <div className="page-main-wrapper" style={{ background: '#fcf7de', color: '#111', minHeight: '100vh', paddingTop: '100px' }}>
+      <div className="container" style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 20px' }}>
         
-        <div style={{ marginBottom: '3rem' }}>
-          <Link href="/menu" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: '#88c65f', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+        <div style={{ marginBottom: '2.5rem' }}>
+          <button onClick={() => router.back()} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: '#146845', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '0.9rem', marginBottom: '1rem', padding: 0 }}>
             <ChevronLeft size={18} /> CONTINUE SHOPPING
-          </Link>
-          <h1 style={{ fontSize: '3.5rem', fontWeight: 800, margin: 0 }}>Shopping Cart</h1>
-          <p style={{ color: 'rgba(215, 232, 188, 0.7)', fontSize: '1.1rem', marginTop: '0.5rem' }}>Manage your eco-friendly selections before checking out.</p>
+          </button>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+            <h1 style={{ fontSize: '2.8rem', fontWeight: 900, margin: 0, letterSpacing: '-1.5px', color: '#041c0b' }}>Shopping Cart</h1>
+            <span style={{ fontWeight: 800, color: '#146845', fontSize: '1.2rem' }}>{cart.length} ITEMS</span>
+          </div>
         </div>
 
         {cart.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '5rem 2rem', background: 'rgba(136, 198, 95, 0.03)', borderRadius: '32px', border: '1px dashed rgba(136, 198, 95, 0.2)' }}>
-            <div style={{ width: '80px', height: '80px', background: 'rgba(136, 198, 95, 0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem' }}>
-              <ShoppingBag size={40} color="#88c65f" />
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            style={{ 
+              textAlign: 'center', padding: '6rem 2rem', 
+              background: '#fff', borderRadius: '40px', 
+              boxShadow: '0 25px 60px rgba(0,0,0,0.04)',
+              border: '1px solid rgba(0,0,0,0.02)',
+              position: 'relative', overflow: 'hidden'
+            }}
+          >
+            <div style={{ 
+              width: '120px', height: '120px', 
+              background: 'rgba(20, 104, 69, 0.05)', 
+              borderRadius: '35%', display: 'flex', 
+              alignItems: 'center', justifyContent: 'center', 
+              margin: '0 auto 2.5rem',
+              transform: 'rotate(-5deg)'
+            }}>
+              <PackageSearch size={50} color="#146845" />
             </div>
-            <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Your cart is empty</h2>
-            <p style={{ color: 'rgba(215, 232, 188, 0.7)', marginBottom: '2.5rem', maxWidth: '400px', margin: '0 auto 2.5rem' }}>Looks like you haven't added any eco-friendly essentials yet.</p>
-            <Link href="/menu" className="btn-primary" style={{ padding: '1rem 3rem', borderRadius: '40px', textDecoration: 'none', display: 'inline-block' }}>Explore Products</Link>
-          </div>
+            <h2 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '1rem', letterSpacing: '-0.5px' }}>Your cart is empty</h2>
+            <p style={{ color: '#666', marginBottom: '2.5rem', maxWidth: '420px', margin: '0 auto 2.5rem', fontSize: '1.1rem', fontWeight: 500, lineHeight: 1.6 }}>Looks like you haven't added any eco-friendly essentials yet. Start browsing our live catalog!</p>
+            <Link href="/menu" style={{ 
+              background: '#111', color: '#fff',
+              padding: '1.2rem 3.5rem', borderRadius: '50px', 
+              textDecoration: 'none', display: 'inline-block',
+              fontWeight: 800, fontSize: '1rem',
+              boxShadow: '0 15px 30px rgba(0,0,0,0.1)',
+              transition: '0.3s'
+            }}>Explore Products</Link>
+          </motion.div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '3rem', alignItems: 'start' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '2.5rem', alignItems: 'start' }}>
             
             {/* LEFT: Cart Items */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              {cart.map((item) => (
-                <div key={item.id} className="cart-item-container" style={{ background: 'rgba(7, 38, 15, 1)', border: '1px solid rgba(136, 198, 95, 0.1)', borderRadius: '24px', padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '2rem', transition: '0.3s' }}>
-                  <div className="cart-item-image" style={{ width: '120px', height: '120px', borderRadius: '16px', overflow: 'hidden', background: '#fff', flexShrink: 0 }}>
-                    <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  </div>
-                  
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                      <h3 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 700 }}>{item.name}</h3>
-                      <button onClick={() => removeItem(item.id)} style={{ padding: '8px', borderRadius: '12px', background: 'rgba(255, 107, 107, 0.1)', border: 'none', color: '#ff6b6b', cursor: 'pointer', transition: '0.2s' }}>
-                        <Trash2 size={18} />
-                      </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <AnimatePresence>
+                {cart.map((item) => (
+                    <motion.div 
+                      key={item.id}
+                      layout
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 20 }}
+                      className="cart-item-container" 
+                      style={{ 
+                        position: 'relative',
+                        background: '#fff', borderRadius: '28px', 
+                        padding: '1.2rem', display: 'flex', 
+                        alignItems: 'center', gap: '1.5rem', 
+                        boxShadow: '0 10px 25px rgba(0,0,0,0.02)',
+                        border: '1px solid rgba(0,0,0,0.01)'
+                      }}
+                    >
+                    <div className="cart-item-image" style={{ width: '100px', height: '100px', borderRadius: '20px', overflow: 'hidden', background: '#fcf7de', flexShrink: 0, position: 'relative' }}>
+                      <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
-                    <p style={{ color: '#88c65f', fontWeight: 600, fontSize: '0.9rem', marginBottom: '1.2rem' }}>{item.category || 'Organic Essential'}</p>
                     
-                    <div className="cart-item-price-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(0,0,0,0.3)', borderRadius: '30px', padding: '4px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                        <button onClick={() => updateQuantity(item.id, -1)} style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#1a1a1a', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <Minus size={14} />
-                        </button>
-                        <span style={{ width: '40px', textAlign: 'center', fontWeight: 700, color: '#fff' }}>{item.quantity}</span>
-                        <button onClick={() => updateQuantity(item.id, 1)} style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#1a1a1a', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <Plus size={14} />
+                    <div style={{ flex: 1, position: 'static' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div>
+                          <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#041c0b' }}>{item.name}</h3>
+                          <p style={{ color: '#aaa', fontWeight: 600, fontSize: '0.8rem', margin: '4px 0 0' }}>{item.category || 'Organic Essential'}</p>
+                        </div>
+                        <button className="trash-btn" onClick={() => removeItem(item.id)} style={{ padding: '8px', borderRadius: '12px', background: 'rgba(255, 107, 107, 0.05)', border: 'none', color: '#ff6b6b', cursor: 'pointer', transition: '0.2s', alignSelf: 'flex-start' }}>
+                          <Trash2 size={18} />
                         </button>
                       </div>
-                      <p style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800 }}>${(parseFloat(item.price) * item.quantity).toFixed(2)}</p>
+                      
+                      <div className="cart-item-price-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', background: '#f8f8f8', borderRadius: '30px', padding: '3px', border: '1px solid #eee' }}>
+                          <button onClick={() => updateQuantity(item.id, -1)} style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#fff', border: '1px solid #eee', color: '#111', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Minus size={12} />
+                          </button>
+                          <span style={{ width: '35px', textAlign: 'center', fontWeight: 800, color: '#111', fontSize: '0.9rem' }}>{item.quantity}</span>
+                          <button onClick={() => updateQuantity(item.id, 1)} style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#fff', border: '1px solid #eee', color: '#111', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Plus size={12} />
+                          </button>
+                        </div>
+                        <p style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900, color: '#146845' }}>₹{(parseFloat(item.price) * item.quantity).toFixed(0)}</p>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </div>
 
             {/* RIGHT: Summary */}
             <div style={{ position: 'sticky', top: '120px' }}>
-              <div style={{ background: 'rgba(7, 38, 15, 1)', border: '1px solid rgba(136, 198, 95, 0.2)', borderRadius: '32px', padding: '2.5rem', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
-                <h3 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '2rem', borderBottom: '1px solid rgba(136, 198, 95, 0.1)', paddingBottom: '1rem' }}>Order Summary</h3>
+              <div style={{ background: '#fff', borderRadius: '35px', padding: '2rem', boxShadow: '0 30px 60px rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.02)' }}>
+                <h3 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '1.5rem', color: '#041c0b' }}>Order Summary</h3>
                 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', marginBottom: '2rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', color: 'rgba(215, 232, 188, 0.7)' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.8rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#666', fontWeight: 500 }}>
                     <span>Subtotal</span>
-                    <span style={{ color: '#fff', fontWeight: 600 }}>${subtotal.toFixed(2)}</span>
+                    <span style={{ color: '#111', fontWeight: 700 }}>₹{subtotal.toFixed(0)}</span>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', color: 'rgba(215, 232, 188, 0.7)' }}>
-                    <span>Delivery</span>
-                    <span style={{ color: '#88c65f', fontWeight: 600 }}>FREE</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', color: 'rgba(215, 232, 188, 0.7)' }}>
-                    <span>Eco-Tax</span>
-                    <span style={{ color: '#fff', fontWeight: 600 }}>$0.00</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#666', fontWeight: 500 }}>
+                    <span>Shipping</span>
+                    <span style={{ color: '#146845', fontWeight: 700 }}>FREE</span>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '1.5rem', borderTop: '2px solid rgba(136, 198, 95, 0.1)', marginBottom: '2.5rem' }}>
-                  <span style={{ fontSize: '1.2rem', fontWeight: 600 }}>Total</span>
-                  <span style={{ fontSize: '2.2rem', fontWeight: 900, color: '#88c65f' }}>${total.toFixed(2)}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '1.2rem', borderTop: '2px dashed #eee', marginBottom: '2rem' }}>
+                  <span style={{ fontSize: '1.1rem', fontWeight: 700 }}>Total Amount</span>
+                  <span style={{ fontSize: '1.8rem', fontWeight: 900, color: '#146845' }}>₹{total.toFixed(0)}</span>
                 </div>
 
                 <button 
@@ -154,22 +198,27 @@ export default function CartPage() {
                       router.push('/checkout');
                     }
                   }}
-                  className="btn-primary" 
-                  style={{ width: '100%', padding: '1.2rem', borderRadius: '40px', fontSize: '1.1rem', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}
+                  style={{ 
+                    width: '100%', padding: '1.2rem', 
+                    borderRadius: '50px', fontSize: '1rem', 
+                    fontWeight: 900, display: 'flex', 
+                    alignItems: 'center', justifyContent: 'center', 
+                    gap: '12px', background: '#111', color: '#fff',
+                    border: 'none', cursor: 'pointer',
+                    boxShadow: '0 15px 30px rgba(0,0,0,0.1)',
+                    transition: '0.3s'
+                  }}
                 >
-                  Proceed to Checkout <ArrowRight size={20} />
+                  Checkout Now <ArrowRight size={20} />
                 </button>
 
                 {/* Trust Badges */}
-                <div style={{ marginTop: '2.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem', color: 'rgba(215, 232, 188, 0.5)' }}>
-                    <Truck size={16} color="#88c65f" /> Carbon-neutral dispatch guaranteed
+                <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: '#999', fontWeight: 600 }}>
+                    <Truck size={14} color="#146845" /> Carbon-neutral dispatch
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem', color: 'rgba(215, 232, 188, 0.5)' }}>
-                    <ShieldCheck size={16} color="#88c65f" /> Secure bio-encrypted transaction
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem', color: 'rgba(215, 232, 188, 0.5)' }}>
-                    <CreditCard size={16} color="#88c65f" /> All major terminal credits accepted
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: '#999', fontWeight: 600 }}>
+                    <ShieldCheck size={14} color="#146845" /> Secure bio-encryption
                   </div>
                 </div>
               </div>
@@ -178,17 +227,16 @@ export default function CartPage() {
           </div>
         )}
 
-      </div>
-
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .animate-spin { animation: spin 1s linear infinite; }
         
         @media (max-width: 900px) {
           .page-main-wrapper {
-            padding-top: 20px !important;
+            padding-top: 50px !important;
+            padding-bottom: 120px !important; /* Clear bottom dock */
           }
-          div[style*="grid-template-columns: 1fr 380px"] {
+          div[style*="grid-template-columns: 1fr 340px"] {
             grid-template-columns: 1fr !important;
             gap: 2rem !important;
           }
@@ -199,21 +247,28 @@ export default function CartPage() {
 
         @media (max-width: 640px) {
           .cart-item-container {
-            flex-direction: column !important;
-            align-items: flex-start !important;
-            gap: 1.2rem !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            padding: 1rem !important;
+            gap: 1rem !important;
           }
           .cart-item-image {
-            width: 100% !important;
-            height: 200px !important;
+            width: 85px !important;
+            height: 85px !important;
+            border-radius: 16px !important;
           }
           .cart-item-price-row {
-            width: 100% !important;
-            justify-content: space-between !important;
+            margin-top: 0.6rem !important;
+          }
+          .trash-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
           }
         }
       `}} />
     </div>
-  );
+  </div>
+);
 }
 
