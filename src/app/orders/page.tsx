@@ -63,9 +63,9 @@ export default function MyOrdersPage() {
     <div className="orders-page" style={{ minHeight: '100vh', background: colors.bg, paddingBottom: '100px' }}>
       <style dangerouslySetInnerHTML={{ __html: `
         @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700;900&display=swap');
-        .orders-container, .orders-header { padding-top: 50px; }
+        .orders-container, .orders-header { padding-top: 140px; }
         @media (max-width: 768px) {
-          .orders-container, .orders-header { padding-top: 1rem !important; }
+          .orders-container, .orders-header { padding-top: 1.5rem !important; }
         }
         .order-card-refined:hover { border-color: ${colors.accent}; box-shadow: 0 10px 30px rgba(20, 104, 69, 0.05); }
       `}} />

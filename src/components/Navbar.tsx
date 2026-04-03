@@ -146,6 +146,7 @@ export default function Navbar() {
           align-items: center;
           gap: 6px;
           border: 1px solid rgba(255, 255, 255, 0.1);
+          white-space: nowrap;
         }
         .nav-pill:hover {
           transform: translateY(-2px);
