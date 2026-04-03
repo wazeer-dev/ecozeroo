@@ -330,7 +330,7 @@ export default function CheckoutPage() {
               lineHeight: 0.9,
               fontFamily: 'Oswald, sans-serif'
             }}>
-              CHECKOUT <span style={{ color: colors.accent }}>REGISTER</span>
+              CHECK OUT <span style={{ color: colors.accent }}>NOW</span>
             </h1>
             
             <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '4rem', alignItems: 'start' }}>
@@ -355,7 +355,7 @@ export default function CheckoutPage() {
                       textTransform: 'uppercase',
                       letterSpacing: '0.5px'
                     }}>
-                      01. Contact Details
+                      01. Contact Info
                     </h3>
                     <input style={inputStyle} placeholder="Identity Email" required type="email" value={email} onChange={e=>setEmail(e.target.value)} />
                     <input style={inputStyle} placeholder="Contact Number (Link Active)" required type="tel" value={phone} onChange={e=>setPhone(e.target.value)} />
@@ -379,7 +379,7 @@ export default function CheckoutPage() {
                         textTransform: 'uppercase',
                         letterSpacing: '0.5px'
                       }}>
-                        02. Logistics
+                        02. Shipping Info
                       </h3>
                       <button 
                         type="button" 
@@ -400,7 +400,7 @@ export default function CheckoutPage() {
                           whiteSpace: 'nowrap'
                         }}
                       >
-                        <MapPin size={14} /> {locationUrl ? 'Pin Confirmed' : 'Drop Delivery Pin'}
+                        <MapPin size={14} /> {locationUrl ? 'Address Saved' : 'Set Location'}
                       </button>
                     </div>
                     <input style={inputStyle} placeholder="Recipient Full Name" required value={customerName} onChange={e=>setCustomerName(e.target.value)} />
@@ -433,7 +433,7 @@ export default function CheckoutPage() {
                       marginTop: '1rem'
                     }}
                   >
-                    {processing ? "SYNCHRONIZING..." : "EXECUTE PURCHASE"}
+                    {processing ? "PLACING ORDER..." : "PLACE ORDER NOW"}
                   </button>
                 </form>
               </div>
@@ -441,7 +441,7 @@ export default function CheckoutPage() {
               <div className="checkout-summary-col">
                 <div className="summary-card" style={{ background: '#fff', borderRadius: '35px', padding: '2.5rem', border: `1px solid ${colors.border}`, boxShadow: '0 20px 40px rgba(0,0,0,0.03)' }}>
                   <h3 style={{ fontSize: '1.2rem', fontWeight: 900, marginBottom: '2.5rem', color: '#041c0b', fontFamily: 'Oswald, sans-serif', textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    Asset Manifest <span style={{ fontSize: '0.7rem', fontWeight: 700, padding: '4px 10px', background: 'rgba(20, 104, 69, 0.1)', color: colors.accent, borderRadius: '20px' }}>Verified</span>
+                    Cart Summary <span style={{ fontSize: '0.7rem', fontWeight: 700, padding: '4px 10px', background: 'rgba(20, 104, 69, 0.1)', color: colors.accent, borderRadius: '20px' }}>SECURE</span>
                   </h3>
                   
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -461,9 +461,9 @@ export default function CheckoutPage() {
                   </div>
 
                   <div style={{ marginTop: '2.5rem', paddingTop: '2rem', borderTop: `1px dashed ${colors.border}`, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', color: colors.textMuted, fontSize: '0.85rem', fontWeight: 700 }}><span>Value</span><span>₹{subtotal.toFixed(0)}</span></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: colors.textMuted, fontSize: '0.85rem', fontWeight: 700 }}><span>Items Total</span><span>₹{subtotal.toFixed(0)}</span></div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', color: colors.accent, fontSize: '0.85rem', fontWeight: 800 }}><span>Shipping</span><span>FREE</span></div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', color: '#ff6b6b', fontSize: '0.85rem', fontWeight: 800 }}><span>Discount</span><span>-₹{discount.toFixed(0)}</span></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: '#ff6b6b', fontSize: '0.85rem', fontWeight: 800 }}><span>Coupon</span><span>-₹{discount.toFixed(0)}</span></div>
                     
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: colors.accent, margin: '1.5rem -2.5rem -2.5rem', padding: '2.5rem', borderBottomLeftRadius: '35px', borderBottomRightRadius: '35px', color: '#fff' }}>
                       <span style={{ fontSize: '1.2rem', fontWeight: 900, fontFamily: 'Oswald, sans-serif' }}>GRAND TOTAL</span>

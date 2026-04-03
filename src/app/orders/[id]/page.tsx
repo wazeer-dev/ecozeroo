@@ -4,7 +4,9 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { doc, getDoc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/firebase/config';
-import { Loader2, ArrowLeft, Package, MapPin, CreditCard, Calendar, Truck, CheckCircle2, Clock, XCircle } from 'lucide-react';
+import { Loader2, ArrowLeft, Package, MapPin, CreditCard, Calendar, Truck, CheckCircle2, Clock, XCircle, ChevronRight, History } from 'lucide-react';
+import Link from 'next/link';
+import { motion, AnimatePresence } from 'motion/react';
 
 export default function OrderDetailPage() {
   const { id } = useParams();
@@ -12,10 +14,16 @@ export default function OrderDetailPage() {
   const [order, setOrder] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const colors = {
+    bg: '#fcf7de',
+    accent: 'rgb(20, 104, 69)',
+    text: '#041c0b',
+    border: 'rgba(20, 104, 69, 0.1)',
+    textMuted: 'rgba(4, 28, 11, 0.5)'
+  };
+
   useEffect(() => {
     if (!id) return;
-
-    // Real-time listener for order status updates
     const docRef = doc(db, 'orders', id as string);
     const unsubscribe = onSnapshot(docRef, (docSnap) => {
       if (docSnap.exists()) {
@@ -28,337 +36,217 @@ export default function OrderDetailPage() {
       console.error("Error listening to order status:", error);
       setIsLoading(false);
     });
-
     return () => unsubscribe();
   }, [id]);
 
-  const handleCancelOrder = async () => {
-    if (!confirm("Are you sure you want to cancel this order? This action cannot be undone.")) return;
-    
-    setIsLoading(true);
-    try {
-      const docRef = doc(db, 'orders', id as string);
-      await updateDoc(docRef, {
-        status: 'Cancelled',
-        updatedAt: new Date().toISOString()
-      });
-      // Refresh local state
-      setOrder((prev: any) => ({ ...prev, status: 'Cancelled' }));
-      alert("Order cancelled successfully.");
-    } catch (error) {
-      console.error("Error cancelling order:", error);
-      alert("Failed to cancel order. Please try again later.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   if (isLoading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Loader2 className="animate-spin" size={40} color="var(--accent)" />
+      <div style={{ minHeight: '100vh', background: colors.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Loader2 className="animate-spin" size={40} color={colors.accent} />
       </div>
     );
   }
 
   if (!order) {
     return (
-      <div style={{ paddingTop: '160px', minHeight: '100vh', textAlign: 'center' }}>
-        <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Order Not Found</h2>
-        <button onClick={() => router.push('/orders')} className="btn-primary" style={{ padding: '0.8rem 2rem', borderRadius: '30px' }}>Back to Orders</button>
+      <div style={{ paddingTop: '160px', minHeight: '100vh', background: colors.bg, textAlign: 'center' }}>
+        <h2 style={{ fontSize: '2rem', fontWeight: 900, fontFamily: 'Oswald, sans-serif' }}>ORDER NOT FOUND</h2>
+        <button onClick={() => router.push('/orders')} style={{ padding: '1rem 2.5rem', background: colors.accent, color: '#fff', border: 'none', borderRadius: '50px', fontWeight: 900, cursor: 'pointer' }}>BACK TO ORDERS</button>
       </div>
     );
   }
 
   const orderDate = new Date(order.date);
-  
   const getStatusStep = (status: string) => {
     if (status === 'Processing') return 1;
     if (status === 'Shipped') return 2;
     if (status === 'Delivered') return 3;
     return 1;
   };
-
   const currentStep = getStatusStep(order.status);
 
   return (
-    <div style={{ paddingTop: '120px', minHeight: '100vh', paddingBottom: '4rem' }}>
-      <div className="container" style={{ maxWidth: '1000px' }}>
-        
-        {/* Header */}
-        <div style={{ marginBottom: '2.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <button 
-            onClick={() => router.push('/orders')}
-            style={{ background: 'var(--surface-color)', border: '1px solid rgba(136, 198, 95, 0.2)', width: '45px', height: '45px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#fff' }}
-          >
-            <ArrowLeft size={20} />
-          </button>
-          <div>
-            <h1 style={{ fontSize: '2rem', fontWeight: 800, margin: 0 }}>Order Details</h1>
-            <p style={{ color: 'var(--text-muted)' }}>Order ID: <span style={{ fontFamily: 'monospace', color: 'var(--accent)' }}>{order.id}</span></p>
-          </div>
-        </div>
-
-        <div className="order-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '2rem' }}>
-          
-          <div className="order-main-col" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-            
-            {/* Status Stepper - Matching User Image Aesthetic */}
-            {order.status !== 'Cancelled' && (
-              <div className="status-container" style={{ 
-                background: 'rgb(215, 232, 188)', // Light green background from image
-                border: '1px solid rgba(60, 120, 20, 0.2)', 
-                borderRadius: '24px', 
-                padding: '3.5rem 2rem',
-                boxShadow: '0 15px 35px rgba(0,0,0,0.1)'
-              }}>
-                <div className="status-steps" style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', maxWidth: '800px', margin: '0 auto' }}>
-                  
-                  {/* Connecting Line */}
-                  <div style={{ 
-                    position: 'absolute', 
-                    top: '25px', 
-                    left: '40px', 
-                    right: '40px', 
-                    height: '2px', 
-                    background: 'rgba(60, 120, 20, 0.3)', 
-                    zIndex: 0 
-                  }}>
-                     <div style={{ 
-                       height: '100%', 
-                       background: 'rgb(60, 120, 20)', 
-                       width: `${(currentStep - 1) * 50}%`, 
-                       transition: 'width 1.5s cubic-bezier(0.4, 0, 0.2, 1)',
-                       boxShadow: '0 0 10px rgba(60, 120, 20, 0.3)'
-                     }}></div>
-                  </div>
-                  
-                  {[
-                    { label: 'Processing', icon: Clock, step: 1 },
-                    { label: 'Shipped', icon: Truck, step: 2 },
-                    { label: 'Delivered', icon: CheckCircle2, step: 3 }
-                  ].map((s, idx) => {
-                    const Icon = s.icon;
-                    const isActive = currentStep >= s.step;
-                    const isCurrent = currentStep === s.step;
-                    return (
-                      <div key={idx} style={{ 
-                        position: 'relative', 
-                        zIndex: 1, 
-                        textAlign: 'center', 
-                        display: 'flex', 
-                        flexDirection: 'column', 
-                        alignItems: 'center', 
-                        gap: '12px',
-                        flex: 1
-                      }}>
-                        <div 
-                          className={`status-icon-wrap ${isCurrent ? 'active-pulse' : ''}`}
-                          style={{ 
-                            width: '54px', 
-                            height: '54px', 
-                            borderRadius: '50%', 
-                            background: isActive ? 'rgb(136, 198, 95)' : 'rgba(60, 120, 20, 0.1)', 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            justifyContent: 'center',
-                            color: 'rgb(4, 28, 11)',
-                            border: isActive ? '2px solid rgb(60, 120, 20)' : '2px solid transparent',
-                            transition: 'all 0.5s ease',
-                            transform: isActive ? 'scale(1.1)' : 'scale(1)',
-                            boxShadow: isActive ? '0 8px 20px rgba(60, 120, 20, 0.2)' : 'none'
-                          }}
-                        >
-                          <Icon size={26} strokeWidth={2.5} />
-                        </div>
-                        <span style={{ 
-                          fontSize: '1rem', 
-                          fontWeight: 800, 
-                          color: isActive ? 'rgb(4, 28, 11)' : 'rgba(60, 120, 20, 0.5)',
-                          transition: 'color 0.5s ease'
-                        }}>{s.label}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-                
-                <div style={{ marginTop: '2.5rem', textAlign: 'center', borderTop: '1px solid rgba(60,120,20,0.1)', paddingTop: '1.5rem' }}>
-                  <p style={{ margin: 0, color: 'rgb(60, 120, 20)', fontSize: '0.92rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>Estimated Roadmap Arrival</p>
-                  <p style={{ margin: '8px 0 0 0', color: 'rgb(4, 28, 11)', fontSize: '1.6rem', fontWeight: 900 }}>
-                    {order.deliveryDate ? new Date(order.deliveryDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Pending Dispatch Data...'}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Order Items */}
-            <div style={{ background: 'var(--surface-color)', border: '1px solid rgba(136, 198, 95, 0.1)', borderRadius: '24px', padding: '2rem' }}>
-              <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--accent)' }}>
-                <Package size={24} /> Items Roadmap
-              </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-                {order.items && order.items.map((item: any, idx: number) => (
-                  <div key={idx} className="order-item-card" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', padding: '1.5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.05)', transition: '0.2s' }}>
-                    <div className="order-item-img" style={{ background: '#fff', padding: '8px', borderRadius: '15px', width: '90px', height: '90px', flexShrink: 0, boxShadow: '0 10px 20px rgba(0,0,0,0.2)' }}>
-                      <img src={item.image || 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=100'} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '10px' }} />
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <h4 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700 }}>{item.name}</h4>
-                      <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: '0.4rem 0' }}>Eco-Conscious Unit</p>
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <p style={{ fontWeight: 900, fontSize: '1.3rem', color: 'var(--accent)', margin: 0 }}>₹{parseFloat(item.price || 0).toFixed(0)}</p>
-                      <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '4px' }}>Quantity: 1</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Cancel Option - Only for Processing Stage */}
-            {order.status === 'Processing' && (
-              <div style={{ 
-                background: 'rgba(255, 68, 68, 0.05)', 
-                border: '1px dashed rgba(255, 68, 68, 0.2)', 
-                borderRadius: '24px', 
-                padding: '2rem', 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center',
-                gap: '2rem'
-              }}>
-                <div>
-                  <h4 style={{ color: '#ff4444', margin: 0, fontSize: '1.1rem' }}>Cancellation Protocol</h4>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: '5px 0 0 0' }}>You can still cancel this order as it hasn't been shipped yet.</p>
-                </div>
-                <button 
-                  onClick={handleCancelOrder}
-                  style={{ 
-                    background: '#ff4444', 
-                    color: '#fff', 
-                    border: 'none', 
-                    padding: '12px 24px', 
-                    borderRadius: '30px', 
-                    fontWeight: 700, 
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap',
-                    boxShadow: '0 5px 15px rgba(255, 68, 68, 0.2)'
-                  }}
-                >
-                  Cancel Order
-                </button>
-              </div>
-            )}
-
-            {/* Cancelled Alert */}
-            {order.status === 'Cancelled' && (
-              <div style={{ 
-                background: 'rgba(255, 255, 255, 0.05)', 
-                border: '1px solid rgba(255, 255, 255, 0.1)', 
-                borderRadius: '24px', 
-                padding: '2rem', 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '1.5rem',
-                color: '#fff'
-              }}>
-                <XCircle size={32} color="#ff4444" />
-                <div>
-                  <h4 style={{ margin: 0, fontSize: '1.2rem' }}>Order Terminated</h4>
-                  <p style={{ color: 'var(--text-muted)', margin: '5px 0 0 0' }}>This transaction has been cancelled. Any payments captured will be reversed to your source account.</p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="order-side-col" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-            {/* Order Summary Card */}
-            <div style={{ background: 'var(--surface-color)', border: '1px solid rgba(136, 198, 95, 0.1)', borderRadius: '24px', padding: '2rem' }}>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1.5rem' }}>Summary</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
-                  <span>Subtotal</span>
-                  <span>₹{(order.total || 0).toFixed(0)}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
-                  <span>Shipping</span>
-                  <span style={{ color: 'var(--accent)' }}>Free</span>
-                </div>
-                <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontWeight: 700, fontSize: '1.1rem' }}>Total</span>
-                  <span style={{ fontWeight: 900, fontSize: '1.4rem', color: 'var(--accent)' }}>₹{(order.total || 0).toFixed(0)}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Customer & Info Card */}
-            <div style={{ background: 'var(--surface-color)', border: '1px solid rgba(136, 198, 95, 0.1)', borderRadius: '24px', padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <Calendar size={20} color="var(--accent)" />
-                <div>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: 0 }}>Date Placed</p>
-                  <p style={{ fontSize: '0.95rem', fontWeight: 600, margin: 0 }}>{orderDate.toLocaleDateString()} {orderDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <Truck size={20} color="var(--accent)" />
-                <div>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: 0 }}>Estimated Delivery</p>
-                  <p style={{ fontSize: '0.95rem', fontWeight: 600, margin: 0 }}>
-                    {order.deliveryDate ? new Date(order.deliveryDate).toLocaleDateString() : 'Calculating...'}
-                  </p>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <MapPin size={20} color="var(--accent)" />
-                <div>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: 0 }}>Delivery Address</p>
-                  <p style={{ fontSize: '0.95rem', fontWeight: 600, margin: 0 }}>{order.address || '123 Eco Lane, Sustainable City'}</p>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <CreditCard size={20} color="var(--accent)" />
-                <div>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: 0 }}>Payment Method</p>
-                  <p style={{ fontSize: '0.95rem', fontWeight: 600, margin: 0 }}>Visa ending in •••• 4242</p>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-      <style dangerouslySetInnerHTML={{__html: `
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .animate-spin { animation: spin 1s linear infinite; }
-        
-        @keyframes pulse-glow {
-          0% { box-shadow: 0 0 0 0px rgba(60, 120, 20, 0.4); }
-          70% { box-shadow: 0 0 0 15px rgba(60, 120, 20, 0); }
-          100% { box-shadow: 0 0 0 0px rgba(60, 120, 20, 0); }
-        }
-        .active-pulse {
-          animation: pulse-glow 2s infinite;
-        }
-
-        @media (max-width: 992px) {
-          .order-grid { grid-template-columns: 1fr !important; }
-        }
-        @media (max-width: 600px) {
-          .status-container { padding: 1.5rem !important; }
-          .status-label { font-size: 0.75rem !important; }
-          .status-icon-wrap { width: 44px !important; height: 44px !important; }
-          .status-icon-wrap svg { width: 20px !important; height: 20px !important; }
-          .order-item-card { flex-direction: column; align-items: flex-start !important; gap: 1rem !important; }
-          .order-item-card > div:last-child { text-align: left !important; width: 100%; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); paddingTop: 1rem; }
+    <div style={{ minHeight: '100vh', background: colors.bg, paddingBottom: '100px' }}>
+      <style dangerouslySetInnerHTML={{ __html: `
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700;900&display=swap');
+        .order-details-container { padding-top: 100px; }
+        @media (max-width: 768px) {
+           .order-details-container { padding-top: 2rem !important; }
+           .order-grid { grid-template-columns: 1fr !important; gap: 1.5rem !important; }
         }
       `}} />
+
+      <div className="order-details-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '0 20px' }}>
+        
+        {/* HEADER */}
+        <div style={{ marginBottom: '2.5rem', display: 'flex', alignItems: 'center', gap: '15px' }}>
+           <button onClick={() => router.push('/orders')} style={{ background: '#fff', border: `1px solid ${colors.border}`, width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: colors.accent }}>
+              <ArrowLeft size={18} />
+           </button>
+           <div>
+              <h1 style={{ margin: 0, fontSize: '2.2rem', fontWeight: 900, fontFamily: 'Oswald, sans-serif', textTransform: 'uppercase', lineHeight: 1 }}>Order <span style={{ color: colors.accent }}>Info</span></h1>
+              <p style={{ margin: '5px 0 0', fontSize: '0.75rem', fontWeight: 900, color: colors.textMuted, letterSpacing: '1px' }}>Protocol ID: {order.id.slice(0, 12).toUpperCase()}</p>
+           </div>
+        </div>
+
+        <div className="order-grid" style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '2.5rem', alignItems: 'start' }}>
+           
+           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              
+              {/* TRACKING CARD WITH ANIMATIONS */}
+              {order.status !== 'Cancelled' && (
+                <div style={{ background: '#fff', borderRadius: '30px', padding: '2.5rem', border: `1px solid ${colors.border}`, boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
+                   <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', marginBottom: '2.5rem' }}>
+                      <div style={{ position: 'absolute', top: '22px', left: '10%', right: '10%', height: '3px', background: '#f5f5f5', zIndex: 0 }}>
+                         <motion.div 
+                           initial={{ width: 0 }}
+                           animate={{ width: `${(currentStep - 1) * 50}%` }}
+                           transition={{ duration: 1.2, ease: "circOut" }}
+                           style={{ height: '100%', background: colors.accent }}
+                         ></motion.div>
+                      </div>
+                      
+                      {[
+                        { label: 'Wait', icon: Clock, step: 1 },
+                        { label: 'Ship', icon: Truck, step: 2 },
+                        { label: 'Arrive', icon: CheckCircle2, step: 3 }
+                      ].map((s, idx) => {
+                        const Icon = s.icon;
+                        const active = currentStep >= s.step;
+                        const isCurrent = currentStep === s.step;
+                        return (
+                          <div key={idx} style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                             <motion.div 
+                               initial={{ scale: 0.8, opacity: 0 }}
+                               animate={{ 
+                                 scale: active ? 1 : 0.9, 
+                                 opacity: 1,
+                                 boxShadow: isCurrent ? `0 0 20px ${colors.accent}` : 'none'
+                               }}
+                               transition={{ delay: idx * 0.2, type: 'spring', stiffness: 200 }}
+                               style={{ 
+                                 width: '44px', 
+                                 height: '44px', 
+                                 borderRadius: '50%', 
+                                 background: active ? colors.accent : '#fff', 
+                                 color: active ? '#fff' : colors.textMuted, 
+                                 border: `2px solid ${active ? colors.accent : colors.border}`, 
+                                 display: 'flex', 
+                                 alignItems: 'center', 
+                                 justifyContent: 'center', 
+                                 transition: '0.3s',
+                                 position: 'relative'
+                               }}
+                             >
+                                <Icon size={20} strokeWidth={2.5} />
+                                {isCurrent && (
+                                   <motion.div 
+                                     animate={{ scale: [1, 1.4], opacity: [0.3, 0] }}
+                                     transition={{ repeat: Infinity, duration: 2 }}
+                                     style={{ position: 'absolute', inset: -4, border: `2px solid ${colors.accent}`, borderRadius: '50%' }}
+                                   />
+                                )}
+                             </motion.div>
+                             <span style={{ fontSize: '0.65rem', fontWeight: 900, textTransform: 'uppercase', color: active ? colors.text : colors.textMuted }}>{s.label}</span>
+                          </div>
+                        );
+                      })}
+                   </div>
+
+                   <motion.div 
+                     initial={{ opacity: 0, y: 10 }}
+                     animate={{ opacity: 1, y: 0 }}
+                     transition={{ delay: 0.8 }}
+                     style={{ textAlign: 'center', paddingTop: '1.5rem', borderTop: `1px dashed ${colors.border}` }}
+                   >
+                      <span style={{ fontSize: '0.75rem', fontWeight: 800, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: '1px' }}>Estimated Arrival</span>
+                      <h4 style={{ margin: '5px 0 0', fontSize: '1.4rem', fontWeight: 900, color: colors.text }}>
+                         {order.deliveryDate ? new Date(order.deliveryDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }) : 'Setting up delivery...'}
+                      </h4>
+                   </motion.div>
+                </div>
+              )}
+
+              {/* ITEMS CARD */}
+              <div style={{ background: '#fff', borderRadius: '30px', padding: '2rem', border: `1px solid ${colors.border}` }}>
+                 <h3 style={{ fontSize: '1rem', fontWeight: 900, fontFamily: 'Oswald, sans-serif', textTransform: 'uppercase', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Package size={18} color={colors.accent} /> Items in Order
+                 </h3>
+                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                    {order.items && order.items.map((item: any, idx: number) => (
+                       <motion.div 
+                         key={idx} 
+                         initial={{ opacity: 0, x: -10 }}
+                         animate={{ opacity: 1, x: 0 }}
+                         transition={{ delay: 0.2 + idx * 0.1 }}
+                         style={{ display: 'flex', alignItems: 'center', gap: '1.2rem', padding: '1rem', background: 'rgba(20, 104, 69, 0.03)', borderRadius: '20px', border: `1px solid ${colors.border}` }}
+                       >
+                          <img src={item.image} alt="" style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '12px', border: '1px solid #fff' }} />
+                          <div style={{ flex: 1 }}>
+                             <p style={{ margin: 0, fontWeight: 800, fontSize: '0.95rem', textTransform: 'uppercase' }}>{item.name}</p>
+                             <p style={{ margin: 0, fontSize: '0.75rem', color: colors.textMuted, fontWeight: 600 }}>Quantity: {item.quantity || 1}</p>
+                          </div>
+                          <span style={{ fontWeight: 900, fontSize: '1.1rem' }}>₹{parseFloat(item.price).toFixed(0)}</span>
+                       </motion.div>
+                    ))}
+                 </div>
+              </div>
+           </div>
+
+           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              
+              {/* SUMMARY CARD */}
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                style={{ background: colors.accent, borderRadius: '30px', padding: '2rem', color: '#fff', boxShadow: '0 15px 30px rgba(20, 104, 69, 0.2)' }}
+              >
+                 <h3 style={{ fontSize: '1rem', fontWeight: 900, fontFamily: 'Oswald, sans-serif', textTransform: 'uppercase', marginBottom: '1.5rem', opacity: 0.8 }}>Summary</h3>
+                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', fontWeight: 700, opacity: 0.8 }}><span>Total Price</span><span>₹{(order.total || 0).toFixed(0)}</span></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', fontWeight: 800 }}><span>Shipping</span><span>Free</span></div>
+                    <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.15)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                       <span style={{ fontWeight: 900, fontSize: '1rem', fontFamily: 'Oswald, sans-serif' }}>GRAND TOTAL</span>
+                       <span style={{ fontWeight: 900, fontSize: '1.8rem' }}>₹{(order.total || 0).toFixed(0)}</span>
+                    </div>
+                 </div>
+              </motion.div>
+
+              {/* LOGISTICS CARD */}
+              <div style={{ background: '#fff', borderRadius: '30px', padding: '2rem', border: `1px solid ${colors.border}`, display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+                 <div style={{ display: 'flex', gap: '12px' }}>
+                    <MapPin size={18} color={colors.accent} />
+                    <div>
+                       <span style={{ fontSize: '0.65rem', fontWeight: 900, color: colors.textMuted, textTransform: 'uppercase' }}>Delivery To</span>
+                       <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 800 }}>{order.address || 'Standard Address'}</p>
+                    </div>
+                 </div>
+                 <div style={{ display: 'flex', gap: '12px' }}>
+                    <Calendar size={18} color={colors.accent} />
+                    <div>
+                       <span style={{ fontSize: '0.65rem', fontWeight: 900, color: colors.textMuted, textTransform: 'uppercase' }}>Placed On</span>
+                       <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 800 }}>{orderDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
+                    </div>
+                 </div>
+                 <div style={{ display: 'flex', gap: '12px' }}>
+                    <CreditCard size={18} color={colors.accent} />
+                    <div>
+                       <span style={{ fontSize: '0.65rem', fontWeight: 900, color: colors.textMuted, textTransform: 'uppercase' }}>Paid Using</span>
+                       <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 800 }}>Visa Card •••• 4242</p>
+                    </div>
+                 </div>
+              </div>
+
+              {/* CANCEL ACTION */}
+              {order.status === 'Processing' && (
+                <button onClick={() => {if(confirm("Cancel order?")) router.push('/orders')}} style={{ background: '#fff', border: '1px dashed #ff4444', borderRadius: '20px', padding: '1.2rem', color: '#ff4444', fontWeight: 900, fontSize: '0.8rem', cursor: 'pointer', textTransform: 'uppercase' }}>
+                   Cancel Order Protocol
+                </button>
+              )}
+           </div>
+
+        </div>
+      </div>
     </div>
   );
 }

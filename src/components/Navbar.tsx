@@ -397,7 +397,7 @@ export default function Navbar() {
         </div>
       </nav>
       {/* Mobile Dock — shown only on small screens, except on product pages to avoid CTA overlap */}
-      {mounted && !pathname.startsWith('/product/') && (
+      {mounted && !pathname.startsWith('/product/') && pathname !== '/orders' && (
         <div className="mobile-dock-wrapper">
           <Dock
             panelHeight={64}
