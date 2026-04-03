@@ -8,31 +8,34 @@ const Footer = () => {
   return (
     <footer style={{ 
       backgroundColor: '#041c0b', 
-      padding: '100px 5% 40px',
+      padding: '100px 8% 40px',
       color: '#fcf7de',
       position: 'relative',
       zIndex: 10,
-      fontFamily: "'Inter', sans-serif"
+      fontFamily: "'Inter', sans-serif",
+      borderRadius: '100px 100px 0 0',
+      boxShadow: '0 -20px 60px rgba(4, 28, 11, 0.08)'
     }}>
       <div className="container" style={{ maxWidth: '1400px', margin: '0 auto' }}>
         
-        <div style={{ 
+        <div className="footer-grid" style={{ 
           display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-          gap: '60px',
+          gridTemplateColumns: 'repeat(12, 1fr)', 
+          gap: '40px',
           marginBottom: '80px'
         }}>
           {/* BRAND COLUMN */}
-          <div style={{ gridColumn: 'span 2' }}>
-            <h2 style={{ 
-              fontSize: '2.5rem', 
-              fontWeight: 800, 
-              color: '#fff', 
-              marginBottom: '20px', 
-              fontFamily: 'var(--font-brand), serif',
-              fontStyle: 'italic',
-              letterSpacing: '-1.5px'
-            }}>ecozero</h2>
+          <div className="footer-brand-col" style={{ gridColumn: 'span 5' }}>
+            <img 
+              src="/photo_2026-03-13_20-14-52 (1).png" 
+              alt="ecozero" 
+              style={{ 
+                height: '50px', 
+                objectFit: 'contain', 
+                marginBottom: '20px',
+                filter: 'brightness(0) invert(1)' /* Making it white to match existing design */
+              }} 
+            />
             <p style={{ 
               maxWidth: '350px', 
               fontSize: '1rem', 
@@ -52,7 +55,7 @@ const Footer = () => {
           </div>
 
           {/* CATALOG COLUMN */}
-          <div>
+          <div className="footer-link-col" style={{ gridColumn: 'span 2' }}>
             <h4 style={columnTitleStyle}>Catalog</h4>
             <nav style={navColumnStyle}>
               <Link href="/menu" style={footerLinkStyle}>All Products</Link>
@@ -62,8 +65,8 @@ const Footer = () => {
             </nav>
           </div>
 
-          {/* SUPPORT COLUMN */}
-          <div>
+          {/* FOUNDATION COLUMN */}
+          <div className="footer-link-col" style={{ gridColumn: 'span 2' }}>
             <h4 style={columnTitleStyle}>Foundation</h4>
             <nav style={navColumnStyle}>
               <Link href="/about" style={footerLinkStyle}>Our Story</Link>
@@ -73,8 +76,8 @@ const Footer = () => {
             </nav>
           </div>
 
-          {/* CONTACT COLUMN */}
-          <div>
+          {/* TERMINAL COLUMN */}
+          <div className="footer-link-col" style={{ gridColumn: 'span 3' }}>
             <h4 style={columnTitleStyle}>Terminal</h4>
             <div style={navColumnStyle}>
               <div style={contactRowStyle}><Mail size={16} /> hi@ecozero.eco</div>
@@ -84,19 +87,7 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* COLOSSAL BACKGROUND TEXT */}
-        <div style={{ 
-          textAlign: 'center', 
-          opacity: 0.03, 
-          fontSize: 'clamp(5rem, 15vw, 15rem)', 
-          fontWeight: 900, 
-          pointerEvents: 'none',
-          userSelect: 'none',
-          marginBottom: '20px',
-          color: '#fff'
-        }}>
-          ECOZERO
-        </div>
+
 
         {/* BOTTOM LINE */}
         <div style={{ 
@@ -121,6 +112,30 @@ const Footer = () => {
           </div>
         </div>
       </div>
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media (max-width: 1024px) {
+          .footer-grid { 
+            display: grid !important; 
+            grid-template-columns: repeat(2, 1fr) !important; 
+            gap: 30px 20px !important; 
+            margin-bottom: 40px !important;
+          }
+          .footer-brand-col { 
+            grid-column: span 2 !important; 
+            margin-bottom: 10px !important;
+          }
+          .footer-link-col { 
+            grid-column: span 1 !important; 
+          }
+          /* Ensure the terminal column spans both on even smaller screens if needed, 
+             but here it will just sit in the grid. */
+          
+          footer { 
+            border-radius: 40px 40px 0 0 !important; 
+            padding: 50px 6% 30px !important; 
+          }
+        }
+      ` }} />
     </footer>
   );
 };

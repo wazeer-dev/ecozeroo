@@ -19,8 +19,18 @@ export default function Home() {
       <main className="main-content visible" style={{ paddingTop: '100px', backgroundColor: '#fcf7de', minHeight: '100vh', paddingBottom: '100px' }}>
         
         {/* 1. HERO SECTION */}
-        <section style={{ position: 'relative', marginTop: '20px', width: '100%', padding: '0 4%', overflow: 'visible' }}>
-          <div style={{ backgroundColor: '#cde6ae', borderRadius: '80px', padding: '100px 80px', display: 'flex', flexWrap: 'wrap', position: 'relative', overflow: 'hidden', minHeight: '650px', alignItems: 'center' }}>
+        <section className="hero-section" style={{ position: 'relative', marginTop: '20px', width: '100%', padding: '0 4%', overflow: 'visible' }}>
+          <div style={{ 
+            background: 'linear-gradient(90deg, rgba(205, 230, 174, 0.9) 30%, rgba(205, 230, 174, 0) 100%), url(/toothbrush-hero.png) center/cover', 
+            borderRadius: '80px', 
+            padding: '100px 80px', 
+            display: 'flex', 
+            flexWrap: 'wrap', 
+            position: 'relative', 
+            overflow: 'hidden', 
+            minHeight: '650px', 
+            alignItems: 'center' 
+          }}>
              
              {/* Left Content */}
              <div style={{ flex: '1 1 500px', zIndex: 10, display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative' }}>
@@ -35,32 +45,17 @@ export default function Home() {
                 </p>
              </div>
              
-             {/* Right Image/Graphic Area */}
-             <div style={{ flex: '1 1 400px', position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                 {/* Curved text SVG */}
-                 <div style={{ position: 'absolute', width: '700px', height: '700px', right: '-150px', top: '50%', transform: 'translateY(-50%)', zIndex: 0 }}>
-                    <svg viewBox="0 0 500 500" style={{ width: '100%', height: '100%', animation: 'spin 40s linear infinite' }}>
-                      <path id="hero-curve" d="M 50, 250 a 200,200 0 1,1 400,0 a 200,200 0 1,1 -400,0" fill="transparent" />
-                      <text width="500" style={{ fontSize: '18px', fill: '#1a3c26', opacity: 0.4, fontWeight: 800, letterSpacing: '4px' }}>
-                        <textPath href="#hero-curve">
-                          CARBON NEUTRAL PRODUCTS • ORGANIC BLENDS • SUSTAINABILITY • 
-                        </textPath>
-                      </text>
-                    </svg>
-                 </div>
-                 
-                 {/* Circular backdrop */}
-                 <div style={{ position: 'absolute', width: '450px', height: '450px', backgroundColor: '#e2f4c9', borderRadius: '50%', zIndex: 1 }}></div>
-
-                 {/* Subject Image */}
-                 <div style={{ position: 'relative', zIndex: 5, width: '340px', height: '520px', borderRadius: '50px', overflow: 'hidden', boxShadow: '0 40px 80px rgba(0,0,0,0.1)' }}>
-                    <img src="https://images.unsplash.com/photo-1545205597-3d9d02c29597?q=80&w=800&auto=format&fit=crop" alt="Eco Living" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                 </div>
-             </div>
+             {/* Right Graphic Area - Emptied for cleaner look */}
+             <div style={{ flex: '1 1 400px', position: 'relative', zIndex: 1 }}></div>
           </div>
           
           <style dangerouslySetInnerHTML={{ __html: `
             @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+            
+            @media (max-width: 768px) {
+              .main-content { padding-top: 32px !important; }
+              .hero-section { margin-top: 0px !important; }
+            }
           ` }} />
         </section>
 
@@ -288,3 +283,4 @@ export default function Home() {
     </>
   );
 }
+

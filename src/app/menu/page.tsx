@@ -268,7 +268,12 @@ export default function MenuPage() {
                           <span className="mobile-product-title">{product.name}</span>
                           <span className="mobile-product-weight">{product.category || 'Eco'} &bull; 68 gm.</span>
                           <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                             <span className="mobile-product-price">₹{product.price}</span>
+                             <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontSize: '0.75rem', color: '#bbb', textDecoration: 'line-through', fontWeight: 600, marginBottom: '-2px' }}>
+                                  ₹{product.oldPrice || (parseFloat(product.price) * 1.25).toFixed(0)}
+                                </span>
+                                <span className="mobile-product-price">₹{product.price}</span>
+                             </div>
                              <button className="mobile-add-btn" onClick={(e) => quickAddToCart(e, product)}>
                                 <Plus size={14} />
                              </button>
@@ -303,14 +308,13 @@ export default function MenuPage() {
             <p style={{ fontSize: '0.72rem', fontWeight: 800, color: '#aaa', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.8rem' }}>Sort by</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '1.5rem' }}>
               {[
-                { id: 'newest', label: 'Newest First', emoji: '✨' },
-                { id: 'price-asc', label: 'Price: Low to High', emoji: '↑' },
-                { id: 'price-desc', label: 'Price: High to Low', emoji: '↓' },
+                { id: 'newest', label: 'Newest First' },
+                { id: 'price-asc', label: 'Price: Low to High' },
+                { id: 'price-desc', label: 'Price: High to Low' },
               ].map(opt => (
                 <button key={opt.id} onClick={() => setSortBy(opt.id)}
                   style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 18px', borderRadius: '16px', border: 'none', cursor: 'pointer', background: sortBy === opt.id ? '#041c0b' : '#f5f5f5', color: sortBy === opt.id ? '#fff' : '#111', fontWeight: 700, fontSize: '0.95rem', textAlign: 'left', transition: 'all 0.2s ease' }}
                 >
-                  <span style={{ fontSize: '1.1rem', width: '20px', textAlign: 'center' }}>{opt.emoji}</span>
                   {opt.label}
                   {sortBy === opt.id && <span style={{ marginLeft: 'auto' }}>✓</span>}
                 </button>
@@ -406,10 +410,10 @@ export default function MenuPage() {
             box-shadow: 0 4px 15px rgba(0,0,0,0.03);
             border: 1px solid #f2f2f2;
             height: 100% !important;
-            min-height: 280px;
+            min-height: 250px;
           }
           .mobile-product-img-wrapper {
-            width: 100%; height: 160px; /* Fixed height for image area to ensure alignment */
+            width: 100%; height: 140px; /* Reduced height for a smaller card */
             background: #fdfdfd; border-radius: 14px;
             margin-bottom: 12px; overflow: hidden;
             display: flex; align-items: center; justify-content: center;
@@ -427,15 +431,15 @@ export default function MenuPage() {
           }
           .mobile-product-info { 
             display: flex; flex-direction: column; flex: 1;
-            gap: 2px; text-align: left;
+            gap: 0px; text-align: left;
           }
           .mobile-product-title { 
             font-size: 0.85rem; font-weight: 800; color: #111; 
-            min-height: 2.3em; line-height: 1.15; margin-bottom: 2px;
+            min-height: 1.2em; line-height: 1.15; margin-bottom: 0px;
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
             text-transform: capitalize;
           }
-          .mobile-product-weight { font-size: 0.7rem; color: #bbb; font-weight: 600; margin-bottom: 8px; }
+          .mobile-product-weight { font-size: 0.7rem; color: #bbb; font-weight: 600; margin-bottom: 4px; }
           .mobile-product-price { font-size: 1rem; font-weight: 900; color: #111; }
           .mobile-add-btn {
             width: 30px; height: 30px; border-radius: 50%;
