@@ -837,7 +837,7 @@ export default function ProductDetailPage() {
               
               <div className="accordions-container">
                 <div className="accordion">
-                  <button className="accordion-header" onClick={() => setActiveAccordion(activeAccordion === 1 ? null : 1)}>
+                  <button className="accordion-header" onClick={() => setActiveAccordion(activeAccordion === 1 ? 0 : 1)}>
                     Descriptions <ChevronDown size={18} style={{ transform: activeAccordion === 1 ? 'rotate(180deg)' : 'none', transition: '0.2s' }} />
                   </button>
                   {activeAccordion === 1 && (
