@@ -60,8 +60,6 @@ function DockItem({
   const widthTransform = useTransform(
     mouseX,
     (val: number) => {
-      // Don't modify width for active items using hover springs!
-      if (isActive) return baseItemSize * 2.6; // ~110px+ based on word length 
       const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
       const dist = val - (bounds.x + bounds.width / 2);
       const absDist = Math.abs(dist);
@@ -72,59 +70,29 @@ function DockItem({
   );
 
   const width = useSpring(widthTransform, spring);
-  const activeWidth = label === 'Products' || label === 'Wishlist' ? 120 : 105;
 
   return (
     <motion.div
       ref={ref}
       style={{ 
-        width: isActive ? activeWidth : width,
-        height: 44,
+        width: width,
+        height: 48,
         backgroundColor: isActive ? '#FFFFFF' : 'transparent',
-        borderRadius: '100px',
+        borderRadius: '14px',
+        padding: '0',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
       }}
       onClick={onClick}
-      className={`relative flex items-center justify-center shrink-0 overflow-hidden ${isActive ? 'shadow-[0_4px_12px_rgba(0,0,0,0.1)]' : 'hover:bg-white/10'} transition-colors duration-300 ${className}`}
+      className={`relative shrink-0 cursor-pointer transition-all duration-300 ${className}`}
     >
-      <div className="flex items-center justify-start w-full h-full" style={{ padding: isActive ? '0 6px' : '0' }}>
-        {isActive ? (
-          <div className="flex items-center justify-start gap-1.5 w-full">
-            <div style={{ 
-              background: '#146845', 
-              width: '32px', 
-              height: '32px', 
-              borderRadius: '50%', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              flexShrink: 0
-            }}>
-              {React.cloneElement(icon as React.ReactElement, { 
-                size: 16, 
-                strokeWidth: 2.5,
-                color: '#FFFFFF' 
-              })}
-            </div>
-            <span style={{ 
-              color: '#146845', 
-              fontSize: '13px', 
-              fontWeight: 800,
-              whiteSpace: 'nowrap',
-              letterSpacing: '-0.02em',
-              paddingRight: '6px'
-            }}>
-              {label}
-            </span>
-          </div>
-        ) : (
-          <div className="flex items-center justify-center w-full">
-            {React.cloneElement(icon as React.ReactElement, { 
-              size: 22, 
-              strokeWidth: 1.8,
-              color: 'rgba(255,255,255,0.95)' 
-            })}
-          </div>
-        )}
+      <div className="flex items-center justify-center">
+        {React.cloneElement(icon as React.ReactElement, { 
+          size: isActive ? 24 : 22, 
+          strokeWidth: isActive ? 2.5 : 1.8,
+          color: isActive ? '#146845' : '#FFFFFF' 
+        })}
       </div>
     </motion.div>
   );
@@ -134,10 +102,10 @@ export default function Dock({
   items,
   className = '',
   spring = { mass: 0.1, stiffness: 220, damping: 22 },
-  magnification = 54,
-  distance = 100,
-  panelHeight = 68,
-  baseItemSize = 46,
+  magnification = 58,
+  distance = 120,
+  panelHeight = 64,
+  baseItemSize = 48,
 }: DockProps) {
   const mouseX = useMotionValue(Infinity);
 
@@ -148,15 +116,16 @@ export default function Dock({
       style={{ 
         height: panelHeight,
         background: '#146845',
-        borderRadius: '100px',
-        padding: '0 6px',
-        boxShadow: '0 20px 40px rgba(0,0,0,0.25)',
+        borderRadius: '32px',
+        padding: '0 8px',
+        boxShadow: '0 15px 40px rgba(20,104,69,0.25)',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: '4px',
+        justifyContent: 'center',
+        gap: '6px',
         width: 'max-content',
-        maxWidth: '100%'
+        maxWidth: 'calc(100vw - 32px)',
+        border: '1px solid rgba(255,255,255,0.1)'
       }}
       className={className}
     >

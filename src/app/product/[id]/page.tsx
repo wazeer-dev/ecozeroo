@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { doc, getDoc, collection, getDocs, query, where, addDoc } from 'firebase/firestore';
 import { db } from '@/firebase/config';
-import { Loader2, Star, ChevronDown, ChevronUp, ShoppingCart, Zap, Heart } from 'lucide-react';
+import { Loader2, Star, ChevronDown, ChevronUp, ShoppingCart, Zap, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -28,6 +29,19 @@ export default function ProductDetailPage() {
   const [activeAccordion, setActiveAccordion] = useState<number>(0);
   const [selectedColor, setSelectedColor] = useState<number>(1);
   const [quantity, setQuantity] = useState(1);
+  const [direction, setDirection] = useState(0);
+
+  const images: string[] = (product?.images && product.images.length > 0) ? product.images : [product?.image].filter(Boolean);
+
+  const handleNext = () => {
+    setDirection(1);
+    setActiveImageIdx((prev) => (prev + 1) % images.length);
+  };
+
+  const handlePrev = () => {
+    setDirection(-1);
+    setActiveImageIdx((prev) => (prev - 1 + images.length) % images.length);
+  };
 
   useEffect(() => {
     if (id) fetchProductData();
@@ -164,7 +178,6 @@ export default function ProductDetailPage() {
     );
   }
 
-  const images: string[] = (product.images && product.images.length > 0) ? product.images : [product.image].filter(Boolean);
   const originalPrice = parseFloat(product.price) * 1.33;
   const averageRating = reviews.length > 0 ? (reviews.reduce((a, r) => a + r.rating, 0) / reviews.length).toFixed(1) : '0.0';
   const displayRating = averageRating.replace('.', ',');
@@ -208,19 +221,76 @@ export default function ProductDetailPage() {
           gap: 20px;
         }
         .main-image {
+          position: relative;
           background: #fff;
           border-radius: 12px;
-          padding: 40px;
+          padding: 0;
           aspect-ratio: 1;
           display: flex;
           align-items: center;
           justify-content: center;
           box-shadow: 0 4px 24px rgba(0,0,0,0.03);
+          overflow: hidden;
+        }
+        .main-image-inner {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
         .main-image img {
           width: 100%;
           height: 100%;
-          object-fit: contain;
+          object-fit: cover;
+        }
+        .carousel-btn {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          background: rgba(255,255,255,0.8);
+          backdrop-filter: blur(8px);
+          border: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          z-index: 10;
+          transition: 0.2s;
+          color: #111;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .carousel-btn:hover {
+          background: #fff;
+          transform: translateY(-50%) scale(1.1);
+        }
+        .carousel-btn.prev { left: 15px; }
+        .carousel-btn.next { right: 15px; }
+        
+        .carousel-dots {
+          position: absolute;
+          bottom: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          display: flex;
+          gap: 8px;
+          z-index: 10;
+        }
+        .dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: rgba(0,0,0,0.2);
+          cursor: pointer;
+          transition: 0.2s;
+        }
+        .dot.active {
+          background: #295A43;
+          width: 20px;
+          border-radius: 4px;
         }
         .thumbnails {
           display: grid;
@@ -230,7 +300,7 @@ export default function ProductDetailPage() {
         .thumb-box {
           background: #fff;
           border-radius: 12px;
-          padding: 20px;
+          padding: 0;
           aspect-ratio: 1;
           display: flex;
           align-items: center;
@@ -239,6 +309,7 @@ export default function ProductDetailPage() {
           border: 2px solid transparent;
           transition: 0.2s;
           box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+          overflow: hidden;
         }
         .thumb-box.active {
           border-color: #295A43;
@@ -249,7 +320,7 @@ export default function ProductDetailPage() {
         .thumb-box img {
           width: 100%;
           height: 100%;
-          object-fit: contain;
+          object-fit: cover;
         }
         
         /* INFO SECTION */
@@ -659,7 +730,48 @@ export default function ProductDetailPage() {
             {/* LEFT: IMAGES */}
             <div className="image-showcase">
               <div className="main-image">
-                <img src={images[activeImageIdx]} alt={product.name} />
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={activeImageIdx}
+                    initial={{ opacity: 0, x: direction > 0 ? 100 : -100 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: direction > 0 ? -100 : 100 }}
+                    transition={{ duration: 0.4, type: 'spring', stiffness: 300, damping: 30 }}
+                    drag="x"
+                    dragConstraints={{ left: 0, right: 0 }}
+                    dragElastic={0.4}
+                    onDragEnd={(_, info) => {
+                       const swipe = info.offset.x;
+                       if (swipe < -50) handleNext();
+                       else if (swipe > 50) handlePrev();
+                    }}
+                    className="main-image-inner"
+                    style={{ cursor: 'grab' }}
+                    whileTap={{ cursor: 'grabbing' }}
+                  >
+                    <img src={images[activeImageIdx]} alt={product.name} draggable={false} />
+                  </motion.div>
+                </AnimatePresence>
+
+                {images.length > 1 && (
+                  <>
+                    <button className="carousel-btn prev" onClick={(e) => { e.stopPropagation(); handlePrev(); }}>
+                      <ChevronLeft size={24} />
+                    </button>
+                    <button className="carousel-btn next" onClick={(e) => { e.stopPropagation(); handleNext(); }}>
+                      <ChevronRight size={24} />
+                    </button>
+                    <div className="carousel-dots">
+                      {images.map((_, i) => (
+                        <div 
+                          key={i} 
+                          className={`dot ${activeImageIdx === i ? 'active' : ''}`}
+                          onClick={(e) => { e.stopPropagation(); setActiveImageIdx(i); }}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
               
               <div className="thumbnails desktop-only">

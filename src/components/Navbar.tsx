@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Search, ShoppingBag, User, Package, Heart, ChevronDown, LogOut, Bell, Instagram, Twitter, Facebook, ArrowDownRight, Home as HomeIcon, Menu, Grid } from 'lucide-react';
+import { Search, ShoppingBag, User, Package, Heart, ChevronDown, LogOut, Bell, Instagram, Twitter, Facebook, ArrowDownRight, Home as HomeIcon, Menu, Grid, UtensilsCrossed, ShoppingCart, LayoutGrid } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import Dock from '@/components/Dock';
 
@@ -320,11 +320,11 @@ export default function Navbar() {
           baseItemSize={44}
           magnification={58}
           items={[
-            { icon: <HomeIcon size={22} strokeWidth={1.5} />, label: 'Home', onClick: () => handleDockClick('/'), isActive: pathname === '/' },
-            { icon: <Grid size={22} strokeWidth={1.5} />, label: 'Products', onClick: () => handleDockClick('/menu'), isActive: pathname === '/menu' },
-            { icon: <Heart size={22} strokeWidth={1.5} />, label: 'Wishlist', onClick: () => handleDockClick('/wishlist'), isActive: pathname === '/wishlist' },
-            { icon: <Package size={22} strokeWidth={1.5} />, label: 'Orders', onClick: () => handleDockClick('/orders'), isActive: pathname === '/orders' },
-            { icon: <User size={22} strokeWidth={1.5} />, label: 'Profile', onClick: () => handleDockClick('/profile'), isActive: pathname === '/profile' },
+            { icon: <HomeIcon />, label: 'Home', onClick: () => handleDockClick('/'), isActive: pathname === '/' },
+            { icon: <LayoutGrid />, label: 'Products', onClick: () => handleDockClick('/menu'), isActive: pathname === '/menu' },
+            { icon: <Heart />, label: 'Wishlist', onClick: () => handleDockClick('/wishlist'), isActive: pathname === '/wishlist' },
+            { icon: <User />, label: 'Profile', onClick: () => handleDockClick('/profile'), isActive: pathname === '/profile' },
+            { icon: <ShoppingCart />, label: 'Cart', onClick: () => handleDockClick('/cart'), isActive: pathname === '/cart' },
           ]}
         />
       </div>

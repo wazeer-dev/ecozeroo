@@ -216,13 +216,13 @@ export default function MenuPage() {
                     {/* DESKTOP VIEW CARD */}
                     <div className="desktop-only product-link" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                       <div className="product-image-container" style={{ position: 'relative', borderRadius: '28px', overflow: 'hidden', height: '320px', marginBottom: '1.2rem', background: '#fff', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
-                        <img src={product.image || 'https://via.placeholder.com/600x600'} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        <div style={{ position: 'absolute', bottom: '15px', left: '15px', background: 'rgba(255,255,255,0.95)', padding: '6px 14px', borderRadius: '30px', fontSize: '0.75rem', fontWeight: 800, color: 'rgb(4, 28, 11)' }}>ESSENTIAL</div>
+                        <img className="scaled-img" src={product.image || 'https://via.placeholder.com/600x600'} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)' }} />
+                        <div style={{ position: 'absolute', bottom: '15px', left: '15px', background: 'rgba(255,255,255,0.95)', padding: '6px 14px', borderRadius: '30px', fontSize: '0.75rem', fontWeight: 800, color: 'rgb(4, 28, 11)', backdropFilter: 'blur(10px)' }}>ESSENTIAL</div>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '0 14px' }}>
                         <div>
-                          <h3 className="product-title">{product.name}</h3>
-                          <p style={{ color: '#5a7a40', fontSize: '0.9rem' }}>{product.category || 'Eco-Friendly'}</p>
+                          <h3 className="product-title" style={{ fontSize: '1.25rem', fontWeight: 800, color: '#111', marginBottom: '0.3rem', height: '1.2em', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{product.name}</h3>
+                          <p style={{ color: '#5a7a40', fontSize: '0.9rem', fontWeight: 500 }}>{product.category || 'Eco-Friendly'}</p>
                         </div>
                         <div style={{ textAlign: 'right' }}>
                           <p style={{ margin: 0, fontSize: '0.85rem', color: '#5a7a40', textDecoration: 'line-through' }}>₹{(parseFloat(product.price) * 1.25).toFixed(0)}</p>
@@ -231,18 +231,23 @@ export default function MenuPage() {
                       </div>
                     </div>
 
-                    {/* MOBILE VIEW CARD (MATCH SCREENSHOT) */}
-                    <div className="mobile-product-card mobile-only">
+                    {/* MOBILE VIEW CARD (STANDARD UNIFORM DESIGN) */}
+                    <div className="mobile-product-card mobile-only" onClick={() => router.push(`/product/${product.id}`)}>
                        {product.stock <= 0 && <div className="discount-bubble" style={{ background: '#333' }}>OUT</div>}
-                       <img src={product.image || 'https://via.placeholder.com/600x600'} className="mobile-product-img" alt={product.name} />
+                       <div className="mobile-product-img-wrapper">
+                         <img src={product.image || 'https://via.placeholder.com/600x600'} className="mobile-product-img" alt={product.name} />
+                         <div className="mobile-essential-tag">ESSENTIAL</div>
+                       </div>
                        <div className="mobile-product-info">
                           <span className="mobile-product-title">{product.name}</span>
                           <span className="mobile-product-weight">{product.category || 'Eco'} &bull; 68 gm.</span>
-                          <span className="mobile-product-price">${parseFloat(product.price).toFixed(2)}</span>
+                          <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                             <span className="mobile-product-price">₹{product.price}</span>
+                             <button className="mobile-add-btn" onClick={(e) => { e.stopPropagation(); /* Add to cart */ }}>
+                                <Plus size={14} />
+                             </button>
+                          </div>
                        </div>
-                       <button className="mobile-add-btn">
-                          <Plus size={16} />
-                       </button>
                     </div>
 
                   </div>
@@ -331,49 +336,74 @@ export default function MenuPage() {
           }
           
           .products-grid {
-             grid-template-columns: 1fr 1fr !important;
-             gap: 15px !important;
              display: grid !important;
+             grid-template-columns: 1fr 1fr !important;
+             grid-auto-rows: 1fr !important; /* Forces all cards in a row to have same height */
+             gap: 12px !important;
+             padding: 0 4px 160px !important;
           }
           .mobile-product-card {
-            background: #fff; border-radius: 24px; padding: 12px;
+            background: #fff; border-radius: 20px; padding: 10px;
             display: flex; flex-direction: column; position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
             border: 1px solid #f2f2f2;
-            height: 100%;
-            justify-content: space-between;
+            height: 100% !important;
+            min-height: 280px;
+          }
+          .mobile-product-img-wrapper {
+            width: 100%; height: 160px; /* Fixed height for image area to ensure alignment */
+            background: #fdfdfd; border-radius: 14px;
+            margin-bottom: 12px; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            position: relative;
           }
           .mobile-product-img {
-            width: 100%; aspect-ratio: 1; object-fit: contain;
-            margin-bottom: 10px; flex-shrink: 0;
+            width: 100%; height: 100%; object-fit: cover;
+            mix-blend-mode: multiply;
+          }
+          .mobile-essential-tag {
+            position: absolute; bottom: 8px; left: 8px;
+            background: rgba(255,255,255,0.9); padding: 4px 10px;
+            border-radius: 20px; font-size: 0.6rem; font-weight: 800;
+            color: #111; letter-spacing: 0.5px;
           }
           .mobile-product-info { 
-            display: flex; flex-direction: column; gap: 2px;
-            flex-grow: 1;
+            display: flex; flex-direction: column; flex: 1;
+            gap: 2px; text-align: left;
           }
           .mobile-product-title { 
             font-size: 0.85rem; font-weight: 800; color: #111; 
-            max-width: 100%; height: 2.2em;
+            min-height: 2.3em; line-height: 1.15; margin-bottom: 2px;
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+            text-transform: capitalize;
           }
-          .mobile-product-weight { font-size: 0.7rem; color: #aaa; font-weight: 600; }
-          .mobile-product-price { font-size: 0.95rem; font-weight: 800; color: #111; margin-top: auto; padding-top: 5px; }
+          .mobile-product-weight { font-size: 0.7rem; color: #bbb; font-weight: 600; margin-bottom: 8px; }
+          .mobile-product-price { font-size: 1rem; font-weight: 900; color: #111; }
           .mobile-add-btn {
-            position: absolute; bottom: 12px; right: 12px;
-            width: 32px; height: 32px; border-radius: 50%;
+            width: 30px; height: 30px; border-radius: 50%;
             background: #111; color: #fff; border: none;
             display: flex; align-items: center; justify-content: center;
           }
           .discount-bubble {
-            position: absolute; top: 12px; left: 12px;
-            padding: 4px 10px; border-radius: 20px;
-            background: #FF5733; color: #fff; font-size: 10px; font-weight: 800;
+            position: absolute; top: 6px; left: 6px;
+            padding: 2px 7px; border-radius: 20px;
+            background: #FF5A35; color: #fff; font-size: 8px; font-weight: 800;
+            z-index: 2;
           }
 
           .desktop-only { display: none !important; }
         }
         @media (min-width: 769px) {
           .mobile-header, .mobile-only, .search-filter-row, .section-label-row { display: none !important; }
+          .products-grid {
+             display: grid !important;
+             grid-template-columns: repeat(3, 1fr) !important;
+             gap: 32px !important;
+          }
+          .product-image-container {
+             aspect-ratio: 1/1 !important;
+             height: auto !important;
+          }
         }
       `}} />
     </div>
