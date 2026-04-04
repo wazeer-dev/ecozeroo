@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useMemo } from 'react';
 import { doc, getDoc, collection, getDocs, query, where, addDoc } from 'firebase/firestore';
 import { db } from '@/firebase/config';
@@ -264,9 +265,9 @@ export default function ProductDetailPage() {
         .main-image {
           position: relative;
           background: transparent;
-          border-radius: 54px;
+          border-radius: 40px 40px 0 0; /* Grounded plain base with architectural top curves */
           padding: 0;
-          aspect-ratio: 1;
+          aspect-ratio: 1.1; /* Optimized height for desktop */
           display: flex;
           align-items: center;
           justify-content: center;
@@ -288,20 +289,19 @@ export default function ProductDetailPage() {
           position: absolute;
           top: 50%;
           transform: translateY(-50%);
-          width: 44px;
-          height: 44px;
+          width: 42px;
+          height: 42px;
           border-radius: 50%;
-          background: rgba(255,255,255,0.8);
-          backdrop-filter: blur(8px);
+          background: #fff;
           border: none;
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
           z-index: 10;
-          transition: 0.2s;
+          transition: 0.3s;
           color: #111;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+          box-shadow: 0 8px 24px rgba(0,0,0,0.12);
         }
         .carousel-btn:hover {
           background: #fff;
@@ -328,34 +328,51 @@ export default function ProductDetailPage() {
           transition: 0.2s;
         }
         .dot.active {
-          background: #295A43;
-          width: 20px;
-          border-radius: 4px;
+          background: #146845;
+          width: 24px;
+          border-radius: 12px;
         }
         .thumbnails {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 20px;
+          display: flex;
+          gap: 12px;
+          justify-content: flex-start;
+          margin-top: 20px;
+          overflow-x: auto;
+          scroll-behavior: smooth;
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+          padding: 4px 5px;
+        }
+        .thumbnails::-webkit-scrollbar {
+          display: none;
         }
         .thumb-box {
           background: #fff;
           border-radius: 12px;
-          padding: 0;
-          aspect-ratio: 1;
+          width: 58px;
+          height: 58px;
+          flex-shrink: 0;
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          border: 2px solid transparent;
-          transition: 0.2s;
-          box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+          border: 1.5px solid #fff;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.06);
           overflow: hidden;
+          position: relative;
+          padding: 2px;
         }
         .thumb-box.active {
-          border-color: #295A43;
+          border-color: #146845;
+          border-width: 2px;
+          transform: translateY(-2px) scale(1.05);
+          box-shadow: 0 8px 24px rgba(20, 104, 69, 0.15);
         }
         .thumb-box:hover:not(.active) {
-          border-color: rgba(41, 90, 67, 0.3);
+          border-color: #146845;
+          opacity: 0.8;
+          transform: translateY(-1px);
         }
         .thumb-box img {
           width: 100%;
@@ -672,12 +689,11 @@ export default function ProductDetailPage() {
           .buy-page { padding: 0 !important; background: var(--bg-color) !important; }
           .buy-container { width: 100% !important; padding: 0 !important; }
           .main-grid { grid-template-columns: 1fr; gap: 0 !important; }
-          .image-showcase { background: #fff; padding: 0; position: relative; border-top-left-radius: 40px; border-top-right-radius: 40px; overflow: hidden; margin: 0; width: 100% !important; max-width: 100% !important; }
-          .main-image { padding: 0 !important; box-shadow: none !important; border-radius: 0 !important; height: auto !important; aspect-ratio: 1 / 1 !important; background: #fff; width: 100% !important; }
+          .image-showcase { background: transparent; padding: 0; position: relative; border-radius: 40px; overflow: hidden; margin: 0; width: 100% !important; max-width: 100% !important; }
+          .main-image { padding: 0 !important; box-shadow: none !important; border-radius: 40px !important; height: auto !important; aspect-ratio: 3 / 4 !important; background: transparent; width: 100% !important; margin-bottom: 0 !important; }
           .main-image-inner { width: 100% !important; height: 100% !important; display: block !important; position: relative !important; }
-          .main-image img { width: 100% !important; height: auto !important; min-height: 40vh; object-fit: contain; mix-blend-mode: multiply; display: block; }
+          .main-image img { width: 100% !important; height: auto !important; min-height: 60vh; object-fit: cover; mix-blend-mode: normal; display: block; }
           .carousel-dots { bottom: 15px !important; }
-          .thumbnails { display: none !important; }
           
           .mobile-header {
             position: fixed; top: 0; left: 0; right: 0; 
@@ -750,6 +766,16 @@ export default function ProductDetailPage() {
           .big-rating-slash { font-size: 1.2rem; }
           .progress-bars { max-width: 100%; }
           .review-card { padding: 20px; border: 1.5px solid #eee; }
+          .thumbnails { 
+            padding: 10px 25px !important;
+            margin-top: 10px !important;
+            background: transparent !important;
+          }
+          .thumb-box {
+            width: 60px !important;
+            height: 60px !important;
+            border-radius: 12px !important;
+          }
           .empty-reviews-state { grid-column: span 1 !important; }
         }
         @media (min-width: 901px) {
@@ -822,13 +848,12 @@ export default function ProductDetailPage() {
                 )}
               </div>
               
-              <div className="thumbnails desktop-only">
-                {images.slice(0, 3).map((img, i) => (
+              <div className="thumbnails">
+                {images.map((img, i) => (
                   <div 
                     key={i} 
                     className={'thumb-box ' + (activeImageIdx === i ? 'active' : '')} 
                     onClick={() => setActiveImageIdx(i)}
-                    style={{ position: 'relative' }}
                   >
                     <Image src={img} alt="" fill style={{ objectFit: 'cover' }} />
                   </div>
@@ -863,6 +888,7 @@ export default function ProductDetailPage() {
               </div>
               
               <div className="accordions-container">
+                {/* Description Accordion */}
                 <div className="accordion">
                   <button className="accordion-header" onClick={() => setActiveAccordion(activeAccordion === 1 ? 0 : 1)}>
                     Descriptions <ChevronDown size={18} style={{ transform: activeAccordion === 1 ? 'rotate(180deg)' : 'none', transition: '0.2s' }} />
@@ -873,6 +899,34 @@ export default function ProductDetailPage() {
                     </div>
                   )}
                 </div>
+
+                {/* Specifications Accordion */}
+                {product.specifications && (
+                  <div className="accordion">
+                    <button className="accordion-header" onClick={() => setActiveAccordion(activeAccordion === 2 ? 0 : 2)}>
+                      Specifications <ChevronDown size={18} style={{ transform: activeAccordion === 2 ? 'rotate(180deg)' : 'none', transition: '0.2s' }} />
+                    </button>
+                    {activeAccordion === 2 && (
+                      <div className="accordion-content" style={{ whiteSpace: 'pre-line' }}>
+                        {product.specifications}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Features Accordion */}
+                {product.features && (
+                  <div className="accordion">
+                    <button className="accordion-header" onClick={() => setActiveAccordion(activeAccordion === 3 ? 0 : 3)}>
+                      Core Features <ChevronDown size={18} style={{ transform: activeAccordion === 3 ? 'rotate(180deg)' : 'none', transition: '0.2s' }} />
+                    </button>
+                    {activeAccordion === 3 && (
+                      <div className="accordion-content" style={{ whiteSpace: 'pre-line' }}>
+                        {product.features}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
               
               <div className="action-buttons-wrap" style={{ marginTop: '40px', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
@@ -967,10 +1021,23 @@ export default function ProductDetailPage() {
 
                <div className="description-section">
                  <span className="description-title" style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '8px' }}>Description</span>
-                 <p className="description-text" style={{ fontSize: '0.88rem', color: '#666', lineHeight: '1.6' }}>
+                 <p className="description-text" style={{ fontSize: '0.88rem', color: '#666', lineHeight: '1.6', marginBottom: '20px' }}>
                    {product.description || "Designed for the modern professional, this minimalist aesthetic focuses on quality materials and sustainable practices."}
-                   <span style={{ fontWeight: 800, color: '#111', marginLeft: '5px', cursor: 'pointer', borderBottom: '1px solid #111' }}>Read More</span>
                  </p>
+
+                 {product.specifications && (
+                    <div style={{ marginBottom: '20px' }}>
+                      <span className="description-title" style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '8px', display: 'block' }}>Specifications</span>
+                      <p style={{ fontSize: '0.88rem', color: '#666', lineHeight: '1.6', whiteSpace: 'pre-line' }}>{product.specifications}</p>
+                    </div>
+                 )}
+
+                 {product.features && (
+                    <div style={{ marginBottom: '20px' }}>
+                      <span className="description-title" style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '8px', display: 'block' }}>Core Features</span>
+                      <p style={{ fontSize: '0.88rem', color: '#666', lineHeight: '1.6', whiteSpace: 'pre-line' }}>{product.features}</p>
+                    </div>
+                 )}
                </div>
 
                <div className="mobile-footer-cta">

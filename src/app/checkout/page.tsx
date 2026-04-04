@@ -22,9 +22,20 @@ export default function CheckoutPage() {
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [pinCode, setPinCode] = useState('');
+  const [countryCode, setCountryCode] = useState('+91');
   const [locationUrl, setLocationUrl] = useState('');
   const [isStateDropdownOpen, setIsStateDropdownOpen] = useState(false);
-
+ 
+  const indianStates = [
+    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", 
+    "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", 
+    "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", 
+    "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", 
+    "Uttarakhand", "West Bengal", "Andaman and Nicobar Islands", "Chandigarh", 
+    "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Jammu and Kashmir", 
+    "Ladakh", "Lakshadweep", "Puducherry"
+  ];
+ 
   const router = useRouter();
 
   const colors = {
@@ -88,12 +99,37 @@ export default function CheckoutPage() {
     setShowMap(true);
   };
 
-  const confirmMapLocation = () => {
+  const confirmMapLocation = async () => {
     if (mapCoords) {
       const url = `https://www.google.com/maps?q=${mapCoords.lat},${mapCoords.lng}`;
       setLocationUrl(url);
+      
+      try {
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${mapCoords.lat}&lon=${mapCoords.lng}&format=json&accept-language=en`);
+        const data = await response.json();
+        if (data && data.address) {
+          const addr = data.address;
+          const road = addr.road || addr.suburb || addr.neighbourhood || '';
+          const cityName = addr.city || addr.town || addr.village || addr.suburb || '';
+          const stateName = addr.state || '';
+          const pCode = addr.postcode || '';
+          const detail = addr.amenity || addr.tourism || addr.neighbourhood || addr.suburb || '';
+          
+          if (road) setAddress(road);
+          if (cityName) setCity(cityName);
+          if (detail && detail !== road) setAddressDetail(detail);
+          if (stateName) {
+            const matchedState = indianStates.find(s => s.toLowerCase() === stateName.toLowerCase());
+            setState(matchedState || stateName);
+          }
+          if (pCode) setPinCode(pCode.replace(/\s/g, '').slice(0, 6));
+        }
+      } catch (err) {
+        console.error("Geocoding error:", err);
+      }
+
       setShowMap(false);
-      alert("📍 Delivery pin synchronized with GPS coordinates.");
+      alert("📍 Delivery pin synchronized and address auto-filled.");
     } else {
       alert("Please tap on the map to place your delivery pin first.");
     }
@@ -112,7 +148,7 @@ export default function CheckoutPage() {
       const newOrder = {
         customer: customerName || 'Guest User',
         email: email || '',
-        phone: phone || '',
+        phone: `${countryCode} ${phone}`.trim(),
         address: `${address}, ${addressDetail}, ${city}, ${state} - ${pinCode}`,
         locationUrl: locationUrl || '',
         userEmail: localStorage.getItem('ecozero_user') || email || '',
@@ -358,7 +394,33 @@ export default function CheckoutPage() {
                       01. Contact Info
                     </h3>
                     <input style={inputStyle} placeholder="Identity Email" required type="email" value={email} onChange={e=>setEmail(e.target.value)} />
-                    <input style={inputStyle} placeholder="Contact Number (Link Active)" required type="tel" value={phone} onChange={e=>setPhone(e.target.value)} />
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '1.2rem', alignItems: 'stretch' }}>
+                      <div style={{ 
+                        ...inputStyle, width: 'auto', marginBottom: 0, 
+                        display: 'flex', alignItems: 'center', gap: '8px', 
+                        padding: '0 1.2rem', background: 'rgba(20, 104, 69, 0.08)',
+                        height: '58px', flexShrink: 0
+                      }}>
+                        <span style={{ fontSize: '1.2rem' }}>🇮🇳</span>
+                        <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>+91</span>
+                      </div>
+                      <input 
+                        style={{ ...inputStyle, marginBottom: 0, flex: 1, height: '58px' }} 
+                        placeholder="10-Digit Mobile Number" 
+                        required 
+                        type="tel" 
+                        value={phone} 
+                        onChange={e => {
+                          let val = e.target.value.replace(/\D/g, '');
+                          if (val.startsWith('0')) val = val.substring(1);
+                          setPhone(val.slice(0, 10));
+                        }} 
+                      />
+                    </div>
+ 
+                    <style dangerouslySetInnerHTML={{ __html: `
+                      .country-code-option:hover { background: rgba(20, 104, 69, 0.05); }
+                    `}} />
                   </div>
 
                   {/* SECTION 02 */}
@@ -403,12 +465,52 @@ export default function CheckoutPage() {
                         <MapPin size={14} /> {locationUrl ? 'Address Saved' : 'Set Location'}
                       </button>
                     </div>
-                    <input style={inputStyle} placeholder="Recipient Full Name" required value={customerName} onChange={e=>setCustomerName(e.target.value)} />
-                    <input style={inputStyle} placeholder="Street Address / Building" required value={address} onChange={e=>setAddress(e.target.value)} />
-                    <div className="address-sub-grid" style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '1rem' }}>
+                    <input style={inputStyle} placeholder="Full Name" required value={customerName} onChange={e=>setCustomerName(e.target.value)} />
+                    <input style={inputStyle} placeholder="Address" required value={address} onChange={e=>setAddress(e.target.value)} />
+                    <input style={inputStyle} placeholder="Road, Apartment, Near by hotel, etc.." value={addressDetail} onChange={e=>setAddressDetail(e.target.value)} />
+                    <div className="address-sub-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', flexWrap: 'wrap' }}>
                       <input style={{ ...inputStyle, marginBottom: 0 }} placeholder="City" value={city} onChange={e=>setCity(e.target.value)} />
-                      <input style={{ ...inputStyle, marginBottom: 0 }} placeholder="Zip Code" value={pinCode} onChange={e=>setPinCode(e.target.value)} />
+                      
+                      {/* State Dropdown */}
+                      <div style={{ position: 'relative' }}>
+                        <div 
+                          onClick={() => setIsStateDropdownOpen(!isStateDropdownOpen)}
+                          style={{ ...inputStyle, marginBottom: 0, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                        >
+                          <span style={{ color: state ? colors.text : colors.textMuted }}>{state || 'Select State'}</span>
+                          <ChevronDown size={18} style={{ transition: '0.3s', transform: isStateDropdownOpen ? 'rotate(180deg)' : 'none' }} />
+                        </div>
+                        {isStateDropdownOpen && (
+                          <div style={{ 
+                            position: 'absolute', bottom: '100%', left: 0, right: 0, 
+                            maxHeight: '200px', overflowY: 'auto', background: '#fff', 
+                            zIndex: 100, border: `1px solid ${colors.border}`, 
+                            borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+                            marginBottom: '5px'
+                          }}>
+                            {indianStates.map(s => (
+                              <div 
+                                key={s} 
+                                onClick={() => { setState(s); setIsStateDropdownOpen(false); }}
+                                style={{ padding: '0.8rem 1rem', cursor: 'pointer', fontSize: '0.9rem' }}
+                                className="state-option"
+                              >
+                                {s}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      <input style={{ ...inputStyle, marginBottom: 0 }} placeholder="Pin Code" value={pinCode} onChange={e=>setPinCode(e.target.value)} maxLength={6} />
                     </div>
+ 
+                    <style dangerouslySetInnerHTML={{ __html: `
+                      .state-option:hover { background: rgba(20, 104, 69, 0.05); }
+                      @media (max-width: 600px) {
+                        .address-sub-grid { grid-template-columns: 1fr !important; }
+                      }
+                    `}} />
                   </div>
 
                   <button 

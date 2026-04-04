@@ -117,17 +117,54 @@ export default function MyOrdersPage() {
                   {/* Status Indicator Bar */}
                   <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '4px', background: cfg.color }}></div>
 
-                  {/* MINI PREVIEW */}
-                  <div style={{ width: '56px', height: '56px', flexShrink: 0, background: '#f8f8f8', borderRadius: '12px', overflow: 'hidden', border: '1px solid #eee' }}>
-                    {order.items && order.items[0] ? (
-                       <img src={order.items[0].image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  {/* MULTI IMAGE PREVIEW */}
+                  <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    paddingLeft: '5px',
+                    minWidth: itemsCount > 1 ? (48 + (Math.min(itemsCount, 4) - 1) * 15) + 'px' : '56px' 
+                  }}>
+                    {order.items && order.items.length > 0 ? (
+                       order.items.slice(0, 4).map((item: any, idx: number) => (
+                         <div 
+                           key={idx} 
+                           style={{ 
+                              width: '48px', 
+                              height: '48px', 
+                              flexShrink: 0, 
+                              background: '#fff', 
+                              borderRadius: '12px', 
+                              overflow: 'hidden', 
+                              border: '2px solid #fff',
+                              boxShadow: '0 4px 10px rgba(0,0,0,0.06)',
+                              marginLeft: idx > 0 ? '-18px' : '0',
+                              zIndex: 10 - idx,
+                              position: 'relative'
+                           }}
+                         >
+                            <img src={item.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            {idx === 3 && itemsCount > 4 && (
+                              <div style={{ 
+                                position: 'absolute', inset: 0, 
+                                background: 'rgba(0,0,0,0.5)', 
+                                color: '#fff', fontSize: '0.7rem', 
+                                fontWeight: 900, display: 'flex', 
+                                alignItems: 'center', justifyContent: 'center' 
+                              }}>
+                                +{itemsCount - 3}
+                              </div>
+                            )}
+                         </div>
+                       ))
                     ) : (
-                       <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: colors.textMuted }}><PackageSearch size={24} /></div>
+                       <div style={{ width: '48px', height: '48px', background: '#f8f8f8', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: colors.textMuted, border: '1px solid #eee' }}>
+                         <PackageSearch size={22} />
+                       </div>
                     )}
                   </div>
-
+ 
                   {/* INFO CENTRAL */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ flex: 1, minWidth: 0, marginLeft: '5px' }}>
                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
                         <span style={{ fontSize: '0.65rem', fontWeight: 900, color: colors.textMuted, letterSpacing: '0.5px' }}>#{order.id.slice(0, 8).toUpperCase()}</span>
                         <div style={{ background: cfg.bg, color: cfg.color, padding: '2px 8px', borderRadius: '4px', fontSize: '0.6rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -136,7 +173,7 @@ export default function MyOrdersPage() {
                      </div>
                      <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 900, color: colors.text, textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {order.items && order.items[0] ? order.items[0].name : 'MANIFEST ENTRY'}
-                        {itemsCount > 1 && <span style={{ color: colors.accent, marginLeft: '6px', fontSize: '0.8rem' }}>+{itemsCount - 1} MORE</span>}
+                        {itemsCount > 1 && <span style={{ color: colors.accent, marginLeft: '6px', fontSize: '0.75rem', background: 'rgba(20, 104, 69, 0.05)', padding: '1px 6px', borderRadius: '4px' }}>{itemsCount} ITEMS</span>}
                      </h4>
                      <p style={{ margin: 0, fontSize: '0.75rem', fontWeight: 600, color: colors.textMuted }}>
                         Ordered on {new Date(order.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}

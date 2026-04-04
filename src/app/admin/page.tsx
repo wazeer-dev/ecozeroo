@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { 
   LayoutDashboard, 
@@ -96,7 +96,9 @@ export default function AdminDashboard() {
   const [notifTitle, setNotifTitle] = useState('');
   const [notifDesc, setNotifDesc] = useState('');
   const [notifType, setNotifType] = useState('update');
-  const [notifTarget, setNotifTarget] = useState('all'); // 'all' or specific user email
+  const [notifTarget, setNotifTarget] = useState('all');
+  const [notifLinkedProduct, setNotifLinkedProduct] = useState('');
+  const [notifOfferValue, setNotifOfferValue] = useState('');
   const [showNotifModal, setShowNotifModal] = useState(false);
 
   useEffect(() => {
@@ -313,7 +315,9 @@ export default function AdminDashboard() {
         title: notifTitle,
         desc: notifDesc,
         type: notifType || 'update',
-        target: notifTarget, // 'all' or user email
+        target: notifTarget, 
+        linkedProductId: notifLinkedProduct || null,
+        offerValue: notifOfferValue || null,
         createdAt: new Date().toISOString(),
       };
 
@@ -328,6 +332,8 @@ export default function AdminDashboard() {
       setNotifDesc('');
       setNotifType('update');
       setNotifTarget('all');
+      setNotifLinkedProduct('');
+      setNotifOfferValue('');
       setShowNotifModal(false);
       
       setSuccessMsg("Broadcast released successfully!");
@@ -361,25 +367,38 @@ export default function AdminDashboard() {
         @media (max-width: 900px) {
           .admin-sidebar { 
             position: fixed !important; 
-            top: 0; 
-            left: 0; 
+            top: 15px !important; 
+            left: 15px !important; 
+            bottom: 15px !important;
             z-index: 10000; 
-            height: 100vh !important; 
-            transform: translateX(-100%); 
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            box-shadow: 20px 0 50px rgba(0,0,0,0.5);
-            width: 280px !important;
+            height: calc(100vh - 30px) !important; 
+            width: 75px !important;
+            border-radius: 30px !important;
+            background: rgba(4, 28, 11, 0.95) !important;
+            backdrop-filter: blur(15px) !important;
+            transform: translateX(-150%); 
+            transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1) !important;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            overflow: hidden;
+            border: 1px solid rgba(136, 198, 95, 0.1);
           }
+          .admin-sidebar > div { width: 75px !important; }
+          .admin-sidebar .admin-logo-text { display: none !important; }
+          .admin-sidebar button { padding: 0.8rem 0 !important; justify-content: center !important; }
+          .admin-sidebar .exit-btn { padding: 0.8rem 0 !important; justify-content: center !important; }
+          .admin-sidebar .nav-label { display: none !important; }
           .admin-sidebar.open { transform: translateX(0); }
-          .admin-content { padding: 1.5rem !important; margin-left: 0 !important; }
-          .mobile-menu-btn { display: flex !important; }
-          .admin-header h2 { font-size: 1.8rem !important; }
+          
+          .admin-content { padding: 120px 1.2rem 50px !important; margin-left: 0 !important; width: 100vw !important; box-sizing: border-box; overflow-x: hidden; }
+          .mobile-menu-btn { display: flex !important; top: 25px !important; left: 20px !important; }
+          .admin-header h2 { font-size: 1.8rem !important; margin-left: 5px; }
           .stat-grid { grid-template-columns: 1fr !important; gap: 1rem !important; }
           .admin-modal { width: 95% !important; margin: 0 auto; max-height: 90vh !important; }
           .admin-modal-inner { padding: 1.5rem !important; }
-          .admin-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; background: rgba(0,0,0,0.2); border-radius: 12px; }
-          table { min-width: 700px; }
-          .admin-header { margin-bottom: 2rem !important; flex-direction: column; align-items: flex-start !important; gap: 1rem; }
+          .admin-table-wrap { width: 100% !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch; border-radius: 12px; }
+          .admin-table-wrap table { min-width: 850px !important; }
+          .admin-table-wrap th, .admin-table-wrap td { padding: 1rem !important; font-size: 0.85rem !important; }
+          .admin-header { margin-bottom: 2rem !important; flex-direction: column; align-items: flex-start !important; gap: 0.5rem; padding-top: 10px; }
         }
 
         @keyframes fadeIn {
@@ -436,14 +455,63 @@ export default function AdminDashboard() {
           #order-manifest-print img.qr-image { filter: grayscale(100%); background: white !important; }
           #order-manifest-print img:not(.qr-image) { filter: grayscale(100%); }
         }
+
+        /* Premium Scrollbar Customization */
+        ::-webkit-scrollbar {
+          width: 6px;
+          height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+          background: rgba(136, 198, 95, 0.2);
+          border-radius: 10px;
+          transition: 0.3s;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+          background: rgba(136, 198, 95, 0.4);
+        }
+        .admin-modal-inner::-webkit-scrollbar-thumb {
+          background: rgba(136, 198, 95, 0.4);
+        }
       `}} />
 
       {/* Mobile Top Bar */}
       <div className="no-print mobile-menu-btn" style={{ display: 'none', position: 'fixed', top: 15, left: 15, zIndex: 999 }}>
-        <button onClick={() => setIsSidebarOpen(true)} style={{ background: colors.accent, border: 'none', color: colors.bg, padding: '12px', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}>
+        <button onClick={() => setIsSidebarOpen(true)} style={{ background: '#041c0b', border: 'none', color: '#88C65F', padding: '12px', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}>
           <LayoutDashboard size={24} />
         </button>
       </div>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        .admin-sidebar {
+          width: 85px;
+          transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+          overflow: hidden;
+          z-index: 10001;
+        }
+        .admin-sidebar:hover {
+          width: 280px;
+        }
+        .nav-label {
+          opacity: 0;
+          white-space: nowrap;
+          transition: opacity 0.3s ease;
+          pointer-events: none;
+        }
+        .admin-sidebar:hover .nav-label {
+          opacity: 1;
+          pointer-events: auto;
+        }
+        .admin-logo-text {
+           opacity: 0;
+           transition: 0.3s ease;
+        }
+        .admin-sidebar:hover .admin-logo-text {
+           opacity: 1;
+        }
+      `}} />
 
       {/* Sidebar Overlay */}
       {isSidebarOpen && (
@@ -454,54 +522,81 @@ export default function AdminDashboard() {
       )}
 
       {/* Sidebar Navigation */}
-      <div className={`no-print admin-sidebar ${isSidebarOpen ? 'open' : ''}`} style={{ width: '300px', background: colors.pale, borderRight: `none`, padding: '2.5rem 0', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
-        <div style={{ padding: '0 2.5rem', marginBottom: '3.5rem' }}>
-          <h1 style={{ color: '#fff', fontSize: '2.2rem', fontWeight: 800, letterSpacing: '-1px', fontFamily: 'var(--font-outfit), sans-serif', margin: 0 }}>
-            ECO<span style={{ color: '#88C65F' }}>ZERO ADMIN</span>
-          </h1>
-          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', marginTop: '0.4rem', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}>Command Center</p>
+      <div className={`no-print admin-sidebar ${isSidebarOpen ? 'open' : ''}`} style={{ 
+        background: '#041c0b', 
+        height: '100vh',
+        padding: '2rem 0', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        flexShrink: 0,
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        borderRight: '1px solid rgba(136, 198, 95, 0.05)'
+      }}>
+        <div style={{ width: '280px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ padding: '0 20px', marginBottom: '3rem', width: '280px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '44px', height: '44px', background: 'transparent', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0, marginLeft: '0.5rem' }}>
+              <img src="/photo_2026-03-13_20-14-52 (1).png" alt="EcoZero" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            </div>
+            <h1 className="admin-logo-text" style={{ color: '#fff', fontSize: '1.4rem', fontWeight: 900, letterSpacing: '-0.5px', fontFamily: 'Oswald, sans-serif', margin: 0, textTransform: 'uppercase' }}>
+              ECO<span style={{ color: '#88C65F' }}>ZERO</span>
+            </h1>
+          </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', flex: 1, padding: '0 1.2rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', flex: 1, width: '280px' }}>
           {[
             { id: 'overview', icon: LayoutDashboard, label: 'Dashboard' },
             { id: 'products', icon: PackageSearch, label: 'Inventory' },
             { id: 'delivery', icon: Truck, label: 'Logistics' },
             { id: 'customers', icon: Users, label: 'CRM Database' },
-            { id: 'auth', icon: Shield, label: 'Authentication' },
             { id: 'notifications', icon: Bell, label: 'Push Updates' }
           ].map((tab) => {
             const isActive = activeTab === tab.id;
             return (
               <button 
-                key={tab.id}
-                onClick={() => { setActiveTab(tab.id as any); setIsSidebarOpen(false); }}
+                key={tab.id} 
+                onClick={() => setActiveTab(tab.id as any)}
                 style={{ 
-                  display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem 1.4rem', width: '100%', 
-                  borderRadius: '14px', 
-                  background: isActive ? 'rgba(136, 198, 95, 0.15)' : 'transparent', 
-                  color: isActive ? '#88C65F' : 'rgba(255,255,255,0.7)', 
-                  border: 'none', cursor: 'pointer', textAlign: 'left', 
-                  fontWeight: isActive ? 800 : 500, fontSize: '1rem',
-                  transition: 'all 0.2s ease'
+                  display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.8rem 0 0.8rem 20px', 
+                  width: '100%', position: 'relative', background: 'none', border: 'none', 
+                  color: isActive ? '#88C65F' : 'rgba(255,255,255,0.4)', cursor: 'pointer', transition: '0.3s' 
                 }}
               >
-                <tab.icon size={20} /> 
-                <span>{tab.label}</span>
+                {isActive && (
+                  <div style={{ position: 'absolute', left: 0, top: '20%', bottom: '20%', width: '3px', background: '#88C65F', borderRadius: '0 4px 4px 0' }}></div>
+                )}
+                <div style={{ width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, background: isActive ? 'rgba(136, 198, 95, 0.08)' : 'transparent', borderRadius: '14px' }}>
+                  <tab.icon size={20} strokeWidth={isActive ? 2.5 : 2.2} /> 
+                </div>
+                <span className="nav-label" style={{ fontWeight: isActive ? 800 : 700, fontSize: '0.9rem', letterSpacing: '0.5px' }}>{tab.label}</span>
               </button>
             )
           })}
-          
-          <div style={{ marginTop: 'auto', borderTop: `1px solid rgba(255,255,255,0.1)`, paddingTop: '1.5rem', marginBottom: '1rem' }}>
-            <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem 1.4rem', width: '100%', borderRadius: '14px', color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontWeight: 500, transition: 'all 0.2s' }}>
-              <LogOut size={20} /> Exit Terminal
-            </Link>
-          </div>
         </div>
+
+        <div style={{ marginTop: 'auto', padding: '2rem 0', width: '280px' }}>
+          <Link href="/" className="exit-btn" style={{ 
+            display: 'flex', alignItems: 'center', gap: '1rem', width: '100%', 
+            color: 'rgba(255,255,255,0.5)', textDecoration: 'none', 
+            fontWeight: 800, fontSize: '0.85rem', transition: '0.2s', paddingLeft: '20px' 
+          }}>
+            <div style={{ width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, background: 'rgba(255,255,255,0.03)', borderRadius: '14px' }}>
+              <LogOut size={20} /> 
+            </div>
+            <span className="nav-label">Exit Terminal</span>
+          </Link>
+        </div>
+ 
+        <style dangerouslySetInnerHTML={{ __html: `
+          .nav-item-btn:hover { background: rgba(255,255,255,0.03) !important; color: #fff !important; }
+          .exit-btn:hover { background: rgba(239, 68, 68, 0.08) !important; color: #ff6b6b !important; }
+        `}} />
       </div>
 
       {/* Main Container */}
-      <div className="admin-content" style={{ flex: 1, height: '100vh', overflowY: 'auto', padding: '3.5rem' }}>
+      <div className="admin-content" style={{ flex: 1, paddingLeft: '110px', minHeight: '100vh', overflowY: 'auto', paddingRight: '3.5rem', paddingTop: '3.5rem', paddingBottom: '3.5rem' }}>
         
         {/* Page Header */}
         <div className="no-print admin-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4rem' }}>
@@ -511,7 +606,6 @@ export default function AdminDashboard() {
               {activeTab === 'products' && 'Core Inventory'}
               {activeTab === 'delivery' && 'Logistics & Orders'}
               {activeTab === 'customers' && 'Entity Management'}
-              {activeTab === 'auth' && 'Authentication Hub'}
               {activeTab === 'notifications' && 'Communication Hub'}
             </h2>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -776,57 +870,6 @@ export default function AdminDashboard() {
 
         {/* Customers Tab Content Removed for brevity in chunk but will be kept */}
         
-        {/* Authentication Tab - Firestore Users as Auth list */}
-        {activeTab === 'auth' && (
-          <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
-            <div style={{ background: colors.surfaceSolid, borderRadius: '28px', border: `1px solid ${colors.border}`, overflow: 'hidden' }}>
-              <div style={{ padding: '2rem', borderBottom: `1px solid ${colors.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                 <div>
-                   <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: colors.text }}>Identity Management</h3>
-                   <p style={{ margin: '0.4rem 0 0', color: colors.textMuted, fontSize: '0.9rem' }}>Users currently registered for platform access</p>
-                 </div>
-                 <button style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', padding: '0.8rem 1.6rem', borderRadius: '14px', background: colors.accent, color: colors.bg, border: 'none', fontWeight: 700, cursor: 'not-allowed', opacity: 0.7 }}>
-                   <Plus size={18} /> Add User
-                 </button>
-              </div>
-              
-              <div className="admin-table-wrap">
-                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                   <thead>
-                     <tr style={{ background: 'rgba(136, 198, 95, 0.05)' }}>
-                       <th style={{ padding: '1.5rem 2rem', color: colors.pale, fontWeight: 700, fontSize: '0.85rem', textTransform: 'uppercase' }}>Identifier</th>
-                       <th style={{ padding: '1.5rem 2rem', color: colors.pale, fontWeight: 700, fontSize: '0.85rem', textTransform: 'uppercase' }}>Providers</th>
-                       <th style={{ padding: '1.5rem 2rem', color: colors.pale, fontWeight: 700, fontSize: '0.85rem', textTransform: 'uppercase' }}>Created</th>
-                       <th style={{ padding: '1.5rem 2rem', color: colors.pale, fontWeight: 700, fontSize: '0.85rem', textTransform: 'uppercase' }}>User UID</th>
-                     </tr>
-                   </thead>
-                   <tbody>
-                      {users.length === 0 ? (
-                        <tr>
-                          <td colSpan={4} style={{ padding: '4rem', textAlign: 'center', color: colors.textMuted }}>No users for this project yet</td>
-                        </tr>
-                      ) : users.map(user => (
-                        <tr key={user.id} style={{ borderBottom: `1px solid rgba(255,255,255,0.05)`, transition: '0.2s' }}>
-                          <td style={{ padding: '1.5rem 2rem', color: colors.text, fontWeight: 600 }}>{user.email}</td>
-                          <td style={{ padding: '1.5rem 2rem' }}>
-                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '4px 12px', background: 'rgba(136, 198, 95, 0.1)', borderRadius: '8px', border: `1px solid rgba(136, 198, 95, 0.2)` }}>
-                              <Lock size={14} color={colors.accent} />
-                              <span style={{ fontSize: '0.85rem', color: colors.accent, fontWeight: 700 }}>Password</span>
-                            </div>
-                          </td>
-                          <td style={{ padding: '1.5rem 2rem', color: colors.textMuted, fontSize: '0.9rem' }}>{user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Mar 15, 2026'}</td>
-                          <td style={{ padding: '1.5rem 2rem' }}>
-                            <span style={{ fontFamily: 'monospace', color: colors.accent, background: 'rgba(136, 198, 95, 0.08)', padding: '6px 10px', borderRadius: '6px', fontSize: '0.85rem', border: `1px solid rgba(136, 198, 95, 0.15)` }}>{user.id}</span>
-                          </td>
-                        </tr>
-                      ))}
-                   </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        )}
-        
         {activeTab === 'notifications' && (
           <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '2.5rem' }}>
@@ -883,38 +926,53 @@ export default function AdminDashboard() {
 
       {/* Add/Edit Product Modal */}
       {showAddModal && (
-    <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(20, 60, 40, 0.4)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 20000, padding: '1.5rem' }}>
-      <div className="admin-modal" style={{ background: colors.surfaceSolid, border: `1px solid ${colors.border}`, borderRadius: '24px', width: '95%', maxWidth: '750px', maxHeight: '90vh', overflowY: 'auto', position: 'relative', boxShadow: '0 25px 50px -12px rgba(20, 104, 69, 0.25)' }}>
-        <div className="admin-modal-inner" style={{ padding: '2rem' }}>
-          <button onClick={() => setShowAddModal(false)} style={{ position: 'absolute', top: '20px', right: '20px', border: 'none', color: colors.accent, fontSize: '1.5rem', cursor: 'pointer', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255,255,255,0.5)' }}>&times;</button>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 900, marginBottom: '2rem', color: colors.accent, display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Grid size={24} /> {editingProduct ? 'Modify Asset' : 'Register New Asset'}
+    <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(4, 28, 11, 0.4)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 20000, padding: '1rem' }}>
+      <div className="admin-modal" style={{ 
+        background: '#fff', 
+        border: `1px solid ${colors.border}`, 
+        borderRadius: '32px', 
+        width: '100%', 
+        maxWidth: '850px', 
+        maxHeight: '92vh', 
+        overflowY: 'auto', 
+        overflowX: 'hidden',
+        position: 'relative', 
+        boxShadow: '0 30px 60px -12px rgba(4, 28, 11, 0.3)' 
+      }}>
+        <div className="admin-modal-inner" style={{ padding: '2.5rem' }}>
+          <button onClick={() => setShowAddModal(false)} style={{ position: 'absolute', top: '25px', right: '25px', border: 'none', color: colors.accent, fontSize: '1.5rem', cursor: 'pointer', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(20, 104, 69, 0.05)', transition: '0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(20, 104, 69, 0.1)'} onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(20, 104, 69, 0.05)'}>&times;</button>
+          <h2 style={{ fontSize: '1.8rem', fontWeight: 900, marginBottom: '2.5rem', color: colors.accent, display: 'flex', alignItems: 'center', gap: '15px' }}>
+            <Grid size={28} /> {editingProduct ? 'Edit Product' : 'Add New Product'}
           </h2>
               
-          <form onSubmit={handleSaveProduct} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1rem' }}>
+          <form onSubmit={handleSaveProduct} style={{ display: 'flex', flexDirection: 'column', gap: '1.8rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                  <label style={{ fontSize: '0.75rem', color: colors.textMuted, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Asset Label</label>
-                  <input required value={name} onChange={e=>setName(e.target.value)} style={{ padding: '0.9rem', borderRadius: '12px', background: '#fff', border: `1px solid ${colors.border}`, color: colors.accent, fontWeight: 600, outline: 'none' }} />
+                  <label style={{ fontSize: '0.7rem', color: colors.textMuted, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>Asset Identifier / Label</label>
+                  <input required value={name} onChange={e=>setName(e.target.value)} placeholder="Product Name" style={{ padding: '1rem', borderRadius: '14px', background: '#f8faf2', border: `1px solid ${colors.border}`, color: colors.accent, fontWeight: 700, outline: 'none', fontSize: '1rem' }} />
                </div>
                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                  <label style={{ fontSize: '0.75rem', color: colors.textMuted, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Stock</label>
-                  <input type="number" required value={stock} onChange={e=>setStock(e.target.value)} style={{ padding: '0.9rem', borderRadius: '12px', background: '#fff', border: `1px solid ${colors.border}`, color: colors.accent, fontWeight: 600, outline: 'none' }} />
+                  <label style={{ fontSize: '0.7rem', color: colors.textMuted, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>Inventory Count (Stock)</label>
+                  <input type="number" required value={stock} onChange={e=>setStock(e.target.value)} style={{ padding: '1rem', borderRadius: '14px', background: '#f8faf2', border: `1px solid ${colors.border}`, color: colors.accent, fontWeight: 700, outline: 'none', fontSize: '1rem' }} />
                </div>
             </div>
             
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.5rem' }}>
                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                  <label style={{ fontSize: '0.75rem', color: colors.textMuted, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Price (Live)</label>
-                  <input type="number" step="0.01" required value={price} onChange={e=>setPrice(e.target.value)} style={{ padding: '0.9rem', borderRadius: '12px', background: '#fff', border: `1px solid ${colors.border}`, color: colors.accent, fontWeight: 600, outline: 'none' }} />
+                  <label style={{ fontSize: '0.7rem', color: colors.textMuted, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>Live Price (₹)</label>
+                  <input type="number" step="0.01" required value={price} onChange={e=>setPrice(e.target.value)} style={{ padding: '1rem', borderRadius: '14px', background: '#f8faf2', border: `1px solid ${colors.border}`, color: colors.accent, fontWeight: 700, outline: 'none', fontSize: '1rem' }} />
                </div>
                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                  <label style={{ fontSize: '0.75rem', color: colors.textMuted, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Old Price (Strike)</label>
-                  <input type="number" step="0.01" value={oldPrice} onChange={e=>setOldPrice(e.target.value)} placeholder="Optional" style={{ padding: '0.9rem', borderRadius: '12px', background: '#fff', border: `2px dashed ${colors.border}`, color: colors.accent, fontWeight: 600, outline: 'none' }} />
+                  <label style={{ fontSize: '0.7rem', color: colors.textMuted, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>Strike Price (₹)</label>
+                  <input type="number" step="0.01" value={oldPrice} onChange={e=>setOldPrice(e.target.value)} placeholder="0.00" style={{ padding: '1rem', borderRadius: '14px', background: '#fff', border: `2px dashed ${colors.border}`, color: colors.textMuted, fontWeight: 700, outline: 'none', fontSize: '1rem' }} />
                </div>
                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                  <label style={{ fontSize: '0.75rem', color: colors.textMuted, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Segment/Category</label>
-                  <input required value={category} onChange={e=>setCategory(e.target.value)} style={{ padding: '0.9rem', borderRadius: '12px', background: '#fff', border: `1px solid ${colors.border}`, color: colors.accent, fontWeight: 600, outline: 'none' }} />
+                  <label style={{ fontSize: '0.7rem', color: colors.textMuted, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>Classification</label>
+                  <input required value={category} onChange={e=>setCategory(e.target.value)} placeholder="Category" style={{ padding: '1rem', borderRadius: '14px', background: '#f8faf2', border: `1px solid ${colors.border}`, color: colors.accent, fontWeight: 700, outline: 'none', fontSize: '1rem' }} />
+               </div>
+               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                  <label style={{ fontSize: '0.7rem', color: colors.textMuted, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>State Badge</label>
+                  <input value={badge} onChange={e=>setBadge(e.target.value)} placeholder="NEW / SALE / HOT" style={{ padding: '1rem', borderRadius: '14px', background: '#f8faf2', border: `1px solid ${colors.border}`, color: colors.accent, fontWeight: 700, outline: 'none', fontSize: '1rem' }} />
                </div>
             </div>
 
@@ -944,8 +1002,8 @@ export default function AdminDashboard() {
                            <img src={img} alt="Product" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                            <button 
                              type="button"
-                             onClick={() => removeImage(idx)}
-                             style={{ position: 'absolute', top: 0, right: 0, background: 'rgba(211, 47, 47, 0.9)', color: '#fff', border: 'none', width: '24px', height: '24px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 900 }}
+                             onClick={(e) => { e.stopPropagation(); removeImage(idx); }}
+                             style={{ position: 'absolute', top: 0, right: 0, background: 'rgba(211, 47, 47, 0.9)', color: '#fff', border: 'none', width: '24px', height: '24px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 900, zIndex: 10 }}
                            >
                              &times;
                            </button>
@@ -1021,13 +1079,19 @@ export default function AdminDashboard() {
                    </div>
                 </div>
 
-                <div style={{ marginTop: '0.5rem', display: 'flex', gap: '1rem', borderTop: `1px solid ${colors.border}`, paddingTop: '1.5rem' }}>
-                   <button type="button" onClick={() => setShowAddModal(false)} style={{ flex: 1, padding: '0.9rem', borderRadius: '12px', border: `1.5px solid ${colors.border}`, background: 'transparent', color: colors.accent, fontWeight: 700, cursor: 'pointer' }}>Cancel</button>
-                   <button type="submit" disabled={isUploading} style={{ flex: 2, padding: '0.9rem', borderRadius: '12px', border: 'none', background: colors.accent, color: '#fff', fontWeight: 800, cursor: isUploading ? 'not-allowed' : 'pointer', opacity: isUploading ? 0.7 : 1 }}>
-                      {editingProduct ? 'Commit Changes' : 'Execute Registration'}
+                <div style={{ marginTop: '1rem', display: 'flex', gap: '1.2rem', borderTop: `1px solid ${colors.border}`, paddingTop: '2.5rem' }}>
+                   <button type="button" onClick={() => setShowAddModal(false)} style={{ flex: 1, padding: '1.1rem', borderRadius: '16px', border: `1.5px solid ${colors.border}`, background: 'transparent', color: colors.accent, fontWeight: 800, cursor: 'pointer', transition: '0.2s' }}>Cancel</button>
+                   <button type="submit" disabled={isUploading} style={{ flex: 2, padding: '1.1rem', borderRadius: '16px', border: 'none', background: colors.accent, color: '#fff', fontWeight: 900, cursor: isUploading ? 'not-allowed' : 'pointer', opacity: isUploading ? 0.7 : 1, boxShadow: '0 10px 25px rgba(20, 104, 69, 0.2)' }}>
+                      {editingProduct ? 'Save Changes' : 'Add Product'}
                    </button>
                 </div>
               </form>
+               <style dangerouslySetInnerHTML={{ __html: `
+                .admin-modal::-webkit-scrollbar { width: 6px; }
+                .admin-modal::-webkit-scrollbar-track { background: transparent; }
+                .admin-modal::-webkit-scrollbar-thumb { background: rgba(20, 104, 69, 0.1); border-radius: 10px; }
+                .admin-modal::-webkit-scrollbar-thumb:hover { background: rgba(20, 104, 69, 0.2); }
+              `}} />
               {successMsg && <p style={{ color: colors.accent, textAlign: 'center', marginTop: '1.5rem', fontWeight: 700 }}>{successMsg}</p>}
             </div>
           </div>
@@ -1236,7 +1300,7 @@ export default function AdminDashboard() {
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                    <label style={{ fontSize: '0.9rem', color: colors.accent, fontWeight: 700, textTransform: 'uppercase' }}>Information Type</label>
-                   <select value={notifType} onChange={e=>setNotifType(e.target.value)} style={{ padding: '1.2rem', borderRadius: '16px', background: colors.bg, border: `1px solid ${colors.border}`, color: '#fff', outline: 'none' }}>
+                   <select value={notifType} onChange={e=>setNotifType(e.target.value)} style={{ padding: '1.2rem', borderRadius: '16px', background: '#f8faf2', border: `1.5px solid ${colors.border}`, color: '#041c0b', fontWeight: 700, outline: 'none' }}>
                       <option value="update">General Update</option>
                       <option value="offer">Special Offer</option>
                       <option value="order">Order Notice</option>
@@ -1245,15 +1309,37 @@ export default function AdminDashboard() {
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                    <label style={{ fontSize: '0.9rem', color: colors.accent, fontWeight: 700, textTransform: 'uppercase' }}>Target Audience</label>
-                   <select value={notifTarget} onChange={e=>setNotifTarget(e.target.value)} style={{ padding: '1.2rem', borderRadius: '16px', background: colors.bg, border: `1px solid ${colors.border}`, color: '#fff', outline: 'none' }}>
+                   <select value={notifTarget} onChange={e=>setNotifTarget(e.target.value)} style={{ padding: '1.2rem', borderRadius: '16px', background: '#f8faf2', border: `1.5px solid ${colors.border}`, color: '#041c0b', fontWeight: 700, outline: 'none' }}>
                       <option value="all">Global Broadcast (All Guests)</option>
-                      <optgroup label="Specific Profile" style={{ background: colors.bg }}>
+                      <optgroup label="Specific Profile" style={{ background: '#f8faf2', color: '#041c0b' }}>
                          {users.map(u => (
-                           <option key={u.id} value={u.email}>{u.name} ({u.email})</option>
+                           <option key={u.id} value={u.email} style={{ color: '#041c0b' }}>{u.name} ({u.email})</option>
                          ))}
                       </optgroup>
                    </select>
                 </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', marginTop: '0.5rem' }}>
+                   <label style={{ fontSize: '0.9rem', color: colors.accent, fontWeight: 700, textTransform: 'uppercase' }}>Linked Product (Optional)</label>
+                   <select value={notifLinkedProduct} onChange={e=>setNotifLinkedProduct(e.target.value)} style={{ padding: '1.2rem', borderRadius: '16px', background: '#f8faf2', border: `1.5px solid ${colors.border}`, color: '#041c0b', fontWeight: 700, outline: 'none' }}>
+                      <option value="" style={{ color: '#041c0b' }}>No Product Linked</option>
+                      {products.map(p => (
+                        <option key={p.id} value={p.id} style={{ color: '#041c0b' }}>{p.name} (${p.price})</option>
+                      ))}
+                   </select>
+                </div>
+
+                {notifLinkedProduct && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', marginTop: '0.5rem' }}>
+                     <label style={{ fontSize: '0.9rem', color: colors.accent, fontWeight: 700, textTransform: 'uppercase' }}>Promotional Offer Value</label>
+                     <input 
+                       value={notifOfferValue} 
+                       onChange={e=>setNotifOfferValue(e.target.value)} 
+                       placeholder="e.g. ₹199 or 20% OFF" 
+                       style={{ padding: '1.2rem', borderRadius: '16px', background: '#f8faf2', border: `1.5px solid ${colors.border}`, color: '#041c0b', fontWeight: 700, outline: 'none' }} 
+                     />
+                  </div>
+                )}
 
                 <button type="submit" style={{ padding: '1.4rem', borderRadius: '20px', background: colors.accent, color: colors.bg, border: 'none', fontWeight: 800, fontSize: '1.1rem', cursor: 'pointer', marginTop: '1rem' }}>
                   Release Broadcast
