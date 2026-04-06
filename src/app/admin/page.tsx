@@ -37,14 +37,14 @@ import { db } from '@/firebase/config';
 
 // Premium ECOZERO LIVE Color Palette - Modern App-Like Design
 const colors = {
-  bg: '#158225',          // New Vibrant Green Base
-  surface: 'rgba(255, 255, 255, 0.08)', 
+  bg: 'rgb(215, 232, 188)', 
+  surface: 'rgba(0, 0, 0, 0.05)', 
   surfaceSolid: '#ffffff', // Crisp white for cards/widgets
-  border: 'rgba(255, 255, 255, 0.1)',
-  accent: '#fcf7de',      // Light cream accent on dark green
-  pale: '#ffffff',        // White for core high-contrast text
-  text: '#ffffff',        // Solid white text on green
-  textMuted: 'rgba(255, 255, 255, 0.6)'
+  border: 'rgba(0, 0, 0, 0.05)',
+  accent: 'rgb(4, 28, 11)',      
+  pale: 'rgb(4, 28, 11)',        
+  text: 'rgb(4, 28, 11)',        
+  textMuted: 'rgba(4, 28, 11, 0.6)'
 };
 
 export default function AdminDashboard() {
@@ -369,8 +369,8 @@ export default function AdminDashboard() {
       {/* Dynamic Style Injection for Responsive Admin Panel */}
       <style dangerouslySetInnerHTML={{__html: `
         .navbar { display: none !important; }
-        body { background-color: ${colors.bg} !important; margin: 0; padding: 0; }
-        .admin-layout { padding-top: 0 !important; }
+        body { background-color: rgb(215, 232, 188) !important; margin: 0; padding: 0; }
+        .admin-layout { padding-top: 0 !important; background-color: rgb(215, 232, 188); }
         
         @media (max-width: 900px) {
           .admin-sidebar { 
