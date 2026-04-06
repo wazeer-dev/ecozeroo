@@ -48,9 +48,9 @@
     gap: 15px !important;
   }
 
-  /* Increase padding on the product detail page */
+  /* Remove redundant padding that pushes content too far down */
   .buy-page {
-    padding-top: 150px !important;
+    padding-top: 100px !important;
   }
 
   /* Ensure the footer brand text doesn't overflow */

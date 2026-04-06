@@ -686,9 +686,9 @@ export default function ProductDetailPage() {
         }
         
         @media (max-width: 900px) {
-          .buy-page { padding: 0 !important; background: var(--bg-color) !important; }
-          .buy-container { width: 100% !important; padding: 0 !important; }
-          .main-grid { grid-template-columns: 1fr; gap: 0 !important; }
+          .buy-page { padding: 0 !important; background: #F8F6F0 !important; overflow-x: hidden; }
+          .buy-container { width: 100% !important; padding: 0 !important; overflow-x: hidden; }
+          .main-grid { display: flex !important; flex-direction: column !important; gap: 0 !important; width: 100% !important; overflow-x: hidden; }
           .image-showcase { background: transparent; padding: 0; position: relative; border-radius: 40px; overflow: hidden; margin: 0; width: 100% !important; max-width: 100% !important; }
           .main-image { padding: 0 !important; box-shadow: none !important; border-radius: 40px !important; height: auto !important; aspect-ratio: 3 / 4 !important; background: transparent; width: 100% !important; margin-bottom: 0 !important; }
           .main-image-inner { width: 100% !important; height: 100% !important; display: block !important; position: relative !important; }
@@ -710,9 +710,9 @@ export default function ProductDetailPage() {
             cursor: pointer;
           }
           
-          .mobile-details-body { padding: 20px 25px 120px; position: relative; }
-          .product-title { font-size: 1.5rem !important; font-family: 'Inter', sans-serif !important; text-transform: none !important; font-weight: 800 !important; letter-spacing: -0.5px !important; margin-bottom: 6px !important; }
-          .product-subtitle { margin-bottom: 20px !important; font-size: 0.85rem !important; display: flex; align-items: center; gap: 6px; }
+          .mobile-details-body { padding: 25px 20px 140px; position: relative; width: 100%; box-sizing: border-box; }
+          .product-title { font-size: 1.6rem !important; font-family: 'Inter', sans-serif !important; text-transform: none !important; font-weight: 800 !important; letter-spacing: -0.5px !important; margin-bottom: 8px !important; line-height: 1.2 !important; }
+          .product-subtitle { margin-bottom: 24px !important; font-size: 0.88rem !important; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
           
           .quantity-capsule {
             display: flex !important; width: fit-content; margin: 0 auto 24px;
@@ -725,10 +725,10 @@ export default function ProductDetailPage() {
           .qty-btn-minus { background: transparent; color: #999; }
           .qty-btn-plus { background: #000; color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
           
-          .info-pills-row { display: flex; align-items: center; gap: 10px; margin-top: 15px; }
-          .new-price { font-size: 1.6rem !important; font-weight: 900 !important; color: #111; }
-          .old-price { font-size: 1rem !important; color: #ccc !important; text-decoration: line-through; font-weight: 700; }
-          .discount-badge { background: #000 !important; color: #fff !important; font-size: 0.65rem !important; font-weight: 900 !important; padding: 4px 10px !important; border-radius: 10px !important; }
+          .info-pills-row { display: flex; align-items: center; gap: 10px; margin-top: 20px; flex-wrap: wrap; width: 100%; }
+          .new-price { font-size: 1.8rem !important; font-weight: 900 !important; color: #111; }
+          .old-price { font-size: 1.1rem !important; color: #bbb !important; text-decoration: line-through; font-weight: 700; }
+          .discount-badge { background: #000 !important; color: #fff !important; font-size: 0.7rem !important; font-weight: 900 !important; padding: 5px 12px !important; border-radius: 12px !important; }
           
           .promo-banner {
             display: flex !important; padding: 14px 18px; border-radius: 12px;
@@ -772,11 +772,21 @@ export default function ProductDetailPage() {
             background: transparent !important;
           }
           .thumb-box {
-            width: 60px !important;
-            height: 60px !important;
-            border-radius: 12px !important;
+            width: 70px !important;
+            height: 70px !important;
+            border-radius: 16px !important;
+            flex-shrink: 0 !important;
           }
           .empty-reviews-state { grid-column: span 1 !important; }
+        }
+        
+        /* Specific Fix for very small devices */
+        @media (max-width: 380px) {
+          .mobile-details-body { padding-left: 15px !important; padding-right: 15px !important; }
+          .new-price { font-size: 1.5rem !important; }
+          .product-title { font-size: 1.4rem !important; }
+          .thumb-box { width: 60px !important; height: 60px !important; }
+          .info-pills-row { gap: 8px !important; }
         }
         @media (min-width: 901px) {
           .mobile-only { display: none !important; }

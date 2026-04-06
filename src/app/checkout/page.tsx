@@ -337,17 +337,25 @@ export default function CheckoutPage() {
       <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
         
         {success ? (
-          <div style={{ background: colors.surfaceSolid, border: `1px solid ${colors.border}`, padding: '6rem 2rem', borderRadius: '40px', textAlign: 'center' }}>
+          <div className="success-card" style={{ background: colors.surfaceSolid, border: `1px solid ${colors.border}`, padding: '6rem 2rem', borderRadius: '40px', textAlign: 'center' }}>
             <div style={{ background: 'rgba(20, 104, 69, 0.1)', width: '100px', height: '100px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2.5rem' }}>
               <CheckCircle2 size={50} color={colors.accent} />
             </div>
-            <h3 style={{ fontSize: '3rem', marginBottom: '1.5rem', fontWeight: 900, color: colors.accent }}>Transaction Confirmed</h3>
-            <p style={{ color: colors.textMuted, fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto 3rem', lineHeight: '1.6' }}>
+            <h3 className="success-title" style={{ fontSize: '3rem', marginBottom: '1.5rem', fontWeight: 900, color: colors.accent }}>Transaction Confirmed</h3>
+            <p className="success-desc" style={{ color: colors.textMuted, fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto 3rem', lineHeight: '1.6' }}>
               Welcome to the movement. Your order has been registered in our carbon-neutral pipeline.
             </p>
-            <button onClick={() => router.push('/orders')} style={{ padding: '1.2rem 4rem', fontSize: '1.1rem', borderRadius: '35px', background: colors.accent, color: '#fff', border: 'none', fontWeight: 800, cursor: 'pointer' }}>
+            <button className="success-btn" onClick={() => router.push('/orders')} style={{ padding: '1.2rem 4rem', fontSize: '1.1rem', borderRadius: '35px', background: colors.accent, color: '#fff', border: 'none', fontWeight: 800, cursor: 'pointer' }}>
               Track Manifest &rarr;
             </button>
+            <style dangerouslySetInnerHTML={{ __html: `
+              @media (max-width: 600px) {
+                .success-card { padding: 3rem 1rem !important; }
+                .success-title { font-size: 2rem !important; }
+                .success-desc { font-size: 1rem !important; }
+                .success-btn { padding: 1rem 2rem !important; font-size: 1rem !important; }
+              }
+            `}} />
           </div>
         ) : (
           <div>
@@ -567,7 +575,7 @@ export default function CheckoutPage() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', color: colors.accent, fontSize: '0.85rem', fontWeight: 800 }}><span>Shipping</span><span>FREE</span></div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', color: '#ff6b6b', fontSize: '0.85rem', fontWeight: 800 }}><span>Coupon</span><span>-₹{discount.toFixed(0)}</span></div>
                     
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: colors.accent, margin: '1.5rem -2.5rem -2.5rem', padding: '2.5rem', borderBottomLeftRadius: '35px', borderBottomRightRadius: '35px', color: '#fff' }}>
+                    <div className="grand-total-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: colors.accent, margin: '1.5rem -2.5rem -2.5rem', padding: '2.5rem', borderBottomLeftRadius: '35px', borderBottomRightRadius: '35px', color: '#fff' }}>
                       <span style={{ fontSize: '1.2rem', fontWeight: 900, fontFamily: 'Oswald, sans-serif' }}>GRAND TOTAL</span>
                       <span style={{ fontSize: '2.4rem', fontWeight: 900 }}>₹{total.toFixed(0)}</span>
                     </div>
@@ -585,8 +593,8 @@ export default function CheckoutPage() {
 
       {showMap && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)', zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-          <div style={{ background: '#fff', width: '100%', maxWidth: '800px', borderRadius: '32px', overflow: 'hidden', position: 'relative' }}>
-             <div style={{ padding: '2.5rem' }}>
+          <div className="map-modal-card" style={{ background: '#fff', width: '100%', maxWidth: '800px', borderRadius: '32px', overflow: 'hidden', position: 'relative' }}>
+             <div className="map-modal-inner" style={{ padding: '2.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
                   <div>
                     <h3 style={{ margin: 0, color: '#041c0b', fontSize: '2.2rem', fontWeight: 900, fontFamily: 'Oswald, sans-serif', textTransform: 'uppercase' }}>Select Delivery <span style={{ color: colors.accent }}>Pin</span></h3>
@@ -595,7 +603,7 @@ export default function CheckoutPage() {
                   <button onClick={() => setShowMap(false)} style={{ background: '#f8f8f8', border: 'none', width: '44px', height: '44px', borderRadius: '50%', cursor: 'pointer', fontSize: '1.5rem' }}>&times;</button>
                 </div>
                 <div id="map-picker" style={{ width: '100%', height: '400px', borderRadius: '24px', background: '#f0f0f0', border: '1px solid #eee' }}></div>
-                <div style={{ marginTop: '2.5rem', display: 'flex', gap: '1.2rem' }}>
+                <div className="confirm-btn-wrap" style={{ marginTop: '2.5rem', display: 'flex', gap: '1.2rem' }}>
                    <button onClick={() => setShowMap(false)} style={{ flex: 1, padding: '1.2rem', borderRadius: '40px', border: '2px solid #eee', background: 'transparent', fontWeight: 800, cursor: 'pointer' }}>Cancel</button>
                    <button onClick={confirmMapLocation} style={{ flex: 2, padding: '1.2rem', borderRadius: '40px', border: 'none', background: colors.accent, color: '#fff', fontWeight: 900, cursor: 'pointer', textTransform: 'uppercase' }}>Confirm Pin</button>
                 </div>
@@ -610,6 +618,38 @@ export default function CheckoutPage() {
         @media (max-width: 900px) {
           .checkout-grid { grid-template-columns: 1fr !important; }
           .checkout-summary-col { order: -1; }
+        }
+        @media (max-width: 600px) {
+          .map-modal-inner { padding: 1.2rem !important; }
+          .map-modal-card { border-radius: 20px !important; }
+          #map-picker { height: 350px !important; }
+          .map-modal-inner h3 { fontSize: 1.6rem !important; }
+          .map-modal-inner p { fontSize: 0.8rem !important; }
+          .confirm-btn-wrap { flex-direction: column-reverse !important; gap: 0.8rem !important; }
+          
+          /* Checkout Responsiveness */
+          .form-card-section { padding: 1.2rem !important; }
+          .summary-card { padding: 1.5rem !important; }
+          .grand-total-section { margin: 1.5rem -1.5rem -1.5rem !important; padding: 1.5rem !important; }
+          
+          /* Success Screen Responsiveness */
+          .success-card { padding: 4rem 1.2rem !important; border-radius: 24px !important; }
+          .success-title { font-size: 2rem !important; margin-bottom: 1rem !important; }
+          .success-desc { font-size: 1rem !important; margin-bottom: 2rem !important; padding: 0 10px !important; }
+          .success-btn { padding: 1rem 2.5rem !important; font-size: 1rem !important; width: 100% !important; }
+        }
+        @media (max-width: 400px) {
+           .map-modal-inner { padding: 1rem !important; }
+           #map-picker { height: 300px !important; }
+           .summary-card { padding: 1rem !important; border-radius: 24px !important; }
+           .form-card-section { padding: 1rem !important; border-radius: 20px !important; }
+           .grand-total-section { margin: 1.5rem -1rem -1rem !important; padding: 1.5rem 1rem !important; }
+           .grand-total-section span:first-child { font-size: 1rem !important; }
+           .grand-total-section span:last-child { font-size: 1.8rem !important; }
+           
+           .success-card { padding: 3rem 1rem !important; }
+           .success-title { font-size: 1.8rem !important; }
+           .success-desc { font-size: 0.9rem !important; }
         }
       `}} />
     </div>

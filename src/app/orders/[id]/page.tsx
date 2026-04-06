@@ -71,21 +71,31 @@ export default function OrderDetailPage() {
         @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700;900&display=swap');
         .order-details-container { padding-top: 100px; }
         @media (max-width: 768px) {
-           .order-details-container { padding-top: 2rem !important; }
+           .order-details-container { padding-top: 5rem !important; }
            .order-grid { grid-template-columns: 1fr !important; gap: 1.5rem !important; }
+        }
+        @media (max-width: 480px) {
+           .order-details-container { padding: 0 15px !important; padding-top: 4rem !important; }
+           .tracking-card { padding: 1.5rem !important; border-radius: 24px !important; }
+           .card-generic { padding: 1.2rem !important; border-radius: 24px !important; }
+           .order-info-h1 { font-size: 1.8rem !important; }
+           .protocol-id-text { font-size: 0.65rem !important; }
+           .step-label { font-size: 0.55rem !important; }
+           .arrival-h4 { font-size: 1.1rem !important; }
+           .summary-card-inner { padding: 1.5rem !important; }
         }
       `}} />
 
       <div className="order-details-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '0 20px' }}>
         
         {/* HEADER */}
-        <div style={{ marginBottom: '2.5rem', display: 'flex', alignItems: 'center', gap: '15px' }}>
-           <button onClick={() => router.push('/orders')} style={{ background: '#fff', border: `1px solid ${colors.border}`, width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: colors.accent }}>
-              <ArrowLeft size={18} />
+        <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '12px' }}>
+           <button onClick={() => router.push('/orders')} style={{ background: '#fff', border: `1px solid ${colors.border}`, width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: colors.accent, flexShrink: 0 }}>
+              <ArrowLeft size={16} />
            </button>
-           <div>
-              <h1 style={{ margin: 0, fontSize: '2.2rem', fontWeight: 900, fontFamily: 'Oswald, sans-serif', textTransform: 'uppercase', lineHeight: 1 }}>Order <span style={{ color: colors.accent }}>Info</span></h1>
-              <p style={{ margin: '5px 0 0', fontSize: '0.75rem', fontWeight: 900, color: colors.textMuted, letterSpacing: '1px' }}>Protocol ID: {order.id.slice(0, 12).toUpperCase()}</p>
+           <div style={{ flex: 1, minWidth: 0 }}>
+              <h1 className="order-info-h1" style={{ margin: 0, fontSize: '2.2rem', fontWeight: 900, fontFamily: 'Oswald, sans-serif', textTransform: 'uppercase', lineHeight: 1 }}>Order <span style={{ color: colors.accent }}>Info</span></h1>
+              <p className="protocol-id-text" style={{ margin: '4px 0 0', fontSize: '0.75rem', fontWeight: 900, color: colors.textMuted, letterSpacing: '0.8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Protocol ID: {order.id.slice(0, 12).toUpperCase()}</p>
            </div>
         </div>
 
@@ -95,7 +105,7 @@ export default function OrderDetailPage() {
               
               {/* TRACKING CARD WITH ANIMATIONS */}
               {order.status !== 'Cancelled' && (
-                <div style={{ background: '#fff', borderRadius: '30px', padding: '2.5rem', border: `1px solid ${colors.border}`, boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
+                <div className="tracking-card" style={{ background: '#fff', borderRadius: '30px', padding: '2.5rem', border: `1px solid ${colors.border}`, boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
                    <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', marginBottom: '2.5rem' }}>
                       <div style={{ position: 'absolute', top: '22px', left: '10%', right: '10%', height: '3px', background: '#f5f5f5', zIndex: 0 }}>
                          <motion.div 
@@ -147,7 +157,7 @@ export default function OrderDetailPage() {
                                    />
                                 )}
                              </motion.div>
-                             <span style={{ fontSize: '0.65rem', fontWeight: 900, textTransform: 'uppercase', color: active ? colors.text : colors.textMuted }}>{s.label}</span>
+                             <span className="step-label" style={{ fontSize: '0.65rem', fontWeight: 900, textTransform: 'uppercase', color: active ? colors.text : colors.textMuted }}>{s.label}</span>
                           </div>
                         );
                       })}
@@ -160,7 +170,7 @@ export default function OrderDetailPage() {
                      style={{ textAlign: 'center', paddingTop: '1.5rem', borderTop: `1px dashed ${colors.border}` }}
                    >
                       <span style={{ fontSize: '0.75rem', fontWeight: 800, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: '1px' }}>Estimated Arrival</span>
-                      <h4 style={{ margin: '5px 0 0', fontSize: '1.4rem', fontWeight: 900, color: colors.text }}>
+                      <h4 className="arrival-h4" style={{ margin: '5px 0 0', fontSize: '1.4rem', fontWeight: 900, color: colors.text }}>
                          {order.deliveryDate ? new Date(order.deliveryDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }) : 'Setting up delivery...'}
                       </h4>
                    </motion.div>
@@ -168,7 +178,7 @@ export default function OrderDetailPage() {
               )}
 
               {/* ITEMS CARD */}
-              <div style={{ background: '#fff', borderRadius: '30px', padding: '2rem', border: `1px solid ${colors.border}` }}>
+              <div className="card-generic" style={{ background: '#fff', borderRadius: '30px', padding: '2rem', border: `1px solid ${colors.border}` }}>
                  <h3 style={{ fontSize: '1rem', fontWeight: 900, fontFamily: 'Oswald, sans-serif', textTransform: 'uppercase', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <Package size={18} color={colors.accent} /> Items in Order
                  </h3>
@@ -199,6 +209,7 @@ export default function OrderDetailPage() {
               <motion.div 
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
+                className="summary-card-inner"
                 style={{ background: colors.accent, borderRadius: '30px', padding: '2rem', color: '#fff', boxShadow: '0 15px 30px rgba(20, 104, 69, 0.2)' }}
               >
                  <h3 style={{ fontSize: '1rem', fontWeight: 900, fontFamily: 'Oswald, sans-serif', textTransform: 'uppercase', marginBottom: '1.5rem', opacity: 0.8 }}>Summary</h3>
@@ -213,7 +224,7 @@ export default function OrderDetailPage() {
               </motion.div>
 
               {/* LOGISTICS CARD */}
-              <div style={{ background: '#fff', borderRadius: '30px', padding: '2rem', border: `1px solid ${colors.border}`, display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+              <div className="card-generic" style={{ background: '#fff', borderRadius: '30px', padding: '2rem', border: `1px solid ${colors.border}`, display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
                  <div style={{ display: 'flex', gap: '12px' }}>
                     <MapPin size={18} color={colors.accent} />
                     <div>
