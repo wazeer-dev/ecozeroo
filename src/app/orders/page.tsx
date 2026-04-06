@@ -77,9 +77,9 @@ export default function MyOrdersPage() {
            <button onClick={() => router.push('/menu')} style={{ background: '#fff', border: `1px solid ${colors.border}`, width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: colors.accent }}>
               <ArrowLeft size={16} />
            </button>
-           <h1 style={{ margin: 0, fontSize: '2.2rem', fontWeight: 900, fontFamily: 'Oswald, sans-serif', textTransform: 'uppercase', letterSpacing: '-0.5px' }}>
-             My <span style={{ color: colors.accent }}>Orders</span>
-           </h1>
+            <h1 style={{ margin: 0, fontSize: '2.2rem', fontWeight: 900, fontFamily: 'Oswald, sans-serif', textTransform: 'uppercase', letterSpacing: '-0.5px' }}>
+              My <span style={{ color: colors.accent }}>Orders</span>
+            </h1>
         </div>
 
         {/* LIST */}

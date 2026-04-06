@@ -98,10 +98,10 @@ export default function Navbar() {
           align-items: center;
           justify-content: space-between;
           padding: 0 4%;
-          background: rgba(252, 247, 222, 0.45);
+          background: rgba(20, 104, 69, 0.45);
           backdrop-filter: blur(50px) saturate(180%);
           -webkit-backdrop-filter: blur(50px) saturate(180%);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
           transition: all 0.3s ease;
           font-family: 'Inter', sans-serif;
           pointer-events: none;
@@ -132,7 +132,7 @@ export default function Navbar() {
         
         .nav-pill {
           background: rgb(20, 104, 69);
-          color: #fcf7de;
+          color: #fff;
           border-radius: 40px;
           padding: 8px 18px;
           font-size: 0.75rem;
@@ -150,13 +150,14 @@ export default function Navbar() {
         }
         .nav-pill:hover {
           transform: translateY(-2px);
-          background: #f8faf2;
+          background: #fff;
+          color: rgb(20, 104, 69);
           box-shadow: 0 8px 25px rgba(20, 104, 69, 0.1);
         }
         
         .nav-circle {
           background: rgb(20, 104, 69);
-          color: #fcf7de;
+          color: #fff;
           width: 38px;
           height: 38px;
           border-radius: 50%;
@@ -171,7 +172,8 @@ export default function Navbar() {
         }
         .nav-circle:hover {
           transform: translateY(-2px);
-          background: #f8faf2;
+          background: #fff;
+          color: rgb(20, 104, 69);
         }
         
         .quote-pill {
@@ -183,7 +185,7 @@ export default function Navbar() {
           gap: 12px;
           box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
           text-decoration: none;
-          color: #fcf7de;
+          color: #fff;
           font-weight: 800;
           font-size: 0.85rem;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -192,10 +194,12 @@ export default function Navbar() {
         }
         .quote-pill:hover {
           transform: translateY(-2px);
+          background: #fff;
+          color: rgb(20, 104, 69);
           box-shadow: 0 8px 25px rgba(20, 104, 69, 0.1);
         }
         .quote-btn-icon {
-          background: #fcf7de;
+          background: #fff;
           color: rgb(20, 104, 69);
           width: 34px;
           height: 34px;
@@ -235,7 +239,7 @@ export default function Navbar() {
           transition: 0.2s;
         }
         .ez-dd-item:hover {
-          background: #fcf7de;
+          background: rgba(20, 104, 69, 0.1);
           color: #146845;
         }
         
@@ -277,27 +281,6 @@ export default function Navbar() {
         
         {/* LOGO / BACK BUTTON */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, justifyContent: 'flex-start' }}>
-          {pathname !== '/' && pathname !== '/menu' && (
-            <button 
-              onClick={() => router.back()}
-              className="mobile-only"
-              style={{ 
-                background: '#fff', 
-                border: '1px solid rgba(20, 104, 69, 0.1)', 
-                width: '38px', 
-                height: '38px', 
-                borderRadius: '50%', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center', 
-                cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-                color: '#1a3c26'
-              }}
-            >
-              <ArrowDownRight size={18} style={{ transform: 'rotate(135deg)' }} />
-            </button>
-          )}
           <Link href="/" className="brand-logo" style={{ height: '48px' }}>
             <img src="/photo_2026-03-13_20-14-52 (1).png" alt="EcoZero" style={{ height: '40px', width: 'auto', display: 'block', objectFit: 'contain' }} />
           </Link>

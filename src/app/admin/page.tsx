@@ -32,19 +32,19 @@ import {
   ChevronDown,
   Grid
 } from 'lucide-react';
-import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 
 // Premium ECOZERO LIVE Color Palette - Modern App-Like Design
 const colors = {
-  bg: '#fcf7de',          // Base Creme from the main website
-  surface: 'rgba(255, 255, 255, 0.6)', 
+  bg: '#158225',          // New Vibrant Green Base
+  surface: 'rgba(255, 255, 255, 0.08)', 
   surfaceSolid: '#ffffff', // Crisp white for cards/widgets
-  border: 'rgba(4, 28, 11, 0.08)',
-  accent: '#146845',      // Sharp modern forest green
-  pale: '#041c0b',        // Darkest green (Sidebar & Headings)
-  text: '#041c0b',        // Solid text
-  textMuted: 'rgba(4, 28, 11, 0.5)'
+  border: 'rgba(255, 255, 255, 0.1)',
+  accent: '#fcf7de',      // Light cream accent on dark green
+  pale: '#ffffff',        // White for core high-contrast text
+  text: '#ffffff',        // Solid white text on green
+  textMuted: 'rgba(255, 255, 255, 0.6)'
 };
 
 export default function AdminDashboard() {
@@ -102,46 +102,58 @@ export default function AdminDashboard() {
   const [showNotifModal, setShowNotifModal] = useState(false);
 
   useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
     setIsLoading(true);
-    try {
-      // Fetch Products
-      const productsSnapshot = await getDocs(collection(db, 'products'));
-      const productsData = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() as any }));
+    
+    // Live Products Listener
+    const unsubscribeProducts = onSnapshot(collection(db, 'products'), (snapshot) => {
+      const productsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() as any }));
       productsData.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
       setProducts(productsData);
+      setIsLoading(false);
+    }, (error) => {
+      console.error("Error listening to products:", error);
+      setIsLoading(false);
+    });
 
-      // Fetch Orders
-      const ordersSnapshot = await getDocs(collection(db, 'orders'));
-      const ordersData = ordersSnapshot.docs
+    // Live Orders Listener
+    const unsubscribeOrders = onSnapshot(collection(db, 'orders'), (snapshot) => {
+      const ordersData = snapshot.docs
         .map(doc => ({ id: doc.id, ...doc.data() as any }))
         .filter(order => order.status !== 'Cancelled');
       ordersData.sort((a, b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime());
       setOrders(ordersData);
+    }, (error) => {
+      console.error("Error listening to orders:", error);
+    });
 
-      // Fetch Users
-      const usersSnapshot = await getDocs(collection(db, 'users'));
-      const usersData = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() as any }));
+    // Live Users Listener
+    const unsubscribeUsers = onSnapshot(collection(db, 'users'), (snapshot) => {
+      const usersData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() as any }));
       setUsers(usersData);
+    }, (error) => {
+      console.error("Error listening to users:", error);
+    });
 
-      // Fetch Notifications
-      const notifSnapshot = await getDocs(collection(db, 'notifications'));
-      const notifData = notifSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() as any }));
+    // Live Notifications Listener
+    const unsubscribeNotifications = onSnapshot(collection(db, 'notifications'), (snapshot) => {
+      const notifData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() as any }));
       notifData.sort((a, b) => {
         const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
         const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
         return timeB - timeA;
       });
       setAdminNotifications(notifData);
-    } catch (error) {
-      console.error("Error fetching admin data:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    }, (error) => {
+      console.error("Error listening to notifications:", error);
+    });
+
+    return () => {
+      unsubscribeProducts();
+      unsubscribeOrders();
+      unsubscribeUsers();
+      unsubscribeNotifications();
+    };
+  }, []);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -207,8 +219,7 @@ export default function AdminDashboard() {
       } else {
         // Add new product
         const newProduct = { ...productData, createdAt: new Date().toISOString() };
-        const docRef = await addDoc(collection(db, 'products'), newProduct);
-        setProducts([{ id: docRef.id, ...newProduct }, ...products]);
+        await addDoc(collection(db, 'products'), newProduct);
         setSuccessMsg(`Added ${name} successfully!`);
       }
       
@@ -322,10 +333,7 @@ export default function AdminDashboard() {
       };
 
       console.log("Attempting to save notification to Firestore...", newNotif);
-      const docRef = await addDoc(collection(db, 'notifications'), newNotif);
-      console.log("Notification saved with ID:", docRef.id);
-
-      setAdminNotifications(prev => [{ id: docRef.id, ...newNotif }, ...prev]);
+      await addDoc(collection(db, 'notifications'), newNotif);
       
       // Reset form
       setNotifTitle('');

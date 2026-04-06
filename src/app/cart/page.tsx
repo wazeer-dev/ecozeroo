@@ -57,23 +57,23 @@ export default function CartPage() {
 
   if (isLoading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fcf7de' }}>
-        <div className="animate-spin" style={{ width: '40px', height: '40px', border: '4px solid rgba(20, 104, 69, 0.1)', borderTopColor: '#146845', borderRadius: '50%' }}></div>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#158225' }}>
+        <div className="animate-spin" style={{ width: '40px', height: '40px', border: '4px solid rgba(255, 255, 255, 0.1)', borderTopColor: '#fff', borderRadius: '50%' }}></div>
       </div>
     );
   }
 
   return (
-    <div className="page-main-wrapper" style={{ background: '#fcf7de', color: '#111', minHeight: '100vh', paddingTop: '100px' }}>
+    <div className="page-main-wrapper" style={{ background: '#158225', color: '#fff', minHeight: '100vh', paddingTop: '100px' }}>
       <div className="container" style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 20px' }}>
         
         <div style={{ marginBottom: '2.5rem' }}>
-          <button onClick={() => router.back()} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: '#146845', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '0.9rem', marginBottom: '1rem', padding: 0 }}>
+          <button onClick={() => router.back()} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: '#fcf7de', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '0.9rem', marginBottom: '1rem', padding: 0 }}>
             <ChevronLeft size={18} /> CONTINUE SHOPPING
           </button>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-            <h1 style={{ fontSize: '2.8rem', fontWeight: 900, margin: 0, letterSpacing: '-1.5px', color: '#041c0b' }}>Shopping Cart</h1>
-            <span style={{ fontWeight: 800, color: '#146845', fontSize: '1.2rem' }}>{cart.length} ITEMS</span>
+            <h1 style={{ fontSize: '2.8rem', fontWeight: 900, margin: 0, letterSpacing: '-1.5px', color: '#fff' }}>Shopping Cart</h1>
+            <span style={{ fontWeight: 800, color: '#fcf7de', fontSize: '1.2rem' }}>{cart.length} ITEMS</span>
           </div>
         </div>
 

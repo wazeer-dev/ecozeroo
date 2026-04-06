@@ -8,9 +8,9 @@ import { auth, db } from '@/firebase/config';
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, OAuthProvider } from 'firebase/auth';
 
 const colors = {
-  bg: '#f7fdf4',
-  primary: 'rgb(60, 120, 20)',
-  accent: 'rgb(136, 198, 95)',
+  bg: '#fcf7de',
+  primary: '#146845',
+  accent: '#146845',
   text: 'rgb(4, 28, 11)',
   textMuted: 'rgba(4, 28, 11, 0.6)',
   border: 'rgba(4, 28, 11, 0.08)',
@@ -194,7 +194,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="login-root" style={{ height: '100vh', width: '100vw', display: 'flex', overflow: 'hidden', background: '#ffffff' }}>
+    <div className="login-root" style={{ height: '100vh', width: '100vw', display: 'flex', overflow: 'hidden', background: '#fcf7de' }}>
       {/* Left Pane - Hero Visual */}
       <div className="login-hero" style={{ 
         flex: 1, 

@@ -22,6 +22,8 @@ export default function OrderDetailPage() {
     textMuted: 'rgba(4, 28, 11, 0.5)'
   };
 
+  const [isCancelling, setIsCancelling] = useState(false);
+
   useEffect(() => {
     if (!id) return;
     const docRef = doc(db, 'orders', id as string);
@@ -64,6 +66,25 @@ export default function OrderDetailPage() {
     return 1;
   };
   const currentStep = getStatusStep(order.status);
+
+  const handleCancelOrder = async () => {
+    if (!id || !confirm("Are you sure you want to trigger the Cancellation Protocol? This action is permanent.")) return;
+    
+    setIsCancelling(true);
+    try {
+      const docRef = doc(db, 'orders', id as string);
+      await updateDoc(docRef, { 
+        status: 'Cancelled',
+        cancelledAt: new Date().toISOString()
+      });
+      alert("Order Cancellation Successful. The protocol has been updated.");
+    } catch (err) {
+      console.error("Cancellation error:", err);
+      alert("Error triggering cancellation protocol. Access denied.");
+    } finally {
+      setIsCancelling(false);
+    }
+  };
 
   return (
     <div style={{ minHeight: '100vh', background: colors.bg, paddingBottom: '100px' }}>
@@ -250,10 +271,26 @@ export default function OrderDetailPage() {
 
               {/* CANCEL ACTION */}
               {order.status === 'Processing' && (
-                <button onClick={() => {if(confirm("Cancel order?")) router.push('/orders')}} style={{ background: '#fff', border: '1px dashed #ff4444', borderRadius: '20px', padding: '1.2rem', color: '#ff4444', fontWeight: 900, fontSize: '0.8rem', cursor: 'pointer', textTransform: 'uppercase' }}>
-                   Cancel Order Protocol
-                </button>
-              )}
+                 <button 
+                  disabled={isCancelling}
+                  onClick={handleCancelOrder} 
+                  style={{ 
+                    background: '#fff', border: '1px dashed #ff4444', borderRadius: '20px', 
+                    padding: '1.2rem', color: '#ff4444', fontWeight: 900, 
+                    fontSize: '0.8rem', cursor: 'pointer', textTransform: 'uppercase',
+                    opacity: isCancelling ? 0.5 : 1, transition: '0.3s'
+                  }}>
+                    {isCancelling ? 'CANCELING...' : 'Cancel Order Protocol'}
+                 </button>
+               )}
+               
+               {order.status === 'Cancelled' && (
+                 <div style={{ background: '#fff1f1', border: '1px solid #ffcccc', borderRadius: '20px', padding: '1.2rem', textAlign: 'center', color: '#ff4444', fontWeight: 800 }}>
+                    <XCircle size={20} style={{ marginBottom: '8px' }} />
+                    <p style={{ margin: 0, fontSize: '0.85rem' }}>PROTOCOL TERMINATED: ORDER CANCELLED</p>
+                 </div>
+               )}
+
            </div>
 
         </div>

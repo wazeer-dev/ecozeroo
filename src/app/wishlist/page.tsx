@@ -35,6 +35,7 @@ export default function WishlistPage() {
     }
     
     localStorage.setItem('ecozero_cart', JSON.stringify(cart));
+    window.dispatchEvent(new Event('cartUpdated'));
     alert('Added to cart!');
   };
 

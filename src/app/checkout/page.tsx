@@ -25,6 +25,12 @@ export default function CheckoutPage() {
   const [countryCode, setCountryCode] = useState('+91');
   const [locationUrl, setLocationUrl] = useState('');
   const [isStateDropdownOpen, setIsStateDropdownOpen] = useState(false);
+  const [checkoutStep, setCheckoutStep] = useState(1);
+  const [paymentMethod, setPaymentMethod] = useState('online'); // 'cod' or 'online'
+  const [distance, setDistance] = useState<number | null>(null);
+  const [shippingFee, setShippingFee] = useState(0);
+
+  const COMPANY_COORDS = { lat: 10.8505, lng: 76.2711 }; // Fixed HQ Location
  
   const indianStates = [
     "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", 
@@ -39,7 +45,7 @@ export default function CheckoutPage() {
   const router = useRouter();
 
   const colors = {
-    bg: '#fcf7de',
+    bg: '#158225',
     surface: 'rgba(20, 104, 69, 0.05)',
     surfaceSolid: '#ffffff',
     border: 'rgba(20, 104, 69, 0.12)',
@@ -99,8 +105,34 @@ export default function CheckoutPage() {
     setShowMap(true);
   };
 
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    const R = 6371; // Earth's radius in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distance in km
+  };
+
   const confirmMapLocation = async () => {
     if (mapCoords) {
+      const dist = calculateDistance(COMPANY_COORDS.lat, COMPANY_COORDS.lng, mapCoords.lat, mapCoords.lng);
+      setDistance(dist);
+      
+      // Dynamic Shipping Fee based on distance
+      let fee = 0;
+      if (dist > 15) fee = 99;
+      else if (dist > 10) fee = 50;
+      else if (dist > 5) fee = 30;
+      else fee = 0; // Local delivery free
+      
+      setShippingFee(fee);
+      
+      // Auto-switch to online if too far for COD
+      if (dist > 15 && paymentMethod === 'cod') setPaymentMethod('online');
+
       const url = `https://www.google.com/maps?q=${mapCoords.lat},${mapCoords.lng}`;
       setLocationUrl(url);
       
@@ -137,7 +169,12 @@ export default function CheckoutPage() {
 
   const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (items.length === 0) return;
+    if (checkoutStep === 1) {
+      setCheckoutStep(2);
+      window.scrollTo(0, 0);
+      return;
+    }
+    
     setProcessing(true);
     
     try {
@@ -151,8 +188,10 @@ export default function CheckoutPage() {
         phone: `${countryCode} ${phone}`.trim(),
         address: `${address}, ${addressDetail}, ${city}, ${state} - ${pinCode}`,
         locationUrl: locationUrl || '',
-        userEmail: localStorage.getItem('ecozero_user') || email || '',
-        total: total,
+        distance: distance ? `${distance.toFixed(2)} km` : '0 km',
+        shippingFee: shippingFee,
+        paymentMethod: paymentMethod,
+        total: total + shippingFee,
         status: 'Processing',
         date: new Date().toISOString(),
         items: items.map(it => ({ id: it.id, name: it.name, image: it.image, price: it.price, quantity: it.quantity || 1 }))
@@ -188,6 +227,7 @@ export default function CheckoutPage() {
 
       localStorage.removeItem('ecozero_checkout_item');
       localStorage.removeItem('ecozero_cart');
+      window.dispatchEvent(new Event('cartUpdated'));
     } catch (error) {
       console.error("Error processing order:", error);
       alert("Error processing transaction. Check configuration.");
@@ -318,7 +358,7 @@ export default function CheckoutPage() {
 
   const subtotal = items.reduce((acc, it) => acc + (parseFloat(it.price) * (it.quantity || 1)), 0);
   const discount = subtotal * 0.20;
-  const total = subtotal - discount;
+  const total = subtotal - discount + shippingFee;
 
   const inputStyle = {
     width: '100%',
@@ -333,7 +373,7 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="page-main-wrapper" style={{ paddingBottom: '6rem', color: colors.text, fontFamily: 'var(--font-inter), sans-serif' }}>
+    <div className="page-main-wrapper" style={{ background: '#158225', paddingBottom: '6rem', color: '#fff', fontFamily: 'var(--font-inter), sans-serif' }}>
       <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
         
         {success ? (
@@ -360,8 +400,8 @@ export default function CheckoutPage() {
         ) : (
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '3rem', paddingTop: '120px' }}>
-              <Link href="/menu" style={{ color: colors.accent, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700 }}>
-                <ArrowLeft size={20} /> BACK TO MENU
+              <Link href="/menu" onClick={(e) => { if (checkoutStep === 2) { e.preventDefault(); setCheckoutStep(1); } }} style={{ color: '#fcf7de', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700 }}>
+                <ArrowLeft size={20} /> {checkoutStep === 1 ? 'BACK TO MENU' : 'BACK TO INFO'}
               </Link>
             </div>
             
@@ -370,7 +410,7 @@ export default function CheckoutPage() {
               fontWeight: 900, 
               marginBottom: '2rem', 
               letterSpacing: '-0.05em', 
-              color: '#041c0b',
+              color: '#ffffff',
               lineHeight: 0.9,
               fontFamily: 'Oswald, sans-serif'
             }}>
@@ -382,144 +422,225 @@ export default function CheckoutPage() {
               <div className="checkout-form-col">
                 <form onSubmit={handlePayment} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                   
-                  {/* SECTION 01 */}
-                  <div className="form-card-section" style={{ 
-                    background: '#ffffff', 
-                    borderRadius: '28px', 
-                    padding: '2rem', 
-                    border: `1px solid ${colors.border}`,
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.02)'
-                  }}>
-                    <h3 style={{ 
-                      fontSize: '1.2rem', 
-                      fontWeight: 900, 
-                      margin: '0 0 1.8rem', 
-                      color: colors.accent, 
-                      fontFamily: 'Oswald, sans-serif', 
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px'
-                    }}>
-                      01. Contact Info
-                    </h3>
-                    <input style={inputStyle} placeholder="Identity Email" required type="email" value={email} onChange={e=>setEmail(e.target.value)} />
-                    <div style={{ display: 'flex', gap: '8px', marginBottom: '1.2rem', alignItems: 'stretch' }}>
-                      <div style={{ 
-                        ...inputStyle, width: 'auto', marginBottom: 0, 
-                        display: 'flex', alignItems: 'center', gap: '8px', 
-                        padding: '0 1.2rem', background: 'rgba(20, 104, 69, 0.08)',
-                        height: '58px', flexShrink: 0
+                  {checkoutStep === 1 && (
+                    <>
+                      {/* SECTION 01 */}
+                      <div className="form-card-section" style={{ 
+                        background: '#ffffff', 
+                        borderRadius: '28px', 
+                        padding: '2rem', 
+                        border: `1px solid ${colors.border}`,
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.02)'
                       }}>
-                        <span style={{ fontSize: '1.2rem' }}>🇮🇳</span>
-                        <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>+91</span>
+                        <h3 style={{ 
+                          fontSize: '1.2rem', 
+                          fontWeight: 900, 
+                          margin: '0 0 1.8rem', 
+                          color: colors.accent, 
+                          fontFamily: 'Oswald, sans-serif', 
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.5px'
+                        }}>
+                          01. Contact Info
+                        </h3>
+                        <input style={inputStyle} placeholder="Identity Email" required type="email" value={email} onChange={e=>setEmail(e.target.value)} />
+                        <div style={{ display: 'flex', gap: '8px', marginBottom: '1.2rem', alignItems: 'stretch' }}>
+                          <div style={{ 
+                            ...inputStyle, width: 'auto', marginBottom: 0, 
+                            display: 'flex', alignItems: 'center', gap: '8px', 
+                            padding: '0 1.2rem', background: 'rgba(20, 104, 69, 0.08)',
+                            height: '58px', flexShrink: 0
+                          }}>
+                            <span style={{ fontSize: '1.2rem' }}>🇮🇳</span>
+                            <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>+91</span>
+                          </div>
+                          <input 
+                            style={{ ...inputStyle, marginBottom: 0, flex: 1, height: '58px' }} 
+                            placeholder="10-Digit Mobile Number" 
+                            required 
+                            type="tel" 
+                            value={phone} 
+                            onChange={e => {
+                              let val = e.target.value.replace(/\D/g, '');
+                              if (val.startsWith('0')) val = val.substring(1);
+                              setPhone(val.slice(0, 10));
+                            }} 
+                          />
+                        </div>
+    
+                        <style dangerouslySetInnerHTML={{ __html: `
+                          .country-code-option:hover { background: rgba(20, 104, 69, 0.05); }
+                        `}} />
                       </div>
-                      <input 
-                        style={{ ...inputStyle, marginBottom: 0, flex: 1, height: '58px' }} 
-                        placeholder="10-Digit Mobile Number" 
-                        required 
-                        type="tel" 
-                        value={phone} 
-                        onChange={e => {
-                          let val = e.target.value.replace(/\D/g, '');
-                          if (val.startsWith('0')) val = val.substring(1);
-                          setPhone(val.slice(0, 10));
-                        }} 
-                      />
-                    </div>
- 
-                    <style dangerouslySetInnerHTML={{ __html: `
-                      .country-code-option:hover { background: rgba(20, 104, 69, 0.05); }
-                    `}} />
-                  </div>
 
-                  {/* SECTION 02 */}
-                  <div className="form-card-section" style={{ 
-                    background: '#ffffff', 
-                    borderRadius: '28px', 
-                    padding: '2rem', 
-                    border: `1px solid ${colors.border}`,
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.02)'
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.8rem', gap: '10px' }}>
+                      {/* SECTION 02 */}
+                      <div className="form-card-section" style={{ 
+                        background: '#ffffff', 
+                        borderRadius: '28px', 
+                        padding: '2rem', 
+                        border: `1px solid ${colors.border}`,
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.02)'
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.8rem', gap: '10px' }}>
+                          <h3 style={{ 
+                            fontSize: '1.2rem', 
+                            fontWeight: 900, 
+                            margin: 0, 
+                            color: colors.accent, 
+                            fontFamily: 'Oswald, sans-serif', 
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px'
+                          }}>
+                            02. Shipping Info
+                          </h3>
+                          <button 
+                            type="button" 
+                            onClick={handleSetLocation} 
+                            style={{ 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              gap: '6px', 
+                              background: locationUrl ? colors.accent : 'rgba(20, 104, 69, 0.05)', 
+                              color: locationUrl ? '#fff' : colors.accent, 
+                              border: `1px solid ${colors.accent}`, 
+                              padding: '0.5rem 1rem', 
+                              borderRadius: '30px', 
+                              fontWeight: 800, 
+                              cursor: 'pointer',
+                              fontSize: '0.7rem',
+                              textTransform: 'uppercase',
+                              whiteSpace: 'nowrap'
+                            }}
+                          >
+                            <MapPin size={14} /> {locationUrl ? 'Address Saved' : 'Set Location'}
+                          </button>
+                        </div>
+                        <input style={inputStyle} placeholder="Full Name" required value={customerName} onChange={e=>setCustomerName(e.target.value)} />
+                        <input style={inputStyle} placeholder="Address" required value={address} onChange={e=>setAddress(e.target.value)} />
+                        <input style={inputStyle} placeholder="Road, Apartment, Near by hotel, etc.." value={addressDetail} onChange={e=>setAddressDetail(e.target.value)} />
+                        <div className="address-sub-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', flexWrap: 'wrap' }}>
+                          <input style={{ ...inputStyle, marginBottom: 0 }} placeholder="City" value={city} onChange={e=>setCity(e.target.value)} />
+                          
+                          {/* State Dropdown */}
+                          <div style={{ position: 'relative' }}>
+                            <div 
+                              onClick={() => setIsStateDropdownOpen(!isStateDropdownOpen)}
+                              style={{ ...inputStyle, marginBottom: 0, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                            >
+                              <span style={{ color: state ? colors.text : colors.textMuted }}>{state || 'Select State'}</span>
+                              <ChevronDown size={18} style={{ transition: '0.3s', transform: isStateDropdownOpen ? 'rotate(180deg)' : 'none' }} />
+                            </div>
+                            {isStateDropdownOpen && (
+                              <div style={{ 
+                                position: 'absolute', bottom: '100%', left: 0, right: 0, 
+                                maxHeight: '200px', overflowY: 'auto', background: '#fff', 
+                                zIndex: 100, border: `1px solid ${colors.border}`, 
+                                borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+                                marginBottom: '5px'
+                              }}>
+                                {indianStates.map(s => (
+                                  <div 
+                                    key={s} 
+                                    onClick={() => { setState(s); setIsStateDropdownOpen(false); }}
+                                    style={{ padding: '0.8rem 1rem', cursor: 'pointer', fontSize: '0.9rem' }}
+                                    className="state-option"
+                                  >
+                                    {s}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+
+                          <input style={{ ...inputStyle, marginBottom: 0 }} placeholder="Pin Code" value={pinCode} onChange={e=>setPinCode(e.target.value)} maxLength={6} />
+                        </div>
+    
+                        <style dangerouslySetInnerHTML={{ __html: `
+                          .state-option:hover { background: rgba(20, 104, 69, 0.05); }
+                          @media (max-width: 600px) {
+                            .address-sub-grid { grid-template-columns: 1fr !important; }
+                          }
+                        `}} />
+                      </div>
+                    </>
+                  )}
+
+                  {checkoutStep === 2 && (
+                    <div className="form-card-section" style={{ 
+                      background: '#ffffff', 
+                      borderRadius: '28px', 
+                      padding: '2rem', 
+                      border: `2px solid ${colors.accent}`,
+                      boxShadow: '0 8px 30px rgba(20, 104, 69, 0.1)',
+                      marginBottom: '1rem'
+                    }}>
                       <h3 style={{ 
                         fontSize: '1.2rem', 
                         fontWeight: 900, 
-                        margin: 0, 
+                        margin: '0 0 1.8rem', 
                         color: colors.accent, 
                         fontFamily: 'Oswald, sans-serif', 
                         textTransform: 'uppercase',
                         letterSpacing: '0.5px'
                       }}>
-                        02. Shipping Info
+                        03. Payment Method
                       </h3>
-                      <button 
-                        type="button" 
-                        onClick={handleSetLocation} 
-                        style={{ 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          gap: '6px', 
-                          background: locationUrl ? colors.accent : 'rgba(20, 104, 69, 0.05)', 
-                          color: locationUrl ? '#fff' : colors.accent, 
-                          border: `1px solid ${colors.accent}`, 
-                          padding: '0.5rem 1rem', 
-                          borderRadius: '30px', 
-                          fontWeight: 800, 
-                          cursor: 'pointer',
-                          fontSize: '0.7rem',
-                          textTransform: 'uppercase',
-                          whiteSpace: 'nowrap'
-                        }}
-                      >
-                        <MapPin size={14} /> {locationUrl ? 'Address Saved' : 'Set Location'}
-                      </button>
-                    </div>
-                    <input style={inputStyle} placeholder="Full Name" required value={customerName} onChange={e=>setCustomerName(e.target.value)} />
-                    <input style={inputStyle} placeholder="Address" required value={address} onChange={e=>setAddress(e.target.value)} />
-                    <input style={inputStyle} placeholder="Road, Apartment, Near by hotel, etc.." value={addressDetail} onChange={e=>setAddressDetail(e.target.value)} />
-                    <div className="address-sub-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', flexWrap: 'wrap' }}>
-                      <input style={{ ...inputStyle, marginBottom: 0 }} placeholder="City" value={city} onChange={e=>setCity(e.target.value)} />
                       
-                      {/* State Dropdown */}
-                      <div style={{ position: 'relative' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                         <div 
-                          onClick={() => setIsStateDropdownOpen(!isStateDropdownOpen)}
-                          style={{ ...inputStyle, marginBottom: 0, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                          onClick={() => setPaymentMethod('online')}
+                          style={{ 
+                            padding: '1.2rem', border: `2px solid ${paymentMethod === 'online' ? colors.accent : '#eee'}`, 
+                            borderRadius: '20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '15px',
+                            background: paymentMethod === 'online' ? 'rgba(20, 104, 69, 0.05)' : 'transparent',
+                            transition: '0.3s'
+                          }}
                         >
-                          <span style={{ color: state ? colors.text : colors.textMuted }}>{state || 'Select State'}</span>
-                          <ChevronDown size={18} style={{ transition: '0.3s', transform: isStateDropdownOpen ? 'rotate(180deg)' : 'none' }} />
-                        </div>
-                        {isStateDropdownOpen && (
-                          <div style={{ 
-                            position: 'absolute', bottom: '100%', left: 0, right: 0, 
-                            maxHeight: '200px', overflowY: 'auto', background: '#fff', 
-                            zIndex: 100, border: `1px solid ${colors.border}`, 
-                            borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
-                            marginBottom: '5px'
-                          }}>
-                            {indianStates.map(s => (
-                              <div 
-                                key={s} 
-                                onClick={() => { setState(s); setIsStateDropdownOpen(false); }}
-                                style={{ padding: '0.8rem 1rem', cursor: 'pointer', fontSize: '0.9rem' }}
-                                className="state-option"
-                              >
-                                {s}
-                              </div>
-                            ))}
+                          <div style={{ width: '22px', height: '22px', borderRadius: '50%', border: `2px solid ${colors.accent}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                             {paymentMethod === 'online' && <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: colors.accent }} />}
                           </div>
-                        )}
+                          <div>
+                             <p style={{ margin: 0, fontWeight: 800, fontSize: '1rem' }}>Online Payment</p>
+                             <p style={{ margin: 0, fontSize: '0.75rem', opacity: 0.6 }}>Credit/Debit Card, UPI, Net Banking</p>
+                          </div>
+                        </div>
+
+                        <div 
+                          onClick={() => {
+                             if (distance && distance > 15) {
+                                alert("COD is only available within 15km of our headquarters. Please use Online Payment for this distance.");
+                                return;
+                             }
+                             setPaymentMethod('cod');
+                          }}
+                          style={{ 
+                            padding: '1.2rem', border: `2px solid ${paymentMethod === 'cod' ? colors.accent : '#eee'}`, 
+                            borderRadius: '20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '15px',
+                            background: paymentMethod === 'cod' ? 'rgba(20, 104, 69, 0.05)' : 'transparent',
+                            transition: '0.3s',
+                            opacity: (distance && distance > 15) ? 0.5 : 1
+                          }}
+                        >
+                          <div style={{ width: '22px', height: '22px', borderRadius: '50%', border: `2px solid ${colors.accent}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                             {paymentMethod === 'cod' && <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: colors.accent }} />}
+                          </div>
+                          <div>
+                             <p style={{ margin: 0, fontWeight: 800, fontSize: '1rem' }}>Cash on Delivery (COD)</p>
+                             <p style={{ margin: 0, fontSize: '0.75rem', opacity: 0.6 }}>
+                                {distance && distance > 15 
+                                  ? `Not available for this distance (${distance.toFixed(1)} km)` 
+                                  : 'Pay when you receive your order'
+                                }
+                             </p>
+                          </div>
+                        </div>
                       </div>
 
-                      <input style={{ ...inputStyle, marginBottom: 0 }} placeholder="Pin Code" value={pinCode} onChange={e=>setPinCode(e.target.value)} maxLength={6} />
+                      <p onClick={() => setCheckoutStep(1)} style={{ marginTop: '1.5rem', fontSize: '0.8rem', fontWeight: 700, color: colors.accent, textAlign: 'center', cursor: 'pointer', textDecoration: 'underline' }}>
+                        &larr; Back to Information
+                      </p>
                     </div>
- 
-                    <style dangerouslySetInnerHTML={{ __html: `
-                      .state-option:hover { background: rgba(20, 104, 69, 0.05); }
-                      @media (max-width: 600px) {
-                        .address-sub-grid { grid-template-columns: 1fr !important; }
-                      }
-                    `}} />
-                  </div>
+                  )}
 
                   <button 
                     type="submit" 
@@ -543,7 +664,7 @@ export default function CheckoutPage() {
                       marginTop: '1rem'
                     }}
                   >
-                    {processing ? "PLACING ORDER..." : "PLACE ORDER NOW"}
+                    {processing ? "PLACING ORDER..." : (checkoutStep === 1 ? "NEXT: CHOOSE PAYMENT" : "PLACE ORDER NOW")}
                   </button>
                 </form>
               </div>
@@ -571,9 +692,8 @@ export default function CheckoutPage() {
                   </div>
 
                   <div style={{ marginTop: '2.5rem', paddingTop: '2rem', borderTop: `1px dashed ${colors.border}`, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', color: colors.textMuted, fontSize: '0.85rem', fontWeight: 700 }}><span>Items Total</span><span>₹{subtotal.toFixed(0)}</span></div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', color: colors.accent, fontSize: '0.85rem', fontWeight: 800 }}><span>Shipping</span><span>FREE</span></div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', color: '#ff6b6b', fontSize: '0.85rem', fontWeight: 800 }}><span>Coupon</span><span>-₹{discount.toFixed(0)}</span></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: colors.textMuted, fontSize: '0.85rem', fontWeight: 700 }}><span>Items Total</span><span>₹{(subtotal - discount).toFixed(0)}</span></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: colors.accent, fontSize: '0.85rem', fontWeight: 800 }}><span>Shipping {distance ? `(${distance.toFixed(1)} km)` : ''}</span><span>{shippingFee > 0 ? `₹${shippingFee}` : 'FREE'}</span></div>
                     
                     <div className="grand-total-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: colors.accent, margin: '1.5rem -2.5rem -2.5rem', padding: '2.5rem', borderBottomLeftRadius: '35px', borderBottomRightRadius: '35px', color: '#fff' }}>
                       <span style={{ fontSize: '1.2rem', fontWeight: 900, fontFamily: 'Oswald, sans-serif' }}>GRAND TOTAL</span>

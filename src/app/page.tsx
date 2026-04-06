@@ -16,7 +16,7 @@ export default function Home() {
 
   return (
     <>
-      <main className="main-content visible" style={{ paddingTop: '100px', backgroundColor: '#fcf7de', minHeight: '100vh', paddingBottom: '100px' }}>
+      <main className="main-content visible" style={{ paddingTop: '100px', backgroundColor: 'var(--bg-color)', minHeight: '100vh', paddingBottom: '100px' }}>
         
         {/* 1. HERO SECTION */}
         <section className="hero-section" style={{ position: 'relative', marginTop: '20px', width: '100%', padding: '0 4%', overflow: 'visible' }}>
@@ -132,7 +132,7 @@ export default function Home() {
             <div className="bento-grid">
                
                {/* CARD 1: Soft Pearl (Home Essentials) */}
-               <div className="bento-card blue card-blue" style={{ background: 'linear-gradient(135deg, #fdfcf3, #fcf7de)' }}>
+               <div className="bento-card blue card-blue" style={{ background: 'linear-gradient(135deg, #3c7814, #5a7a40)' }}>
                   <h3 style={{ fontSize: 'clamp(3rem, 5vw, 4.5rem)', fontWeight: 800, letterSpacing: '-2px', color: '#0f172a', lineHeight: 1, position: 'relative', zIndex: 10 }}>
                      eco<br/>essentials
                   </h3>
@@ -141,7 +141,7 @@ export default function Home() {
 
                {/* CARD 2: Jewel (Self Care / Tag) */}
                <div className="bento-card pink card-pink" style={{ background: 'var(--primary-color)', alignItems: 'center', justifyContent: 'center' }}>
-                  <h3 style={{ fontSize: '3rem', fontWeight: 800, letterSpacing: '-1px', color: '#fcf7de', textShadow: '4px 4px 0px rgba(0,0,0,0.08)' }}>
+                  <h3 style={{ fontSize: '3rem', fontWeight: 800, letterSpacing: '-1px', color: '#ffffff', textShadow: '4px 4px 0px rgba(0,0,0,0.08)' }}>
                      # selfcare
                   </h3>
                </div>
@@ -251,7 +251,7 @@ export default function Home() {
                <div className="bento-card yellow card-yellow" style={{ backgroundColor: 'var(--bg-color)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                   <h4 style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--primary-color)', marginBottom: '16px', lineHeight: 1.1 }}>Share<br/>Moments</h4>
                   <div style={{ display: 'flex', gap: '8px' }}>
-                     <input type="email" placeholder="Your email..." style={{ flex: 1, padding: '12px 20px', borderRadius: '30px', border: '1px solid rgba(20, 104, 69, 0.1)', outline: 'none', fontSize: '1rem', background: '#fcf7de' }} />
+                     <input type="email" placeholder="Your email..." style={{ flex: 1, padding: '12px 20px', borderRadius: '30px', border: '1px solid rgba(255, 255, 255, 0.1)', outline: 'none', fontSize: '1rem', background: 'rgba(255,255,255,0.1)', color: '#fff' }} />
                      <button style={{ background: 'var(--primary-color)', color: '#fff', padding: '12px 24px', borderRadius: '30px', border: 'none', fontWeight: 700, cursor: 'pointer' }}>Join</button>
                   </div>
                </div>
