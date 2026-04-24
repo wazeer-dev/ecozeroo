@@ -2,94 +2,56 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { motion, useScroll, useTransform } from 'motion/react';
+import { motion } from 'motion/react';
 import { Leaf, Award, Globe, Zap, Heart, CheckCircleIcon } from 'lucide-react';
 
 export default function AboutPage() {
-  const { scrollYProgress } = useScroll();
-  const heroScale = useTransform(scrollYProgress, [0, 0.3], [1, 1.1]);
-  const heroOpacity = useTransform(scrollYProgress, [0.4, 0.5], [1, 0]);
 
   return (
     <main style={{ backgroundColor: 'var(--bg-color)', minHeight: '100vh', overflowX: 'hidden' }}>
       
-      {/* 1. CINEMATIC WINDOW HERO */}
-      <section style={{ 
-        height: '110vh', 
-        width: '100vw', 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
-        padding: '0 5%',
-        position: 'relative',
-        zIndex: 1
-      }}>
-        <motion.div 
-          style={{ 
-            width: '100%', 
-            height: '85vh', 
-            borderRadius: '60px', 
-            overflow: 'hidden', 
-            position: 'relative',
-            scale: heroScale,
-            boxShadow: '0 40px 100px rgba(26, 60, 38, 0.15)'
-          }}
-        >
-          <Image 
-            src="/about/hero.png" 
-            alt="The Greenhouse Architecture" 
-            fill 
-            style={{ objectFit: 'cover' }}
-            priority
-          />
-          <div style={{ 
-            position: 'absolute', 
-            inset: 0, 
-            background: 'linear-gradient(to bottom, transparent 30%, rgba(26, 60, 38, 0.6) 100%)' 
-          }} />
-          
-          {/* Hero Content Overlay */}
-          <div style={{ 
-            position: 'absolute', 
-            bottom: '10%', 
-            left: '8%', 
-            maxWidth: '800px',
-            color: '#fff'
-          }}>
-            <motion.span 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              style={{ 
-                display: 'inline-block', 
-                backgroundColor: 'rgba(255,255,255,0.2)', 
-                backdropFilter: 'blur(10px)',
-                padding: '8px 24px', 
-                borderRadius: '50px', 
-                fontSize: '0.8rem', 
-                fontWeight: 800, 
-                letterSpacing: '3px',
-                marginBottom: '24px'
-              }}
-            >
-              EST. 2024 • THE MISSION
-            </motion.span>
-            <motion.h1 
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              style={{ 
-                fontSize: 'clamp(3rem, 10vw, 8rem)', 
-                fontWeight: 400, 
-                fontFamily: 'var(--font-brand), serif',
-                lineHeight: 0.9,
-                marginBottom: '32px'
-              }}
-            >
-              Architects <br/> of Choice.
-            </motion.h1>
-          </div>
-        </motion.div>
+      {/* 1. HERO SECTION (HOME-STYLE) */}
+      <section className="hero-section" style={{ position: 'relative', marginTop: '120px', width: '100%', padding: '0 4%', overflow: 'visible' }}>
+        <div style={{ 
+          background: 'linear-gradient(90deg, rgba(10, 42, 22, 0.95) 30%, rgba(10, 42, 22, 0) 100%), url(/about/hero.png) center/cover', 
+          borderRadius: '80px', 
+          padding: '120px 80px', 
+          display: 'flex', 
+          flexWrap: 'wrap', 
+          position: 'relative', 
+          overflow: 'hidden', 
+          minHeight: '650px', 
+          alignItems: 'center' 
+        }}>
+           
+           {/* Left Content */}
+           <div style={{ flex: '1 1 500px', zIndex: 10, display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative' }}>
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+                style={{ display: 'inline-block', backgroundColor: 'transparent', border: '1.5px solid rgba(205, 220, 57, 0.2)', borderRadius: '30px', padding: '8px 24px', fontSize: '0.9rem', fontWeight: 700, color: '#A0C2C2', marginBottom: '40px', alignSelf: 'flex-start' }}
+              >
+                 EST. 2024 • THE MISSION
+              </motion.div>
+              <motion.h1 
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                style={{ fontSize: 'clamp(3.5rem, 6vw, 6rem)', lineHeight: 0.95, fontWeight: 900, color: '#ffffff', marginBottom: '32px', letterSpacing: '-3px', fontFamily: 'var(--font-heading), sans-serif' }}
+              >
+                Architects of <br /> Sustainable Choice.
+              </motion.h1>
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+                style={{ fontSize: '1.25rem', color: '#e0f2f1', lineHeight: 1.5, maxWidth: '480px', fontWeight: 500 }}
+              >
+                At EcoZero, we believe that balance in mind and body begins with the health of our earth. Discover our journey towards a zero-waste future.
+              </motion.p>
+           </div>
+        </div>
       </section>
 
       {/* 2. THE MANIFESTO: BOLD TEXT */}
@@ -172,7 +134,7 @@ export default function AboutPage() {
       {/* 4. CORE PRINCIPLES GRID */}
       <section style={{ padding: '15vh 5%' }}>
           <div className="container" style={{ textAlign: 'center', marginBottom: '80px' }}>
-             <h4 style={{ fontSize: '3.5rem', fontWeight: 800, color: '#1a3c26' }}>Our Core Loop.</h4>
+             <h4 style={{ fontSize: '3.5rem', fontWeight: 800, color: '#ffffff' }}>Our Core Loop.</h4>
           </div>
           
           <div style={{ 
