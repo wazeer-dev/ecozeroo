@@ -5,7 +5,7 @@
 :root {
   --primary-color: #cddc39; /* Bamboo Lime */
   --primary-glow: rgba(205, 220, 57, 0.2);
-  --secondary-color: #88c65f;
+  --secondary-color: #cddc39;
   --bg-color: #0a2a16; /* Dark Forest Green from label */
   --text-primary: #ffffff;
   --text-secondary: #e0f2f1; /* Mint from label text */
@@ -105,14 +105,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-secondary {
-  background: var(--white);
-  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--white);
   padding: 1rem 2.4rem;
   border-radius: 50px;
   text-decoration: none;
   font-weight: 700;
   display: inline-block;
-  border: 1.5px solid rgba(60, 120, 20, 0.15);
+  border: 1.5px solid rgba(205, 220, 57, 0.1);
   transition: 0.3s;
 }
 
@@ -131,7 +131,7 @@ h1, h2, h3, h4, h5, h6 {
   left: 5%;
   width: 90%;
   height: 72px;
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(10, 42, 22, 0.85);
   backdrop-filter: blur(12px);
   border-radius: 50px;
   display: flex;
@@ -139,8 +139,8 @@ h1, h2, h3, h4, h5, h6 {
   justify-content: space-between;
   padding: 0 24px;
   z-index: 1000;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-  border: 1px solid rgba(60, 120, 20, 0.08);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  border: 1px solid rgba(205, 220, 57, 0.1);
 }
 
 .nav-links {
@@ -168,11 +168,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .quote-pill {
-  background: var(--white);
-  color: #000;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--white);
   padding: 8px 8px 8px 24px;
   border-radius: 40px;
-  border: 1.5px solid rgba(0,0,0,0.08);
+  border: 1px solid rgba(205, 220, 57, 0.1);
   font-weight: 800;
   text-decoration: none;
   display: flex;
@@ -190,7 +190,7 @@ h1, h2, h3, h4, h5, h6 {
 .quote-btn-icon {
     width: 38px;
     height: 38px;
-    background: #88c65f;
+    background: var(--primary-color);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -211,8 +211,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .faq-item {
-  background: var(--white);
-  border: 1.5px solid rgba(60, 120, 20, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(205, 220, 57, 0.1);
   border-radius: 20px;
   overflow: hidden;
   transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
@@ -249,7 +249,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .faq-item.active {
   border-color: var(--primary-color);
-  box-shadow: 0 15px 40px rgba(60, 120, 20, 0.1);
+  box-shadow: 0 15px 40px rgba(205, 220, 57, 0.1);
   transform: translateY(-2px);
 }
 
@@ -312,9 +312,9 @@ h1, h2, h3, h4, h5, h6 {
   overflow: hidden;
   height: 380px;
   cursor: pointer;
-  background: #eee;
-  border: 1px solid rgba(0,0,0,0.05);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  background: rgba(10, 42, 22, 0.5);
+  border: 1px solid rgba(205, 220, 57, 0.1);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
   transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 

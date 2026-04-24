@@ -14,6 +14,7 @@ const fraunces = Fraunces({ subsets: ['latin'], variable: '--font-brand', style:
 export const metadata: Metadata = {
   title: 'ECOZERO | Organic Drinks & Eco-Fresh Blends',
   description: 'Discover ECOZERO — premium organic smoothies, cold-pressed juices, cold coffees and eco-friendly blends crafted for your body and the planet.',
+  themeColor: '#0a2a16',
 };
 
 export default function RootLayout({
@@ -32,7 +33,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${inter.variable} ${outfit.variable} ${fraunces.variable} theme-orange`}
+        className={`${inter.variable} ${outfit.variable} ${fraunces.variable} theme-dark`}
         suppressHydrationWarning
         style={{ backgroundColor: '#0a2a16', color: '#ffffff', margin: 0, padding: 0, overflowX: 'hidden' }}
       >

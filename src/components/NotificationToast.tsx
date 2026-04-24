@@ -58,9 +58,9 @@ export default function NotificationToast() {
 
   const getToastIcon = (type: string) => {
     switch (type) {
-      case 'order': return <Package size={18} color="#3c7814" />;
-      case 'offer': return <Tag size={18} color="#3c7814" />;
-      default: return <Bell size={18} color="#3c7814" />;
+      case 'order': return <Package size={18} color="#cddc39" />;
+      case 'offer': return <Tag size={18} color="#cddc39" />;
+      default: return <Bell size={18} color="#cddc39" />;
     }
   };
 
@@ -75,12 +75,12 @@ export default function NotificationToast() {
         zIndex: 10000,
         width: '360px',
         maxWidth: 'calc(100vw - 32px)',
-        background: 'rgba(255, 255, 255, 0.98)',
-        backdropFilter: 'blur(10px)',
-        border: '1px solid rgba(60, 120, 20, 0.15)',
+        background: 'rgba(10, 42, 22, 0.95)',
+        backdropFilter: 'blur(15px)',
+        border: '1px solid rgba(205, 220, 57, 0.15)',
         borderRadius: '20px',
         padding: '1rem',
-        boxShadow: '0 15px 35px rgba(4, 28, 11, 0.15)',
+        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.4)',
         transition: 'all 0.6s cubic-bezier(0.23, 1, 0.32, 1)',
         display: 'flex',
         flexDirection: 'column',
@@ -105,7 +105,7 @@ export default function NotificationToast() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div className="notif-badge" style={{ 
-          background: 'rgba(136, 198, 95, 0.1)', 
+          background: 'rgba(205, 220, 57, 0.1)', 
           padding: '6px 12px', 
           borderRadius: '10px', 
           display: 'flex', 
@@ -113,7 +113,7 @@ export default function NotificationToast() {
           gap: '6px',
           fontSize: '0.72rem',
           fontWeight: 800,
-          color: '#146845',
+          color: '#cddc39',
           textTransform: 'uppercase',
           letterSpacing: '0.5px'
         }}>
@@ -122,7 +122,7 @@ export default function NotificationToast() {
         </div>
         <button 
           onClick={dismissNotif}
-          style={{ background: 'none', border: 'none', color: '#7a9a60', cursor: 'pointer', display: 'flex' }}
+          style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', display: 'flex' }}
         >
           <X size={18} />
         </button>
@@ -131,17 +131,17 @@ export default function NotificationToast() {
       {/* Body */}
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px', marginBottom: '5px' }}>
-          <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: 'rgb(4, 28, 11)' }}>{activeNotification.title}</h4>
+          <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#fff' }}>{activeNotification.title}</h4>
           {activeNotification.offerValue && (
             <span style={{ 
-              background: '#146845', color: '#fff', padding: '4px 8px', borderRadius: '8px', 
+              background: '#cddc39', color: '#0a2a16', padding: '4px 8px', borderRadius: '8px', 
               fontSize: '0.75rem', fontWeight: 900, whiteSpace: 'nowrap'
             }}>
               {activeNotification.offerValue}
             </span>
           )}
         </div>
-        <p style={{ margin: 0, fontSize: '0.85rem', color: '#5a7a40', lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+        <p style={{ margin: 0, fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
           {activeNotification.desc}
         </p>
       </div>
@@ -157,14 +157,14 @@ export default function NotificationToast() {
           justifyContent: 'space-between', 
           marginTop: '2px',
           textDecoration: 'none',
-          background: '#146845',
+          background: '#cddc39',
           padding: '10px 16px',
           borderRadius: '14px',
-          color: '#fff',
+          color: '#0a2a16',
           fontSize: '0.8rem',
           fontWeight: 800,
           transition: '0.2s',
-          boxShadow: '0 4px 12px rgba(20, 104, 69, 0.15)'
+          boxShadow: '0 8px 24px rgba(205, 220, 57, 0.2)'
         }}
       >
         <span>{activeNotification.linkedProductId ? `Redeem Offer` : 'View Details'}</span>

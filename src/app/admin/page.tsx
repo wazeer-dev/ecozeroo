@@ -521,15 +521,15 @@ export default function AdminDashboard() {
           background: transparent;
         }
         ::-webkit-scrollbar-thumb {
-          background: rgba(136, 198, 95, 0.2);
+          background: rgba(205, 220, 57, 0.2);
           border-radius: 10px;
           transition: 0.3s;
         }
         ::-webkit-scrollbar-thumb:hover {
-          background: rgba(136, 198, 95, 0.4);
+          background: rgba(205, 220, 57, 0.4);
         }
         .admin-modal-inner::-webkit-scrollbar-thumb {
-          background: rgba(136, 198, 95, 0.4);
+          background: rgba(205, 220, 57, 0.4);
         }
       `}} />
 

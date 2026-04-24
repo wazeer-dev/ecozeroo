@@ -11,7 +11,7 @@ export default function AboutPage() {
   const heroOpacity = useTransform(scrollYProgress, [0.4, 0.5], [1, 0]);
 
   return (
-    <main style={{ backgroundColor: '#f7faef', minHeight: '100vh', overflowX: 'hidden' }}>
+    <main style={{ backgroundColor: 'var(--bg-color)', minHeight: '100vh', overflowX: 'hidden' }}>
       
       {/* 1. CINEMATIC WINDOW HERO */}
       <section style={{ 
@@ -104,7 +104,7 @@ export default function AboutPage() {
             maxWidth: '1200px', 
             margin: '0 auto',
             lineHeight: 1.1,
-            color: '#1a3c26',
+            color: '#ffffff',
             fontWeight: 800,
             letterSpacing: '-0.03em'
           }}>
@@ -132,7 +132,7 @@ export default function AboutPage() {
       </section>
 
       {/* 3. ASYMMETRICAL STORY SECTION */}
-      <section style={{ backgroundColor: '#1a3c26', color: '#fff', padding: '15vh 0' }}>
+      <section style={{ backgroundColor: 'rgba(255,255,255,0.03)', color: '#fff', padding: '15vh 0' }}>
          <div className="container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '5%', alignItems: 'center' }}>
             
             <motion.div 
@@ -205,7 +205,7 @@ export default function AboutPage() {
 function Metric({ counter, label }: { counter: string, label: string }) {
   return (
     <div style={{ textAlign: 'center' }}>
-      <div style={{ fontSize: '3.5rem', fontWeight: 800, color: '#1a3c26' }}>{counter}</div>
+      <div style={{ fontSize: '3.5rem', fontWeight: 800, color: '#ffffff' }}>{counter}</div>
       <div style={{ fontSize: '0.75rem', fontWeight: 800, letterSpacing: '2px', color: 'var(--primary-color)', marginTop: '8px' }}>{label}</div>
     </div>
   );
@@ -217,15 +217,16 @@ function PrincipleCard({ icon, title, desc }: { icon: any, title: string, desc: 
        whileHover={{ y: -10 }}
        style={{ 
           padding: '60px 40px', 
-          backgroundColor: '#fff', 
+          backgroundColor: 'rgba(255,255,255,0.03)', 
           borderRadius: '40px', 
-          boxShadow: '0 20px 50px rgba(0,0,0,0.03)',
+          border: '1px solid rgba(205, 220, 57, 0.1)',
+          boxShadow: '0 20px 50px rgba(0,0,0,0.2)',
           transition: 'all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1)'
        }}
     >
        <div style={{ color: 'var(--primary-color)', marginBottom: '32px' }}>{icon}</div>
-       <h5 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '16px', color: '#1a3c26' }}>{title}</h5>
-       <p style={{ color: 'rgba(26,60,38,0.6)', lineHeight: 1.7, fontSize: '1.05rem' }}>{desc}</p>
+       <h5 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '16px', color: '#ffffff' }}>{title}</h5>
+       <p style={{ color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, fontSize: '1.05rem' }}>{desc}</p>
     </motion.div>
   );
 }
