@@ -206,7 +206,7 @@ function Metric({ counter, label }: { counter: string, label: string }) {
   return (
     <div style={{ textAlign: 'center' }}>
       <div style={{ fontSize: '3.5rem', fontWeight: 800, color: '#ffffff' }}>{counter}</div>
-      <div style={{ fontSize: '0.75rem', fontWeight: 800, letterSpacing: '2px', color: 'var(--primary-color)', marginTop: '8px' }}>{label}</div>
+      <div style={{ fontSize: '0.75rem', fontWeight: 800, letterSpacing: '2px', color: 'var(--accent-secondary)', marginTop: '8px' }}>{label}</div>
     </div>
   );
 }

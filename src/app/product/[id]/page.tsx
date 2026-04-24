@@ -409,10 +409,10 @@ export default function ProductDetailPage() {
           color: #ffffff;
         }
         .discount-badge {
-          background: #cddc39;
+          background: var(--accent-secondary);
           color: #0a2a16;
           font-size: 0.75rem;
-          font-weight: 700;
+          font-weight: 800;
           padding: 4px 12px;
           border-radius: 20px;
         }
@@ -878,7 +878,7 @@ export default function ProductDetailPage() {
               <div className="price-row">
                 <span className="old-price">${originalPrice.toFixed(2)}</span>
                 <span className="new-price">${parseFloat(product.price).toFixed(2)}</span>
-                <span className="discount-badge">-25% Disc</span>
+                <span className="discount-badge">-25% OFF</span>
               </div>
               
               <div className="rating-stars-row">
@@ -989,7 +989,7 @@ export default function ProductDetailPage() {
                  <div style={{ flex: 1 }}>
                     <h1 className="product-title" style={{ fontSize: '1.4rem', fontWeight: 900 }}>{product.name}</h1>
                     <div className="product-subtitle" style={{ color: 'rgba(255, 255, 255, 0.6)', fontWeight: 700, marginTop: '4px' }}>
-                      <Zap size={14} fill="#cddc39" stroke="#cddc39" style={{ marginRight: '4px' }} /> Available on fast delivery
+                      <Zap size={14} fill="var(--accent-secondary)" stroke="var(--accent-secondary)" style={{ marginRight: '4px' }} /> Available on fast delivery
                     </div>
                  </div>
                  <button onClick={toggleWishlist} style={{ background: 'none', border: 'none', color: isWishlisted ? '#ff4d4d' : '#ccc', padding: '5px' }}>
@@ -1000,7 +1000,7 @@ export default function ProductDetailPage() {
                <div className="info-pills-row" style={{ marginTop: '18px' }}>
                   <span className="new-price" style={{ fontSize: '1.6rem', fontWeight: 900 }}>${parseFloat(product.price).toFixed(2)}</span>
                   <span className="old-price" style={{ fontSize: '1.1rem', fontWeight: 700, color: '#888', marginLeft: '8px' }}>${originalPrice.toFixed(2)}</span>
-                  <div className="discount-badge" style={{ marginLeft: '10px' }}>20%</div>
+                  <div className="discount-badge" style={{ marginLeft: '10px' }}>20% OFF</div>
                   <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 800, fontSize: '0.95rem' }}>
                     <Star size={18} fill="#F5B800" color="#F5B800" /> {averageRating} Rating
                   </div>

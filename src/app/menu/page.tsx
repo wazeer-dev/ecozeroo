@@ -138,7 +138,7 @@ export default function MenuPage() {
             maxWidth: '350px', boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
             transition: '0.3s'
           }} className="search-container">
-            <Search size={20} color="#cddc39" />
+            <Search size={20} color="#A0C2C2" />
             <input 
               type="text" 
               placeholder="Search products..." 
@@ -187,7 +187,7 @@ export default function MenuPage() {
         </div>
 
         {/* Desktop category pills */}
-        <div className="categories-scroll-wrapper desktop-only" style={{ overflowX: 'auto', margin: '0 -16px 3rem', padding: '0 16px 10px', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
+        <div className="categories-scroll-wrapper desktop-only" style={{ overflowX: 'auto', margin: '0 -166px 3rem', padding: '0 16px 10px', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
           <div className="categories-container" style={{ display: 'flex', gap: '0.8rem', alignItems: 'center', width: 'max-content', paddingRight: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '8px', color: '#ffffff', fontWeight: 700, fontSize: '0.9rem', flexShrink: 0 }}>
               <Filter size={18} /> CATEGORIES:
@@ -212,7 +212,7 @@ export default function MenuPage() {
         {/* Products header (Found count) */}
         <div className="section-label-row">
            <h3 className="section-label" style={{ color: '#ffffff' }}>{filtered.length} products found</h3>
-           <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#cddc39' }}>See all</span>
+           <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#A0C2C2' }}>See all</span>
         </div>
 
         {isLoading ? (

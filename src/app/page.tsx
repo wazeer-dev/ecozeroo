@@ -181,7 +181,7 @@ export default function Home() {
                           <div className="card-overlay" style={{ position: 'absolute', bottom: '0', left: '0', padding: '30px', background: 'linear-gradient(to top, #000, transparent)', width: '100%' }}>
                             <h3 style={{ color: '#fff', fontSize: '1.5rem', fontWeight: 900, textTransform: 'uppercase', marginBottom: '4px' }}>{product.name}</h3>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                              <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.7rem', fontWeight: 800 }}>Limited Edition</span>
+                              <span style={{ color: 'var(--accent-secondary)', fontSize: '0.7rem', fontWeight: 800 }}>Limited Edition</span>
                               <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#cddc39' }}></div>
                               <span style={{ color: '#cddc39', fontSize: '0.7rem', fontWeight: 800 }}>Shop Now</span>
                             </div>
@@ -296,14 +296,14 @@ export default function Home() {
                
                .scatter-pill {
                   position: absolute;
-                  background: white;
-                  color: black;
+                  background: var(--accent-secondary);
+                  color: #0a2a16;
                   font-weight: 800;
                   padding: 8px 16px;
                   border-radius: 20px;
                   font-size: 0.9rem;
-                  box-shadow: 4px 4px 0px rgba(0,0,0,0.15);
-                  border: 2px solid rgba(0,0,0,0.05);
+                  box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
+                  border: 1px solid rgba(0,0,0,0.05);
                   pointer-events: none;
                }
             `}</style>

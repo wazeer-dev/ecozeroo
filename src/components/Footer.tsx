@@ -145,7 +145,7 @@ const columnTitleStyle = {
   fontSize: '0.8rem',
   textTransform: 'uppercase' as const,
   letterSpacing: '2px',
-  color: '#cddc39',
+  color: '#A0C2C2',
   marginBottom: '30px',
   fontWeight: 800
 };

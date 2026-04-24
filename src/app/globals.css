@@ -13,6 +13,7 @@
   --black: #041c0b;
   --glass: rgba(10, 42, 22, 0.85);
   --glass-border: rgba(205, 220, 57, 0.1);
+  --accent-secondary: #A0C2C2; /* Minty Grey */
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
@@ -61,7 +62,7 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 0.82rem;
   font-weight: 800;
   letter-spacing: 2.5px;
-  color: var(--primary-color);
+  color: var(--accent-secondary);
   text-transform: uppercase;
   margin-bottom: 1.5rem;
 }
