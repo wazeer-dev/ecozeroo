@@ -15,11 +15,11 @@ export default function OrderDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   const colors = {
-    bg: '#fcf7de',
-    accent: 'rgb(20, 104, 69)',
-    text: '#041c0b',
-    border: 'rgba(20, 104, 69, 0.1)',
-    textMuted: 'rgba(4, 28, 11, 0.5)'
+    bg: 'var(--bg-color)',
+    accent: '#cddc39',
+    text: '#ffffff',
+    border: 'rgba(255, 255, 255, 0.1)',
+    textMuted: 'rgba(255, 255, 255, 0.5)'
   };
 
   const [isCancelling, setIsCancelling] = useState(false);
@@ -51,9 +51,9 @@ export default function OrderDetailPage() {
 
   if (!order) {
     return (
-      <div style={{ paddingTop: '160px', minHeight: '100vh', background: colors.bg, textAlign: 'center' }}>
+      <div style={{ paddingTop: '160px', minHeight: '100vh', background: 'var(--bg-color)', textAlign: 'center' }}>
         <h2 style={{ fontSize: '2rem', fontWeight: 900, fontFamily: 'Oswald, sans-serif' }}>ORDER NOT FOUND</h2>
-        <button onClick={() => router.push('/orders')} style={{ padding: '1rem 2.5rem', background: colors.accent, color: '#fff', border: 'none', borderRadius: '50px', fontWeight: 900, cursor: 'pointer' }}>BACK TO ORDERS</button>
+        <button onClick={() => router.push('/orders')} style={{ padding: '1rem 2.5rem', background: '#cddc39', color: '#0a2a16', border: 'none', borderRadius: '50px', fontWeight: 900, cursor: 'pointer' }}>BACK TO ORDERS</button>
       </div>
     );
   }
@@ -87,12 +87,12 @@ export default function OrderDetailPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: colors.bg, paddingBottom: '100px' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-color)', paddingBottom: '100px' }}>
       <style dangerouslySetInnerHTML={{ __html: `
         @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700;900&display=swap');
-        .order-details-container { padding-top: 100px; }
+        .order-details-container { padding-top: 180px; }
         @media (max-width: 768px) {
-           .order-details-container { padding-top: 5rem !important; }
+           .order-details-container { padding-top: 120px !important; }
            .order-grid { grid-template-columns: 1fr !important; gap: 1.5rem !important; }
         }
         @media (max-width: 480px) {
@@ -107,12 +107,12 @@ export default function OrderDetailPage() {
         }
       `}} />
 
-      <div className="order-details-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '0 20px' }}>
+      <div className="order-details-container" style={{ maxWidth: '900px', margin: '0 auto', paddingLeft: '20px', paddingRight: '20px' }}>
         
         {/* HEADER */}
         <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '12px' }}>
-           <button onClick={() => router.push('/orders')} style={{ background: '#fff', border: `1px solid ${colors.border}`, width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: colors.accent, flexShrink: 0 }}>
-              <ArrowLeft size={16} />
+           <button onClick={() => router.push('/orders')} style={{ background: 'rgba(255, 255, 255, 0.05)', border: `1px solid ${colors.border}`, width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#cddc39', flexShrink: 0 }}>
+              <ArrowLeft size={20} />
            </button>
            <div style={{ flex: 1, minWidth: 0 }}>
               <h1 className="order-info-h1" style={{ margin: 0, fontSize: '2.2rem', fontWeight: 900, fontFamily: 'Oswald, sans-serif', textTransform: 'uppercase', lineHeight: 1 }}>Order <span style={{ color: colors.accent }}>Info</span></h1>
@@ -126,7 +126,7 @@ export default function OrderDetailPage() {
               
               {/* TRACKING CARD WITH ANIMATIONS */}
               {order.status !== 'Cancelled' && (
-                <div className="tracking-card" style={{ background: '#fff', borderRadius: '30px', padding: '2.5rem', border: `1px solid ${colors.border}`, boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
+                <div className="tracking-card" style={{ background: 'rgba(255, 255, 255, 0.03)', borderRadius: '30px', padding: '2.5rem', border: `1px solid ${colors.border}`, boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
                    <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', marginBottom: '2.5rem' }}>
                       <div style={{ position: 'absolute', top: '22px', left: '10%', right: '10%', height: '3px', background: '#f5f5f5', zIndex: 0 }}>
                          <motion.div 
@@ -199,7 +199,7 @@ export default function OrderDetailPage() {
               )}
 
               {/* ITEMS CARD */}
-              <div className="card-generic" style={{ background: '#fff', borderRadius: '30px', padding: '2rem', border: `1px solid ${colors.border}` }}>
+              <div className="card-generic" style={{ background: 'rgba(255, 255, 255, 0.03)', borderRadius: '30px', padding: '2rem', border: `1px solid ${colors.border}` }}>
                  <h3 style={{ fontSize: '1rem', fontWeight: 900, fontFamily: 'Oswald, sans-serif', textTransform: 'uppercase', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <Package size={18} color={colors.accent} /> Items in Order
                  </h3>
@@ -245,7 +245,7 @@ export default function OrderDetailPage() {
               </motion.div>
 
               {/* LOGISTICS CARD */}
-              <div className="card-generic" style={{ background: '#fff', borderRadius: '30px', padding: '2rem', border: `1px solid ${colors.border}`, display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+              <div className="card-generic" style={{ background: 'rgba(255, 255, 255, 0.03)', borderRadius: '30px', padding: '2rem', border: `1px solid ${colors.border}`, display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
                  <div style={{ display: 'flex', gap: '12px' }}>
                     <MapPin size={18} color={colors.accent} />
                     <div>
@@ -275,7 +275,7 @@ export default function OrderDetailPage() {
                   disabled={isCancelling}
                   onClick={handleCancelOrder} 
                   style={{ 
-                    background: '#fff', border: '1px dashed #ff4444', borderRadius: '20px', 
+                    background: 'rgba(255, 255, 255, 0.03)', border: '1px dashed #ff4444', borderRadius: '20px', 
                     padding: '1.2rem', color: '#ff4444', fontWeight: 900, 
                     fontSize: '0.8rem', cursor: 'pointer', textTransform: 'uppercase',
                     opacity: isCancelling ? 0.5 : 1, transition: '0.3s'

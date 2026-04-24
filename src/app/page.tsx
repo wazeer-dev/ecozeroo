@@ -1,9 +1,13 @@
 'use client';
 
-import { ArrowDownRight } from 'lucide-react';
-import { useState } from 'react';
+import Link from 'next/link';
+import { ArrowDownRight, Heart, ShoppingBag, SlidersHorizontal, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { collection, getDocs, limit, query } from 'firebase/firestore';
+import { db } from '@/firebase/config';
 
 const TESTIMONIALS = [
+// ... (keep testimonials as is)
   { id: 1, name: 'Sarah M.', role: 'Eco Activist', quote: 'This platform completely changed how I source my daily essentials.', img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop', top: '35%', left: '15%', size: 60 },
   { id: 2, name: 'David L.', role: 'Chef', quote: 'The organic blends are exactly what my kitchen needed. Unmatched quality.', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop', top: '70%', left: '25%', size: 80 },
   { id: 3, name: 'Jessica T.', role: 'Yoga Instructor', quote: 'Truly sustainable and incredibly well packaged. Highly recommend!', img: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=200&auto=format&fit=crop', top: '15%', left: '46%', size: 70 },
@@ -12,7 +16,55 @@ const TESTIMONIALS = [
 ];
 
 export default function Home() {
+  const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [activeIdx, setActiveIdx] = useState(0);
   const [activeTestimonial, setActiveTestimonial] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        const q = query(collection(db, 'products'), limit(6));
+        const snapshot = await getDocs(q);
+        const products = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setFeaturedProducts(products);
+      } catch (err) {
+        console.error("Error fetching featured products:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFeatured();
+  }, []);
+
+  const addToBag = (product: any) => {
+    try {
+      const savedCart = JSON.parse(localStorage.getItem('ecozero_cart') || '[]');
+      const existing = savedCart.find((it: any) => it.id === product.id);
+      
+      if (existing) {
+        existing.quantity = (existing.quantity || 1) + 1;
+      } else {
+        savedCart.push({ ...product, quantity: 1 });
+      }
+      
+      localStorage.setItem('ecozero_cart', JSON.stringify(savedCart));
+      window.dispatchEvent(new Event('cartUpdated'));
+      alert(`Added ${product.name} to bag!`);
+    } catch (e) {
+      console.error("Error adding to cart:", e);
+    }
+  };
+
+  const currentProduct = featuredProducts[activeIdx];
+
+  const getIndex = (offset: number) => {
+    if (featuredProducts.length === 0) return 0;
+    return (activeIdx + offset + featuredProducts.length) % featuredProducts.length;
+  };
 
   return (
     <>
@@ -21,7 +73,7 @@ export default function Home() {
         {/* 1. HERO SECTION */}
         <section className="hero-section" style={{ position: 'relative', marginTop: '20px', width: '100%', padding: '0 4%', overflow: 'visible' }}>
           <div style={{ 
-            background: 'linear-gradient(90deg, rgba(205, 230, 174, 0.9) 30%, rgba(205, 230, 174, 0) 100%), url(/toothbrush-hero.png) center/cover', 
+            background: 'linear-gradient(90deg, rgba(10, 42, 22, 0.95) 30%, rgba(10, 42, 22, 0) 100%), url(/toothbrush-hero.png) center/cover', 
             borderRadius: '80px', 
             padding: '100px 80px', 
             display: 'flex', 
@@ -34,13 +86,13 @@ export default function Home() {
              
              {/* Left Content */}
              <div style={{ flex: '1 1 500px', zIndex: 10, display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative' }}>
-                <div style={{ display: 'inline-block', backgroundColor: 'transparent', border: '1.5px solid rgba(26, 60, 38, 0.2)', borderRadius: '30px', padding: '8px 24px', fontSize: '0.9rem', fontWeight: 700, color: '#1a3c26', marginBottom: '40px', alignSelf: 'flex-start' }}>
+                <div style={{ display: 'inline-block', backgroundColor: 'transparent', border: '1.5px solid rgba(205, 220, 57, 0.2)', borderRadius: '30px', padding: '8px 24px', fontSize: '0.9rem', fontWeight: 700, color: '#cddc39', marginBottom: '40px', alignSelf: 'flex-start' }}>
                    Eco-Friendly Living
                 </div>
-                <h1 style={{ fontSize: 'clamp(3.5rem, 6vw, 6rem)', lineHeight: 0.95, fontWeight: 900, color: '#1a3c26', marginBottom: '32px', letterSpacing: '-3px', fontFamily: 'var(--font-heading), sans-serif' }}>
+                <h1 style={{ fontSize: 'clamp(3.5rem, 6vw, 6rem)', lineHeight: 0.95, fontWeight: 900, color: '#ffffff', marginBottom: '32px', letterSpacing: '-3px', fontFamily: 'var(--font-heading), sans-serif' }}>
                   Achieve balance in <br /> mind, body, and earth.
                 </h1>
-                <p style={{ fontSize: '1.25rem', color: 'rgba(26, 60, 38, 0.7)', lineHeight: 1.5, maxWidth: '480px', fontWeight: 500 }}>
+                <p style={{ fontSize: '1.25rem', color: '#e0f2f1', lineHeight: 1.5, maxWidth: '480px', fontWeight: 500 }}>
                   Discover EcoZero — premium organic blends and eco-friendly products crafted for your well-being and the planet's future.
                 </p>
              </div>
@@ -58,6 +110,133 @@ export default function Home() {
             }
           ` }} />
         </section>
+        {/* 1.5 BEST SELLERS (BRUTALIST FASHION DECK) */}
+        <section style={{ background: '#041c0b', padding: '150px 0', position: 'relative', overflow: 'hidden' }}>
+          
+          <div className="container" style={{ position: 'relative', zIndex: 10 }}>
+            {/* Header Area */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '80px' }} className="bestsellers-header">
+              <div>
+                <p style={{ color: '#cddc39', fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '4px', marginBottom: '12px' }}>Luxury Performance</p>
+                <h2 className="bestsellers-heading" style={{ color: '#fff', fontWeight: 900, textTransform: 'uppercase', lineHeight: 0.9, letterSpacing: '-2px' }}>
+                  Best<br/>Sellers
+                </h2>
+              </div>
+              
+              <div style={{ display: 'flex', alignItems: 'center', gap: '30px', paddingBottom: '10px' }} className="nav-controls">
+                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+                    <span style={{ color: '#fff', fontSize: '1.4rem', fontWeight: 900 }}>0{activeIdx + 1}</span>
+                    <span style={{ color: 'rgba(255,255,255,0.1)', fontSize: '1rem', fontWeight: 900 }}>/</span>
+                    <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '1rem', fontWeight: 900 }}>0{featuredProducts.length}</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <button onClick={() => setActiveIdx(getIndex(-1))} className="nav-icon-btn"><ChevronLeft size={20} /></button>
+                    <button onClick={() => setActiveIdx(getIndex(1))} className="nav-icon-btn"><ChevronRight size={20} /></button>
+                  </div>
+              </div>
+            </div>
+
+            {/* Asymmetric Staggered Track */}
+            <div className="carousel-window" style={{ overflow: 'visible', padding: '40px 0' }}>
+              {loading ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                   <div className="brutalist-loader" />
+                   <span style={{ color: '#fff', fontWeight: 900 }}>INITIALIZING...</span>
+                </div>
+              ) : (
+                <div 
+                  className="carousel-track" 
+                  style={{ 
+                    display: 'flex', 
+                    gap: '60px', 
+                    transition: 'transform 1.4s cubic-bezier(0.23, 1, 0.32, 1)', 
+                    transform: `translateX(calc(0% - ${activeIdx * (400 + 60)}px))` 
+                  }}
+                >
+                  {featuredProducts.map((product, index) => {
+                    const isActive = activeIdx === index;
+                    const isStaggered = index % 2 === 1;
+                    return (
+                      <div 
+                        key={product.id}
+                        onClick={() => setActiveIdx(index)}
+                        className={`staggered-card ${isActive ? 'focused' : ''}`}
+                        style={{ 
+                          flex: '0 0 400px', 
+                          marginTop: isStaggered ? '120px' : '0',
+                          opacity: isActive ? 1 : 0.4,
+                          transform: isActive ? 'scale(1.05)' : 'scale(1)',
+                          transition: '0.8s'
+                        }}
+                      >
+                        <div style={{ position: 'relative', border: '1px solid rgba(255,255,255,0.1)', background: '#111' }}>
+                          <img src={product.image || product.imageUrl} style={{ width: '100%', aspectRatio: '3/4', objectFit: 'cover' }} alt={product.name} />
+                          
+                          {/* Top-Right Price Pop */}
+                          <div style={{ position: 'absolute', top: '-1px', right: '-1px', background: '#cddc39', color: '#0a2a16', padding: '15px 25px', fontSize: '1.2rem', fontWeight: 900 }}>
+                            ₹{product.price}
+                          </div>
+
+                          {/* Hover Label */}
+                          <div className="card-overlay" style={{ position: 'absolute', bottom: '0', left: '0', padding: '30px', background: 'linear-gradient(to top, #000, transparent)', width: '100%' }}>
+                            <h3 style={{ color: '#fff', fontSize: '1.5rem', fontWeight: 900, textTransform: 'uppercase', marginBottom: '4px' }}>{product.name}</h3>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                              <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.7rem', fontWeight: 800 }}>Limited Edition</span>
+                              <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#cddc39' }}></div>
+                              <span style={{ color: '#cddc39', fontSize: '0.7rem', fontWeight: 800 }}>Shop Now</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {isActive && (
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              addToBag(product);
+                            }}
+                            style={{ 
+                              marginTop: '20px', width: '100%', padding: '20px', background: 'transparent', border: '1px solid #fff', color: '#fff', fontWeight: 900, textTransform: 'uppercase', cursor: 'pointer', transition: '0.3s'
+                            }} 
+                            className="brutalist-buy-btn"
+                          >
+                            Add to bag
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+
+        <style dangerouslySetInnerHTML={{ __html: `
+          .bestsellers-heading { font-size: 4rem; transition: 0.3s; }
+          .nav-icon-btn { width: 44px; height: 44px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; }
+          .nav-icon-btn:hover { background: #fff; color: #000; border-color: #fff; transform: scale(1.05); }
+          .brutalist-buy-btn:hover { background: #fff; color: #000; }
+          .focused { z-index: 50; }
+          .focused div { border-color: #cddc39 !important; }
+          
+          .brutalist-loader { width: 30px; height: 30px; border: 4px solid #cddc39; border-top-color: transparent; animation: spin 0.8s linear infinite; }
+          @keyframes spin { to { transform: rotate(360deg); } }
+
+          @media (max-width: 1024px) {
+            .carousel-track { transform: translateX(calc(50% - 175px - ${activeIdx * (350 + 40)}px)) !important; }
+            .carousel-track > div { flex: 0 0 350px !important; }
+          }
+
+          @media (max-width: 768px) {
+            section { padding: 60px 0 !important; }
+            .bestsellers-heading { font-size: 2.2rem !important; }
+            .bestsellers-header { flex-direction: column !important; align-items: flex-start !important; gap: 30px !important; margin-bottom: 50px !important; }
+            .nav-controls { width: 100%; justify-content: space-between !important; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px; }
+            .carousel-track { transform: translateX(calc(50% - 140px - ${activeIdx * (280 + 20)}px)) !important; gap: 20px !important; }
+            .carousel-track > div { flex: 0 0 280px !important; margin-top: 0 !important; }
+            .nav-icon-btn { width: 48px; height: 48px; }
+          }
+        ` }} />
 
 
 
@@ -132,22 +311,34 @@ export default function Home() {
             <div className="bento-grid">
                
                {/* CARD 1: Soft Pearl (Home Essentials) */}
-               <div className="bento-card blue card-blue" style={{ background: 'linear-gradient(135deg, #3c7814, #5a7a40)' }}>
-                  <h3 style={{ fontSize: 'clamp(3rem, 5vw, 4.5rem)', fontWeight: 800, letterSpacing: '-2px', color: '#0f172a', lineHeight: 1, position: 'relative', zIndex: 10 }}>
+               <div className="bento-card blue card-blue" style={{ background: 'linear-gradient(135deg, #0a2a16, #146845)' }}>
+                  <h3 style={{ fontSize: 'clamp(3rem, 5vw, 4.5rem)', fontWeight: 800, letterSpacing: '-2px', color: '#ffffff', lineHeight: 1, position: 'relative', zIndex: 10 }}>
                      eco<br/>essentials
                   </h3>
-                  <div style={{ position: 'absolute', bottom: '-20px', right: '-20px', width: '80%', height: '70%', background: 'url(https://images.unsplash.com/photo-1618220179428-22790b461013?q=80&w=600&auto=format&fit=crop) center/cover', borderRadius: '32px', border: '8px solid rgba(255,255,255,0.4)', transform: 'rotate(-4deg)' }} />
+                  <div style={{ position: 'absolute', bottom: '-20px', right: '-20px', width: '80%', height: '70%', background: 'url(https://images.unsplash.com/photo-1618220179428-22790b461013?q=80&w=600&auto=format&fit=crop) center/cover', borderRadius: '32px', border: '8px solid rgba(255,255,255,0.1)', transform: 'rotate(-4deg)' }} />
                </div>
 
                {/* CARD 2: Jewel (Self Care / Tag) */}
-               <div className="bento-card pink card-pink" style={{ background: 'var(--primary-color)', alignItems: 'center', justifyContent: 'center' }}>
-                  <h3 style={{ fontSize: '3rem', fontWeight: 800, letterSpacing: '-1px', color: '#ffffff', textShadow: '4px 4px 0px rgba(0,0,0,0.08)' }}>
+               <div className="bento-card pink card-pink" style={{ background: 'var(--primary-color)', position: 'relative', overflow: 'hidden' }}>
+                  <h3 style={{ fontSize: '3.5rem', fontWeight: 800, letterSpacing: '-1px', color: '#ffffff', textShadow: '4px 4px 0px rgba(0,0,0,0.1)', position: 'relative', zIndex: 10, margin: 0 }}>
                      # selfcare
                   </h3>
+                  <div style={{ 
+                    position: 'absolute', 
+                    bottom: '-30px', 
+                    right: '-30px', 
+                    width: '220px', 
+                    height: '220px', 
+                    background: 'url(https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=400&auto=format&fit=crop) center/cover', 
+                    borderRadius: '40px', 
+                    border: '6px solid rgba(255,255,255,0.3)', 
+                    transform: 'rotate(6deg)',
+                    boxShadow: '0 15px 35px rgba(0,0,0,0.2)'
+                  }} />
                </div>
 
                {/* CARD 3: Crypto-style Line Chart (Testimonials) */}
-               <div className="bento-card chart card-chart" style={{ background: 'linear-gradient(to bottom, #dcfce7 0%, #ffffff 80%)', padding: '24px' }}>
+               <div className="bento-card chart card-chart" style={{ background: 'linear-gradient(to bottom, #0a2a16 0%, #1a3c26 80%)', padding: '24px', border: '1px solid rgba(205, 220, 57, 0.1)' }}>
                   <div style={{ textAlign: 'center', marginBottom: '20px', zIndex: 10 }}>
                      <h4 style={{ fontSize: '1.5rem', fontWeight: 800 }}>#Impact</h4>
                      <p style={{ color: 'var(--primary-color)', fontWeight: 700, fontSize: '0.9rem' }}>+57k (eco-points) Today</p>
@@ -239,20 +430,20 @@ export default function Home() {
                </div>
 
                {/* CARD 4: Jewel Green (Pill scatter) */}
-               <div className="bento-card green card-green" style={{ backgroundColor: 'var(--primary-color)', position: 'relative' }}>
-                  <div className="scatter-pill" style={{ top: '20%', left: '10%', transform: 'rotate(-5deg)', color: 'var(--primary-color)' }}>Community</div>
-                  <div className="scatter-pill" style={{ top: '45%', right: '15%', transform: 'rotate(8deg)', color: 'var(--primary-color)' }}>Zero-Waste</div>
-                  <div className="scatter-pill" style={{ bottom: '25%', left: '30%', transform: 'rotate(-2deg)', color: 'var(--primary-color)' }}>Active Users</div>
-                  <div className="scatter-pill" style={{ top: '15%', right: '10%', transform: 'rotate(12deg)', color: 'var(--primary-color)' }}>2025</div>
-                  <div className="scatter-pill" style={{ bottom: '15%', left: '8%', transform: 'rotate(-10deg)', color: 'var(--primary-color)' }}>Organic</div>
+               <div className="bento-card green card-green" style={{ backgroundColor: '#146845', position: 'relative' }}>
+                  <div className="scatter-pill" style={{ top: '20%', left: '10%', transform: 'rotate(-5deg)', color: '#0a2a16' }}>Community</div>
+                  <div className="scatter-pill" style={{ top: '45%', right: '15%', transform: 'rotate(8deg)', color: '#0a2a16' }}>Zero-Waste</div>
+                  <div className="scatter-pill" style={{ bottom: '25%', left: '30%', transform: 'rotate(-2deg)', color: '#0a2a16' }}>Active Users</div>
+                  <div className="scatter-pill" style={{ top: '15%', right: '10%', transform: 'rotate(12deg)', color: '#0a2a16' }}>2025</div>
+                  <div className="scatter-pill" style={{ bottom: '15%', left: '8%', transform: 'rotate(-10deg)', color: '#0a2a16' }}>Organic</div>
                </div>
 
-               {/* CARD 5: Bright Yellow CTA */}
-               <div className="bento-card yellow card-yellow" style={{ backgroundColor: 'var(--bg-color)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  <h4 style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--primary-color)', marginBottom: '16px', lineHeight: 1.1 }}>Share<br/>Moments</h4>
+               {/* CARD 5: Dark Forest CTA */}
+               <div className="bento-card yellow card-yellow" style={{ backgroundColor: '#041c0b', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <h4 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#fff', marginBottom: '16px', lineHeight: 1.1 }}>Share<br/>Moments</h4>
                   <div style={{ display: 'flex', gap: '8px' }}>
-                     <input type="email" placeholder="Your email..." style={{ flex: 1, padding: '12px 20px', borderRadius: '30px', border: '1px solid rgba(255, 255, 255, 0.1)', outline: 'none', fontSize: '1rem', background: 'rgba(255,255,255,0.1)', color: '#fff' }} />
-                     <button style={{ background: 'var(--primary-color)', color: '#fff', padding: '12px 24px', borderRadius: '30px', border: 'none', fontWeight: 700, cursor: 'pointer' }}>Join</button>
+                     <input type="email" placeholder="Your email..." style={{ flex: 1, padding: '12px 20px', borderRadius: '30px', border: '1px solid rgba(255, 255, 255, 0.1)', outline: 'none', fontSize: '1rem', background: 'rgba(255,255,255,0.05)', color: '#fff' }} />
+                     <button style={{ background: '#cddc39', color: '#0a2a16', padding: '12px 24px', borderRadius: '30px', border: 'none', fontWeight: 700, cursor: 'pointer' }}>Join</button>
                   </div>
                </div>
                
@@ -262,7 +453,7 @@ export default function Home() {
                      <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b' }}>EcoZero Typeface</span>
                      <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#ec4899', background: '#fce7f3', padding: '4px 12px', borderRadius: '12px' }}>Bold</span>
                   </div>
-                  <h2 style={{ fontSize: 'clamp(3rem, 6vw, 5rem)', fontWeight: 800, color: '#0f172a', lineHeight: 1, letterSpacing: '-2px' }}>AaBbCc</h2>
+                  <h2 style={{ fontSize: 'clamp(3rem, 6vw, 5rem)', fontWeight: 800, color: '#ffffff', lineHeight: 1, letterSpacing: '-2px' }}>AaBbCc</h2>
                </div>
 
             </div>

@@ -85,177 +85,224 @@ export default function Navbar() {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: `
-        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Dancing+Script:wght@700&family=Inter:wght@500;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         
-        .pill-nav-container {
+        .premium-nav-island {
           position: fixed;
-          top: 0; 
-          left: 0;
-          right: 0;
+          top: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 92%;
+          max-width: 1400px;
+          height: 72px;
+          background: rgba(10, 42, 22, 0.75);
+          backdrop-filter: blur(20px) saturate(180%);
+          -webkit-backdrop-filter: blur(20px) saturate(180%);
+          border: 1px solid rgba(205, 220, 57, 0.1);
+          border-radius: 40px;
           z-index: 2000;
-          height: 80px;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 0 4%;
-          background: rgba(20, 104, 69, 0.45);
-          backdrop-filter: blur(50px) saturate(180%);
-          -webkit-backdrop-filter: blur(50px) saturate(180%);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-          transition: all 0.3s ease;
+          padding: 0 32px;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
           font-family: 'Inter', sans-serif;
-          pointer-events: none;
         }
 
-        @media (max-width: 768px) {
-          .pill-nav-container {
+        .premium-nav-island.scrolled {
+          top: 10px;
+          width: 85%;
+          height: 64px;
+          background: rgba(10, 42, 22, 0.9);
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 1024px) {
+          .premium-nav-island {
+            width: 96%;
+            padding: 0 20px;
+          }
+          .nav-links-center {
             display: none !important;
           }
         }
-        
-        .pill-nav-container > * { pointer-events: auto; }
 
-        .brand-logo {
-          text-decoration: none;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          height: 64px;
-          flex-shrink: 0;
+        @media (max-width: 768px) {
+          .premium-nav-island {
+            top: 15px;
+            height: 60px;
+          }
+          .nav-actions-right .hide-mobile {
+            display: none !important;
+          }
         }
-        
-        .nav-center {
-          display: flex;
-          gap: 12px;
-          align-items: center;
-        }
-        
-        .nav-pill {
-          background: rgb(20, 104, 69);
-          color: #fff;
-          border-radius: 40px;
-          padding: 8px 18px;
-          font-size: 0.75rem;
-          font-weight: 800;
-          text-transform: uppercase;
-          text-decoration: none;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          white-space: nowrap;
-        }
-        .nav-pill:hover {
-          transform: translateY(-2px);
-          background: #fff;
-          color: rgb(20, 104, 69);
-          box-shadow: 0 8px 25px rgba(20, 104, 69, 0.1);
-        }
-        
-        .nav-circle {
-          background: rgb(20, 104, 69);
-          color: #fff;
-          width: 38px;
-          height: 38px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          cursor: pointer;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          text-decoration: none;
-        }
-        .nav-circle:hover {
-          transform: translateY(-2px);
-          background: #fff;
-          color: rgb(20, 104, 69);
-        }
-        
-        .quote-pill {
-          background: rgb(20, 104, 69);
-          border-radius: 40px;
-          padding: 4px 4px 4px 18px;
+
+        .brand-section {
           display: flex;
           align-items: center;
           gap: 12px;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
           text-decoration: none;
-          color: #fff;
-          font-weight: 800;
-          font-size: 0.85rem;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          cursor: pointer;
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          transition: 0.3s;
         }
-        .quote-pill:hover {
-          transform: translateY(-2px);
-          background: #fff;
-          color: rgb(20, 104, 69);
-          box-shadow: 0 8px 25px rgba(20, 104, 69, 0.1);
+        .brand-section:hover {
+          transform: scale(1.02);
         }
-        .quote-btn-icon {
-          background: #fff;
-          color: rgb(20, 104, 69);
-          width: 34px;
-          height: 34px;
-          border-radius: 50%;
+
+        .nav-links-center {
           display: flex;
           align-items: center;
-          justify-content: center;
-        }
-        
-        /* DROPDOWN */
-        .ez-dropdown {
+          gap: 4px;
           position: absolute;
-          top: calc(100% + 12px);
           left: 50%;
           transform: translateX(-50%);
-          width: 220px;
-          background: #fff;
-          border-radius: 16px;
+        }
+
+        .nav-item {
+          color: #e0f2f1;
+          text-decoration: none;
+          font-size: 0.82rem;
+          font-weight: 700;
+          padding: 8px 16px;
+          border-radius: 20px;
+          transition: all 0.3s ease;
+          letter-spacing: 0.02em;
+          text-transform: uppercase;
+          position: relative;
+        }
+
+        .nav-item::after {
+          content: '';
+          position: absolute;
+          bottom: 4px;
+          left: 50%;
+          width: 0%;
+          height: 2px;
+          background: #cddc39;
+          transition: 0.3s;
+          transform: translateX(-50%);
+          border-radius: 2px;
+        }
+
+        .nav-item:hover {
+          color: #cddc39;
+          background: rgba(205, 220, 57, 0.05);
+        }
+
+        .nav-item:hover::after {
+          width: 20%;
+        }
+
+        .nav-item.active {
+          color: #cddc39;
+        }
+
+        .nav-actions-right {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .action-btn {
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          color: #e0f2f1;
+          background: transparent;
+          border: 1px solid transparent;
+          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          cursor: pointer;
+          position: relative;
+        }
+
+        .action-btn:hover {
+          background: rgba(255,255,255,0.1);
+          border-color: rgba(205, 220, 57, 0.1);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          transform: translateY(-2px);
+          color: #cddc39;
+        }
+
+        .cart-capsule {
+          background: #cddc39;
+          color: #0a2a16;
+          padding: 8px 16px 8px 20px;
+          border-radius: 30px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          font-weight: 700;
+          font-size: 0.85rem;
+          text-decoration: none;
+          transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .cart-capsule:hover {
+          background: #e0f2f1;
+          transform: translateY(-2px);
+          box-shadow: 0 8px 24px rgba(205, 220, 57, 0.2);
+        }
+
+        .cart-badge-count {
+          background: #ffffff;
+          color: #0a2a16;
+          min-width: 20px;
+          height: 20px;
+          padding: 0 6px;
+          border-radius: 10px;
+          font-size: 11px;
+          font-weight: 800;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        /* DROPDOWNS */
+        .premium-dropdown {
+          position: absolute;
+          top: 110%;
+          right: 0;
+          width: 240px;
+          background: #0a2a16;
+          border-radius: 20px;
           padding: 8px;
-          box-shadow: 0 10px 40px rgba(20, 104, 69, 0.1);
+          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+          border: 1px solid rgba(205, 220, 57, 0.08);
           display: flex;
           flex-direction: column;
           gap: 4px;
           z-index: 100;
-          border: 1px solid rgba(20, 104, 69, 0.05);
         }
-        .ez-dd-item {
-          padding: 10px 15px;
-          border-radius: 10px;
-          font-size: 0.85rem;
-          font-weight: 700;
-          color: #1a3c26;
+
+        .dd-item {
+          padding: 12px 16px;
+          border-radius: 14px;
+          color: #e0f2f1;
           text-decoration: none;
+          font-size: 0.85rem;
+          font-weight: 600;
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 12px;
           transition: 0.2s;
         }
-        .ez-dd-item:hover {
-          background: rgba(20, 104, 69, 0.1);
-          color: #146845;
+
+        .dd-item:hover {
+          background: rgba(205, 220, 57, 0.06);
+          color: #cddc39;
+          padding-left: 20px;
         }
-        
+
+        .mobile-dock-wrapper {
+          display: none;
+        }
+
         @media (max-width: 768px) {
-          .nav-center { display: none; }
-          .pill-nav-container { 
-            display: flex;
-          }
-          .nav-spacer {
-            display: block;
-          }
-          .brand-logo {
-            width: 160px;
-            height: 64px;
-            padding: 10px 16px;
-          }
           .mobile-dock-wrapper {
             display: flex !important;
             position: fixed;
@@ -268,119 +315,121 @@ export default function Navbar() {
           }
           .mobile-dock-wrapper > * { pointer-events: auto; }
         }
-
-        /* Default state: hide on desktop */
-        .mobile-dock-wrapper {
-          display: none;
-        }
       ` }} />
 
-      <nav className="pill-nav-container">
-        
+      <nav className={`premium-nav-island ${isScrolled ? 'scrolled' : ''}`}>
+        {/* LOGO AREA */}
+        <Link href="/" className="brand-section">
+          <img 
+            src="/photo_2026-03-13_20-14-52 (1).png" 
+            alt="EcoZero" 
+            style={{ height: isScrolled ? '32px' : '40px', width: 'auto', transition: '0.3s' }} 
+          />
+        </Link>
 
-        
-        {/* LOGO / BACK BUTTON */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, justifyContent: 'flex-start' }}>
-          <Link href="/" className="brand-logo" style={{ height: '48px' }}>
-            <img src="/photo_2026-03-13_20-14-52 (1).png" alt="EcoZero" style={{ height: '40px', width: 'auto', display: 'block', objectFit: 'contain' }} />
-          </Link>
-        </div>
-
-        <div className="nav-main-group" style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '8px', /* Tight consistent gap */
-          flex: 1,
-          justifyContent: 'flex-end',
-          pointerEvents: 'auto'
-        }}>
-          {/* CENTER LINKS */}
-          <Link href="/" className="nav-pill">HOME</Link>
-          <Link href="/about" className="nav-pill">ABOUT US</Link>
+        {/* CENTER LINKS - HIDDEN ON MOBILE */}
+        <div className="nav-links-center">
+          <Link href="/" className={`nav-item ${pathname === '/' ? 'active' : ''}`}>Home</Link>
+          <Link href="/about" className={`nav-item ${pathname === '/about' ? 'active' : ''}`}>About</Link>
           
           <div ref={categoriesRef} style={{ position: 'relative' }}>
-            <button className="nav-pill" onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}>
-              GARMENTS <ChevronDown size={14} style={{ transform: isCategoriesOpen ? 'rotate(180deg)' : 'none', transition: '0.2s' }} />
+            <button 
+              className="nav-item" 
+              onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+            >
+              Garments <ChevronDown size={14} style={{ transform: isCategoriesOpen ? 'rotate(180deg)' : 'none', transition: '0.3s' }} />
             </button>
-            {isCategoriesOpen && (
-              <div className="ez-dropdown">
-                <Link href="/menu" className="ez-dd-item" onClick={() => setIsCategoriesOpen(false)}>Eco Products</Link>
-                <Link href="/menu" className="ez-dd-item" onClick={() => setIsCategoriesOpen(false)}>Carbon Tracking</Link>
-                <Link href="/menu" className="ez-dd-item" onClick={() => setIsCategoriesOpen(false)}>Zero-Waste Home</Link>
-              </div>
-            )}
-          </div>
-          
-          <Link href="/menu" className="nav-pill">PRODUCTS</Link>
-          <Link href="/contact" className="nav-pill">FAQ</Link>
-          
-          {/* Social Links & Search */}
-          <Link href="#" className="nav-circle"><Search size={16} strokeWidth={2.5} /></Link>
-          <Link href="#" className="nav-circle"><Facebook size={16} fill="currentColor" strokeWidth={0} /></Link>
-          <Link href="#" className="nav-circle"><Instagram size={16} strokeWidth={2.5} /></Link>
-
-          {!user ? (
-            <Link href="/login" className="nav-circle">
-              <User size={16} strokeWidth={2.5} />
-            </Link>
-          ) : (
-            <div ref={dropdownRef} style={{ position: 'relative' }}>
-              <button className="nav-circle" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
-                {avatar ? (
-                  <img src={avatar} alt="User" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
-                ) : (
-                  <User size={16} strokeWidth={2.5} />
-                )}
-              </button>
-              {isDropdownOpen && (
-                <div className="ez-dropdown" style={{ left: 'auto', right: 0, transform: 'none' }}>
-                  <div style={{ padding: '10px 15px', borderBottom: '1px solid #eee', marginBottom: '4px', fontWeight: 800 }}>Hi, {userName?.split(' ')[0]}</div>
-                  <Link href="/profile" className="ez-dd-item" onClick={() => setIsDropdownOpen(false)}><User size={16} /> My Profile</Link>
-                  <Link href="/orders" className="ez-dd-item" onClick={() => setIsDropdownOpen(false)}><Package size={16} /> Orders</Link>
-                  <Link href="/wishlist" className="ez-dd-item" onClick={() => setIsDropdownOpen(false)}><Heart size={16} /> Wishlist</Link>
-                  <div style={{ height: '1px', background: '#eee', margin: '4px 8px' }} />
-                  <button className="ez-dd-item" onClick={handleLogout} style={{ color: '#d33', border: 'none', background: 'none', width: '100%', textAlign: 'left', cursor: 'pointer' }}><LogOut size={16} /> Sign Out</button>
-                </div>
-              )}
-            </div>
-          )}
-          
-          <Link href="/cart" className="quote-pill desktop-only" style={{ position: 'relative' }}>
-            <span style={{ marginRight: '4px' }}>Cart</span>
-            <AnimatePresence mode="popLayout">
-              {mounted && cartCount > 0 && (
-                <motion.div
-                  key={cartCount}
-                  initial={{ scale: 0.5, opacity: 0, y: 5 }}
-                  animate={{ scale: 1, opacity: 1, y: 0 }}
-                  exit={{ scale: 0.5, opacity: 0, y: -5 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 25 }}
-                  style={{
-                    position: 'absolute',
-                    top: '-6px',
-                    left: '12px',
-                    background: '#146845',
-                    color: '#fff',
-                    fontSize: '10px',
-                    fontWeight: 900,
-                    padding: '2px 8px',
-                    borderRadius: '20px',
-                    border: '2px solid #fff',
-                    boxShadow: '0 4px 12px rgba(20, 104, 69, 0.2)',
-                    zIndex: 10
-                  }}
+            <AnimatePresence>
+              {isCategoriesOpen && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  className="premium-dropdown" 
+                  style={{ left: '50%', transform: 'translateX(-50%)' }}
                 >
-                  {cartCount}
+                  <Link href="/menu" className="dd-item" onClick={() => setIsCategoriesOpen(false)}>
+                    <Grid size={16} /> Eco Products
+                  </Link>
+                  <Link href="/menu" className="dd-item" onClick={() => setIsCategoriesOpen(false)}>
+                    <Package size={16} /> Carbon Tracking
+                  </Link>
+                  <Link href="/menu" className="dd-item" onClick={() => setIsCategoriesOpen(false)}>
+                    <LayoutGrid size={16} /> Zero-Waste Home
+                  </Link>
                 </motion.div>
               )}
             </AnimatePresence>
-            <div className="quote-btn-icon">
-              <ShoppingBag size={18} strokeWidth={3} />
+          </div>
+          
+          <Link href="/menu" className={`nav-item ${pathname === '/menu' ? 'active' : ''}`}>Products</Link>
+          <Link href="/contact" className={`nav-item ${pathname === '/contact' ? 'active' : ''}`}>FAQ</Link>
+        </div>
+
+        {/* RIGHT ACTIONS */}
+        <div className="nav-actions-right">
+          <button className="action-btn hide-mobile">
+            <Search size={18} strokeWidth={2} />
+          </button>
+          
+          <Link href="#" className="action-btn hide-mobile">
+            <Instagram size={18} strokeWidth={2} />
+          </Link>
+
+          {!user ? (
+            <Link href="/login" className="action-btn">
+              <User size={18} strokeWidth={2} />
+            </Link>
+          ) : (
+            <div ref={dropdownRef} style={{ position: 'relative' }}>
+              <button 
+                className="action-btn" 
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                style={{ overflow: 'hidden', padding: 0 }}
+              >
+                {avatar ? (
+                  <img src={avatar} alt="User" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <User size={18} strokeWidth={2} />
+                )}
+              </button>
+              <AnimatePresence>
+                {isDropdownOpen && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="premium-dropdown"
+                  >
+                    <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '4px' }}>
+                      <p style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', fontWeight: 800, margin: 0 }}>Signed in as</p>
+                      <p style={{ fontSize: '14px', fontWeight: 700, margin: '2px 0 0 0' }}>{userName?.split(' ')[0]}</p>
+                    </div>
+                    <Link href="/profile" className="dd-item" onClick={() => setIsDropdownOpen(false)}><User size={18} /> My Profile</Link>
+                    <Link href="/orders" className="dd-item" onClick={() => setIsDropdownOpen(false)}><Package size={18} /> Orders</Link>
+                    <Link href="/wishlist" className="dd-item" onClick={() => setIsDropdownOpen(false)}><Heart size={18} /> Wishlist</Link>
+                    <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '4px 8px' }} />
+                    <button className="dd-item" onClick={handleLogout} style={{ color: '#d33', border: 'none', background: 'none', width: '100%', textAlign: 'left', cursor: 'pointer' }}>
+                      <LogOut size={18} /> Sign Out
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
+          )}
+          
+          <Link href="/cart" className="cart-capsule">
+            <ShoppingBag size={18} strokeWidth={2.5} />
+            <span className="hide-mobile">Cart</span>
+            {mounted && cartCount > 0 && (
+              <span className="cart-badge-count">{cartCount}</span>
+            )}
           </Link>
         </div>
       </nav>
-      {/* Mobile Dock — shown only on small screens, except on product pages to avoid CTA overlap */}
+
+      {/* Mobile Dock */}
       {mounted && !pathname.startsWith('/product/') && pathname !== '/orders' && (
         <div className="mobile-dock-wrapper">
           <Dock
@@ -397,7 +446,6 @@ export default function Navbar() {
           />
         </div>
       )}
-
     </>
   );
 }

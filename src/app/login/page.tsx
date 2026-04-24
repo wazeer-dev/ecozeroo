@@ -8,13 +8,13 @@ import { auth, db } from '@/firebase/config';
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, OAuthProvider, setPersistence, browserLocalPersistence, browserSessionPersistence } from 'firebase/auth';
 
 const colors = {
-  bg: '#fcf7de',
-  primary: '#146845',
-  accent: '#3c7814',
-  text: 'rgb(4, 28, 11)',
-  textMuted: 'rgba(4, 28, 11, 0.6)',
-  border: 'rgba(4, 28, 11, 0.08)',
-  inputBg: 'rgba(255, 255, 255, 0.8)',
+  bg: 'var(--bg-color)',
+  primary: '#cddc39',
+  accent: '#cddc39',
+  text: '#ffffff',
+  textMuted: 'rgba(255, 255, 255, 0.6)',
+  border: 'rgba(255, 255, 255, 0.1)',
+  inputBg: 'rgba(255, 255, 255, 0.05)',
 };
 
 export default function LoginPage() {
@@ -121,7 +121,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="login-root" style={{ height: '100vh', width: '100vw', display: 'flex', overflow: 'hidden', background: '#fcf7de' }}>
+    <div className="login-root" style={{ height: '100vh', width: '100vw', display: 'flex', overflow: 'hidden', background: 'var(--bg-color)' }}>
       {/* Left Pane - Hero Visual */}
       <div className="login-hero" style={{ 
         flex: 1, 
@@ -172,7 +172,7 @@ export default function LoginPage() {
       </div>
 
       {/* Right Pane - Form Card */}
-      <div className="login-form-container" style={{ width: '45%', minWidth: '500px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3.5rem 5rem', background: '#fff' }}>
+      <div className="login-form-container" style={{ width: '45%', minWidth: '500px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3.5rem 5rem', background: 'var(--bg-color)' }}>
         <div style={{ width: '100%', maxWidth: '420px', animation: 'fadeIn 0.8s ease-out', position: 'relative' }}>
           <Link href="/" style={{ 
             display: 'flex', 
@@ -227,7 +227,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  style={{ position: 'absolute', right: '16px', top: '18px', background: 'none', border: 'none', color: 'rgba(0,0,0,0.3)', cursor: 'pointer' }}
+                  style={{ position: 'absolute', right: '16px', top: '18px', background: 'none', border: 'none', color: 'rgba(255, 255, 255, 0.3)', cursor: 'pointer' }}
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
@@ -255,8 +255,8 @@ export default function LoginPage() {
                 fontWeight: 900,
                 marginTop: '1.5rem', 
                 borderRadius: '20px', 
-                background: colors.text,
-                color: '#fff',
+                background: '#cddc39',
+                color: '#0a2a16',
                 border: 'none',
                 cursor: 'pointer',
                 display: 'flex',
@@ -282,7 +282,7 @@ export default function LoginPage() {
           <div style={{ display: 'flex', gap: '15px' }}>
             <button 
               onClick={handleGoogleLogin}
-              style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '1rem', borderRadius: '18px', border: `1.5px solid ${colors.border}`, background: '#fff', cursor: 'pointer', fontWeight: 700, transition: '0.2s' }}
+              style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '1rem', borderRadius: '18px', border: `1.5px solid ${colors.border}`, background: 'rgba(255, 255, 255, 0.03)', cursor: 'pointer', fontWeight: 700, transition: '0.2s' }}
             >
               <svg width="20" height="20" viewBox="0 0 24 24">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -294,7 +294,7 @@ export default function LoginPage() {
             </button>
             <button 
               onClick={handleAppleLogin}
-              style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '1rem', borderRadius: '18px', border: `1.5px solid ${colors.border}`, background: '#fff', cursor: 'pointer', fontWeight: 700, transition: '0.2s' }}
+              style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '1rem', borderRadius: '18px', border: `1.5px solid ${colors.border}`, background: 'rgba(255, 255, 255, 0.03)', cursor: 'pointer', fontWeight: 700, transition: '0.2s' }}
             >
               <Apple size={20} fill="currentColor" />
               Apple

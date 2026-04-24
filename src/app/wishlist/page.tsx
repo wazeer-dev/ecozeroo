@@ -41,35 +41,35 @@ export default function WishlistPage() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgb(215, 232, 188)' }}>
-        <Loader2 className="animate-spin" size={40} color="#3c7814" />
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-color)' }}>
+        <Loader2 className="animate-spin" size={40} color="#cddc39" />
       </div>
     );
   }
 
   return (
-    <div className="page-main-wrapper">
+    <div className="page-main-wrapper" style={{ background: 'var(--bg-color)', minHeight: '100vh', paddingTop: '120px' }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 20px' }}>
 
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <h1 style={{ fontSize: '2.8rem', fontWeight: 800, margin: 0, color: 'rgb(4, 28, 11)', letterSpacing: '-1px' }}>
-              My <span style={{ color: '#3c7814' }}>Wishlist</span>
+            <h1 style={{ fontSize: '2.8rem', fontWeight: 800, margin: 0, color: '#ffffff', letterSpacing: '-1px' }}>
+              My <span style={{ color: '#cddc39' }}>Wishlist</span>
             </h1>
-            <p style={{ color: '#5a7a40', fontSize: '1.05rem', marginTop: '6px', fontWeight: 500 }}>
+            <p style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '1.05rem', marginTop: '6px', fontWeight: 500 }}>
               {wishlist.length} {wishlist.length === 1 ? 'item' : 'items'} saved for later
             </p>
           </div>
           <Link href="/menu" style={{
             display: 'flex', alignItems: 'center', gap: '8px',
-            color: '#3c7814', textDecoration: 'none', fontWeight: 700,
+            color: '#cddc39', textDecoration: 'none', fontWeight: 700,
             fontSize: '0.95rem', padding: '12px 24px', borderRadius: '40px',
-            border: '2px solid rgba(60,120,20,0.2)', background: '#fff',
-            transition: '0.2s', boxShadow: '0 4px 10px rgba(0,0,0,0.02)'
+            border: '2px solid rgba(205, 220, 57, 0.2)', background: 'rgba(255, 255, 255, 0.03)',
+            transition: '0.2s', boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
           }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(60,120,20,0.05)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.transform = 'translateY(0)'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(205, 220, 57, 0.1)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'; e.currentTarget.style.transform = 'translateY(0)'; }}
           >
             <ArrowLeft size={18} /> Continue Shopping
           </Link>
@@ -80,9 +80,9 @@ export default function WishlistPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
             {wishlist.map((item) => (
               <div key={item.id} style={{
-                background: '#fff', borderRadius: '24px', overflow: 'hidden',
-                boxShadow: '0 10px 30px rgba(60,120,20,0.06)',
-                border: '1px solid rgba(60,120,20,0.05)',
+                background: 'rgba(255, 255, 255, 0.03)', borderRadius: '24px', overflow: 'hidden',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
                 display: 'flex', flexDirection: 'column', transition: '0.3s'
               }}
               className="wishlist-card"
@@ -95,7 +95,7 @@ export default function WishlistPage() {
                     style={{ width: '100%', height: '100%', objectFit: 'cover', transition: '0.5s transform cubic-bezier(0.2, 0, 0, 1)' }} 
                     className="wish-img"
                   />
-                  <div style={{ position: 'absolute', top: '15px', right: '15px', background: 'rgba(255,255,255,0.9)', padding: '6px 14px', borderRadius: '30px', fontSize: '0.7rem', fontWeight: 800, color: '#3c7814' }}>
+                  <div style={{ position: 'absolute', top: '15px', right: '15px', background: '#cddc39', padding: '6px 14px', borderRadius: '30px', fontSize: '0.7rem', fontWeight: 800, color: '#0a2a16' }}>
                     ESSENTIAL
                   </div>
                 </Link>
@@ -103,27 +103,27 @@ export default function WishlistPage() {
                 {/* Info Content */}
                 <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                    <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: 'rgb(4, 28, 11)' }}>{item.name}</h3>
+                    <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#ffffff' }}>{item.name}</h3>
                     <div style={{ textAlign: 'right' }}>
                        {item.oldPrice && parseFloat(item.oldPrice) > parseFloat(item.price) && (
-                         <span style={{ display: 'block', fontSize: '0.8rem', color: '#5a7a40', textDecoration: 'line-through', fontWeight: 600 }}>₹{item.oldPrice}</span>
+                         <span style={{ display: 'block', fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.4)', textDecoration: 'line-through', fontWeight: 600 }}>₹{item.oldPrice}</span>
                        )}
-                       <span style={{ fontSize: '1.25rem', fontWeight: 850, color: '#3c7814' }}>₹{item.price}</span>
+                       <span style={{ fontSize: '1.25rem', fontWeight: 850, color: '#cddc39' }}>₹{item.price}</span>
                     </div>
                   </div>
-                  <p style={{ color: '#5a7a40', fontSize: '0.85rem', marginBottom: '1.5rem', textTransform: 'capitalize', fontWeight: 500 }}>{item.category}</p>
+                  <p style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.85rem', marginBottom: '1.5rem', textTransform: 'capitalize', fontWeight: 500 }}>{item.category}</p>
 
                   <div style={{ marginTop: 'auto', display: 'flex', gap: '0.8rem' }}>
                     <button 
                       onClick={() => addToCart(item)}
                       style={{
                         flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                        padding: '12px', background: '#3c7814', color: '#fff',
+                        padding: '12px', background: '#cddc39', color: '#0a2a16',
                         border: 'none', borderRadius: '14px', fontWeight: 700,
                         cursor: 'pointer', transition: '0.2s', fontSize: '0.9rem'
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = '#2e6010'}
-                      onMouseLeave={(e) => e.currentTarget.style.background = '#3c7814'}
+                      onMouseEnter={(e) => e.currentTarget.style.background = '#b8c832'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = '#cddc39'}
                     >
                       <ShoppingCart size={18} /> Add
                     </button>
@@ -148,33 +148,33 @@ export default function WishlistPage() {
           /* ── EMPTY STATE ── */
           <div style={{
             textAlign: 'center', padding: '100px 40px',
-            background: '#fff', borderRadius: '32px',
-            border: '2px dashed rgba(60,120,20,0.1)',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.02)',
+            background: 'rgba(255, 255, 255, 0.03)', borderRadius: '32px',
+            border: '2px dashed rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
           }}>
             <div style={{
               width: '100px', height: '100px', borderRadius: '50%',
-              background: 'rgba(60,120,20,0.06)', display: 'flex',
+              background: 'rgba(205, 220, 57, 0.1)', display: 'flex',
               alignItems: 'center', justifyContent: 'center',
               margin: '0 auto 2rem'
             }}>
-              <Heart size={48} color="rgba(60, 120, 20, 0.4)" strokeWidth={1.5} />
+              <Heart size={48} color="rgba(205, 220, 57, 0.4)" strokeWidth={1.5} />
             </div>
-            <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem', color: 'rgb(4, 28, 11)' }}>
+            <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem', color: '#ffffff' }}>
               Wishlist is currently empty
             </h2>
-            <p style={{ color: '#5a7a40', fontSize: '1.1rem', maxWidth: '400px', margin: '0 auto 2.5rem', lineHeight: 1.6, fontWeight: 500 }}>
+            <p style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '1.1rem', maxWidth: '400px', margin: '0 auto 2.5rem', lineHeight: 1.6, fontWeight: 500 }}>
               Discover your favorite eco-friendly essentials and save them for a sustainable future.
             </p>
             <Link href="/menu" style={{
-              background: '#3c7814', color: '#fff',
+              background: '#cddc39', color: '#0a2a16',
               padding: '1.1rem 3rem', borderRadius: '50px',
               fontWeight: 850, textDecoration: 'none', fontSize: '1.1rem',
               display: 'inline-flex', alignItems: 'center', gap: '12px',
-              transition: '0.3s', boxShadow: '0 8px 25px rgba(60,120,20,0.2)'
+              transition: '0.3s', boxShadow: '0 8px 25px rgba(205, 220, 57, 0.2)'
             }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 12px 30px rgba(60,120,20,0.3)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 8px 25px rgba(60,120,20,0.2)'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 12px 30px rgba(205, 220, 57, 0.3)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 8px 25px rgba(205, 220, 57, 0.2)'; }}
             >
               <ShoppingBag size={22} /> Discover Products
             </Link>
@@ -188,7 +188,7 @@ export default function WishlistPage() {
         
         .wishlist-card:hover {
           transform: translateY(-8px);
-          box-shadow: 0 15px 40px rgba(60,120,20,0.1) !important;
+          box-shadow: 0 15px 40px rgba(0,0,0,0.2) !important;
         }
         .wishlist-card:hover .wish-img {
           transform: scale(1.08);

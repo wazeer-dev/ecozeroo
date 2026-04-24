@@ -22,19 +22,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning style={{ backgroundColor: '#158225' }}>
+    <html lang="en" suppressHydrationWarning style={{ backgroundColor: '#0a2a16' }}>
       <head>
         {/* Blocking script to prevent FOUC — sets bg before first paint */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `document.documentElement.style.backgroundColor='#158225';document.documentElement.style.color='#ffffff';`,
+            __html: `document.documentElement.style.backgroundColor='#0a2a16';document.documentElement.style.color='#ffffff';`,
           }}
         />
       </head>
       <body
         className={`${inter.variable} ${outfit.variable} ${fraunces.variable} theme-orange`}
         suppressHydrationWarning
-        style={{ backgroundColor: '#158225', color: '#ffffff', margin: 0, padding: 0, overflowX: 'hidden' }}
+        style={{ backgroundColor: '#0a2a16', color: '#ffffff', margin: 0, padding: 0, overflowX: 'hidden' }}
       >
         <Navbar />
         {children}

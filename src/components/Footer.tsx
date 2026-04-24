@@ -7,14 +7,15 @@ import { Twitter, Facebook, Instagram, Youtube, ArrowUpRight, Mail, MapPin, Phon
 const Footer = () => {
   return (
     <footer style={{ 
-      backgroundColor: '#041c0b', 
+      backgroundColor: '#0a2a16', 
       padding: '100px 8% 40px',
-      color: '#fcf7de',
+      color: '#ffffff',
       position: 'relative',
       zIndex: 10,
       fontFamily: "'Inter', sans-serif",
       borderRadius: '100px 100px 0 0',
-      boxShadow: '0 -20px 60px rgba(4, 28, 11, 0.08)'
+      boxShadow: '0 -20px 60px rgba(0, 0, 0, 0.2)',
+      borderTop: '1px solid rgba(255, 255, 255, 0.05)'
     }}>
       <div className="container" style={{ maxWidth: '1400px', margin: '0 auto' }}>
         
@@ -40,7 +41,7 @@ const Footer = () => {
               maxWidth: '350px', 
               fontSize: '1rem', 
               lineHeight: 1.7, 
-              color: 'rgba(252, 247, 222, 0.7)',
+              color: 'rgba(255, 255, 255, 0.7)',
               fontWeight: 500,
               marginBottom: '30px'
             }}>
@@ -95,9 +96,9 @@ const Footer = () => {
           justifyContent: 'space-between', 
           alignItems: 'center', 
           paddingTop: '32px',
-          borderTop: '1px solid rgba(252, 247, 222, 0.1)',
+          borderTop: '1px solid rgba(255, 255, 255, 0.1)',
           fontSize: '0.85rem',
-          color: 'rgba(252, 247, 222, 0.5)',
+          color: 'rgba(255, 255, 255, 0.5)',
           flexWrap: 'wrap',
           gap: '20px'
         }}>
@@ -106,7 +107,7 @@ const Footer = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
             <Link href="/privacy" style={{ color: 'inherit', textDecoration: 'none' }}>Privacy Node</Link>
             <Link href="/cookies" style={{ color: 'inherit', textDecoration: 'none' }}>Data Cookies</Link>
-            <div style={{ fontWeight: 800, color: '#fcf7de', display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <div style={{ fontWeight: 800, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '5px' }}>
               AG-OS <ArrowUpRight size={14} />
             </div>
           </div>
@@ -144,7 +145,7 @@ const columnTitleStyle = {
   fontSize: '0.8rem',
   textTransform: 'uppercase' as const,
   letterSpacing: '2px',
-  color: '#8BC34A',
+  color: '#cddc39',
   marginBottom: '30px',
   fontWeight: 800
 };
@@ -156,7 +157,7 @@ const navColumnStyle = {
 };
 
 const footerLinkStyle = {
-  color: 'rgba(252, 247, 222, 0.8)',
+  color: 'rgba(255, 255, 255, 0.8)',
   textDecoration: 'none',
   fontSize: '1rem',
   fontWeight: 500,
@@ -168,7 +169,7 @@ const contactRowStyle = {
   alignItems: 'center',
   gap: '12px',
   fontSize: '0.95rem',
-  color: 'rgba(252, 247, 222, 0.8)',
+  color: 'rgba(255, 255, 255, 0.8)',
   fontWeight: 500
 };
 
@@ -176,13 +177,13 @@ const socialBadgeStyle = {
   width: '44px',
   height: '44px',
   borderRadius: '50%',
-  background: 'rgba(252, 247, 222, 0.05)',
+  background: 'rgba(255, 255, 255, 0.05)',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  color: '#fcf7de',
+  color: '#ffffff',
   transition: '0.3s',
-  border: '1px solid rgba(252, 247, 222, 0.1)'
+  border: '1px solid rgba(255, 255, 255, 0.1)'
 };
 
 export default Footer;

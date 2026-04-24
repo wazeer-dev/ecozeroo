@@ -36,9 +36,9 @@ export default function NotificationsPage() {
 
   const getIcon = (type: string) => {
     switch (type) {
-      case 'order': return <Package size={22} color="#3c7814" />;
-      case 'offer': return <Tag size={22} color="#3c7814" />;
-      default: return <Bell size={22} color="#3c7814" />;
+      case 'order': return <Package size={22} color="#cddc39" />;
+      case 'offer': return <Tag size={22} color="#cddc39" />;
+      default: return <Bell size={22} color="#cddc39" />;
     }
   };
 
@@ -61,16 +61,16 @@ export default function NotificationsPage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <h1 style={{ fontSize: '2rem', fontWeight: 800, margin: 0, color: 'rgb(4, 28, 11)' }}>
-              Recent <span style={{ color: '#3c7814' }}>Updates</span>
+              Recent <span style={{ color: '#cddc39' }}>Updates</span>
             </h1>
-            <p style={{ color: '#5a7a40', fontSize: '0.95rem', marginTop: '6px' }}>Stay informed about your orders and offers</p>
+            <p style={{ color: '#cddc39', fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '4px', marginTop: '6px' }}>Luxury Performance</p>
           </div>
           <button style={{
-            background: '#fff', border: '1.5px solid rgba(60,120,20,0.3)',
-            color: '#3c7814', padding: '9px 20px', borderRadius: '30px',
+            background: '#fff', border: '1.5px solid #cddc39',
+            color: '#cddc39', padding: '9px 20px', borderRadius: '30px',
             fontWeight: 700, cursor: 'pointer', fontSize: '0.9rem', transition: '0.2s',
           }}
-            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(60,120,20,0.06)'}
+            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(205,220,57,0.1)'}
             onMouseLeave={(e) => e.currentTarget.style.background = '#fff'}
           >
             Mark all as read
@@ -81,26 +81,27 @@ export default function NotificationsPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
           {notifications.length === 0 && !loading && (
             <div style={{ textAlign: 'center', padding: '3rem', background: '#fff', borderRadius: '20px' }}>
-              <Bell size={40} color="#3c7814" style={{ marginBottom: '1rem', opacity: 0.3 }} />
+              <Bell size={40} color="#cddc39" style={{ marginBottom: '1rem', opacity: 0.3 }} />
               <p style={{ color: '#5a7a40', fontWeight: 600 }}>No new updates at the moment.</p>
             </div>
           )}
           {notifications.map((notif) => (
             <div key={notif.id} style={{
-              background: '#fff', border: '1.5px solid rgba(60,120,20,0.12)',
+              background: '#fff', border: '1.5px solid rgba(205,220,57,0.3)',
               borderRadius: '18px', padding: '1.3rem 1.5rem',
               display: 'flex', gap: '1.2rem', alignItems: 'flex-start',
               transition: '0.2s', cursor: 'pointer',
               boxShadow: '0 2px 8px rgba(60,120,20,0.06)',
             }}
-              onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#3c7814'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(60,120,20,0.12)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(60,120,20,0.12)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(60,120,20,0.06)'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#cddc39'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(205,220,57,0.12)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(205,220,57,0.3)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(60,120,20,0.06)'; }}
             >
               {/* Icon */}
               <div style={{
                 width: '46px', height: '46px', borderRadius: '14px',
-                background: 'rgba(60,120,20,0.08)', display: 'flex',
+                background: 'rgba(205,220,57,0.1)', display: 'flex',
                 alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                border: '1.5px solid #cddc39'
               }}>
                 {getIcon(notif.type)}
               </div>

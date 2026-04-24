@@ -3,17 +3,17 @@
 /* -------------------------------------------------------------------------- */
 
 :root {
-  --primary-color: #3c7814;
-  --primary-glow: rgba(60, 120, 20, 0.2);
-  --secondary-color: #5a7a40;
-  --bg-color: rgb(215, 232, 188);
-  --text-primary: rgb(4, 28, 11);
-  --text-secondary: #5a7a40;
+  --primary-color: #cddc39; /* Bamboo Lime */
+  --primary-glow: rgba(205, 220, 57, 0.2);
+  --secondary-color: #88c65f;
+  --bg-color: #0a2a16; /* Dark Forest Green from label */
+  --text-primary: #ffffff;
+  --text-secondary: #e0f2f1; /* Mint from label text */
   --white: #ffffff;
   --black: #041c0b;
-  --glass: rgba(255, 255, 255, 0.85);
-  --glass-border: rgba(60, 120, 20, 0.1);
-  --shadow: 0 10px 30px rgba(60, 120, 20, 0.05);
+  --glass: rgba(10, 42, 22, 0.85);
+  --glass-border: rgba(205, 220, 57, 0.1);
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 /* -------------------------------------------------------------------------- */

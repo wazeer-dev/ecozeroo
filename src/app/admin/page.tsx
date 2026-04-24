@@ -16,6 +16,7 @@ import {
   Users,
   Search,
   ChevronRight,
+  ChevronLeft,
   User,
   Phone,
   Mail,
@@ -34,17 +35,18 @@ import {
 } from 'lucide-react';
 import { collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/firebase/config';
+import ImageCropper from '@/components/ImageCropper';
 
 // Premium ECOZERO LIVE Color Palette - Modern App-Like Design
 const colors = {
-  bg: 'rgb(215, 232, 188)', 
-  surface: 'rgba(0, 0, 0, 0.05)', 
-  surfaceSolid: '#ffffff', // Crisp white for cards/widgets
-  border: 'rgba(0, 0, 0, 0.05)',
-  accent: 'rgb(4, 28, 11)',      
-  pale: 'rgb(4, 28, 11)',        
-  text: 'rgb(4, 28, 11)',        
-  textMuted: 'rgba(4, 28, 11, 0.6)'
+  bg: '#0a2a16', 
+  surface: 'rgba(255, 255, 255, 0.03)', 
+  surfaceSolid: 'rgba(255, 255, 255, 0.05)', 
+  border: 'rgba(255, 255, 255, 0.1)',
+  accent: '#cddc39',      
+  pale: '#cddc39',        
+  text: '#ffffff',        
+  textMuted: 'rgba(255, 255, 255, 0.6)'
 };
 
 export default function AdminDashboard() {
@@ -58,6 +60,7 @@ export default function AdminDashboard() {
   const [oldPrice, setOldPrice] = useState('');
   const [stock, setStock] = useState('');
   const [category, setCategory] = useState('');
+  const [productType, setProductType] = useState('Physical');
   const [images, setImages] = useState<string[]>([]);
   const [description, setDescription] = useState('');
   const [badge, setBadge] = useState('');
@@ -70,6 +73,7 @@ export default function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [croppingImage, setCroppingImage] = useState<{ url: string, index: number } | null>(null);
 
   // Orders State
   const [orders, setOrders] = useState<any[]>([]);
@@ -155,15 +159,22 @@ export default function AdminDashboard() {
     };
   }, []);
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // Derived Categories
+  const availableCategories = Array.from(new Set([
+    'Accessories', 
+    'Home Decor', 
+    'Lifestyle', 
+    'Personal Care', 
+    'Wellness',
+    ...products.map(p => p.category)
+  ])).filter(Boolean).sort();
 
+  const uploadToImgBB = async (fileOrBlob: File | Blob) => {
     setIsUploading(true);
     setUploadProgress(20);
 
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append('image', fileOrBlob);
 
     try {
       const response = await fetch(`https://api.imgbb.com/1/upload?key=bc2b31e802ebfbc0450bf45cfef8cf02`, {
@@ -174,18 +185,53 @@ export default function AdminDashboard() {
       const result = await response.json();
       
       if (result.success) {
-        setImages(prev => [...prev, result.data.url]);
         setUploadProgress(100);
+        return result.data.url;
       } else {
         alert("Upload failed: " + result.error.message);
+        return null;
       }
     } catch (error) {
       console.error("Upload Error:", error);
       alert("Failed to connect to ImgBB.");
+      return null;
     } finally {
       setIsUploading(false);
       setTimeout(() => setUploadProgress(0), 1000);
     }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const url = await uploadToImgBB(file);
+    if (url) {
+      setImages(prev => [...prev, url]);
+    }
+  };
+
+  const handleCropComplete = async (croppedBlob: Blob) => {
+    if (!croppingImage) return;
+    
+    const url = await uploadToImgBB(croppedBlob);
+    if (url) {
+      const newImages = [...images];
+      newImages[croppingImage.index] = url;
+      setImages(newImages);
+      setCroppingImage(null);
+    }
+  };
+
+  const moveImage = (index: number, direction: 'left' | 'right') => {
+    const newIndex = direction === 'left' ? index - 1 : index + 1;
+    if (newIndex < 0 || newIndex >= images.length) return;
+    
+    const newImages = [...images];
+    const temp = newImages[index];
+    newImages[index] = newImages[newIndex];
+    newImages[newIndex] = temp;
+    setImages(newImages);
   };
 
   const removeImage = (index: number) => {
@@ -200,13 +246,13 @@ export default function AdminDashboard() {
         price: parseFloat(price),
         oldPrice: parseFloat(oldPrice) || 0,
         stock: parseInt(stock, 10) || 0,
-        category: category || 'General',
-        image: images[0] || '', // Fallback for old code
-        images: images,
-        description: description,
-        badge: badge,
-        specifications: specifications,
-        features: features,
+        category,
+        type: productType,
+        images,
+        description,
+        badge,
+        specifications,
+        features,
         updatedAt: new Date().toISOString()
       };
       
@@ -228,6 +274,7 @@ export default function AdminDashboard() {
       setOldPrice('');
       setStock('');
       setCategory('');
+      setProductType('Physical');
       setImages([]);
       setDescription('');
       setSpecifications('');
@@ -246,11 +293,12 @@ export default function AdminDashboard() {
 
   const startEditProduct = (product: any) => {
     setEditingProduct(product);
-    setName(product.name);
-    setPrice(product.price.toString());
+    setName(product.name || '');
+    setPrice(product.price ? product.price.toString() : '');
     setOldPrice(product.oldPrice ? product.oldPrice.toString() : '');
-    setStock(product.stock.toString());
-    setCategory(product.category);
+    setStock(product.stock ? product.stock.toString() : '');
+    setCategory(product.category || '');
+    setProductType(product.type || 'Physical');
     setImages(product.images || (product.image ? [product.image] : []));
     setDescription(product.description || '');
     setSpecifications(product.specifications || '');
@@ -369,8 +417,8 @@ export default function AdminDashboard() {
       {/* Dynamic Style Injection for Responsive Admin Panel */}
       <style dangerouslySetInnerHTML={{__html: `
         .navbar { display: none !important; }
-        body { background-color: rgb(215, 232, 188) !important; margin: 0; padding: 0; }
-        .admin-layout { padding-top: 0 !important; background-color: rgb(215, 232, 188); }
+        body { background-color: #0a2a16 !important; margin: 0; padding: 0; color: #ffffff; }
+        .admin-layout { padding-top: 0 !important; background-color: #0a2a16; color: #ffffff; }
         
         @media (max-width: 900px) {
           .admin-sidebar { 
@@ -388,7 +436,7 @@ export default function AdminDashboard() {
             transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1) !important;
             box-shadow: 0 20px 50px rgba(0,0,0,0.4);
             overflow: hidden;
-            border: 1px solid rgba(136, 198, 95, 0.1);
+            border: 1px solid rgba(205, 220, 57, 0.1);
           }
           .admin-sidebar > div { width: 75px !important; }
           .admin-sidebar .admin-logo-text { display: none !important; }
@@ -487,7 +535,7 @@ export default function AdminDashboard() {
 
       {/* Mobile Top Bar */}
       <div className="no-print mobile-menu-btn" style={{ display: 'none', position: 'fixed', top: 15, left: 15, zIndex: 999 }}>
-        <button onClick={() => setIsSidebarOpen(true)} style={{ background: '#041c0b', border: 'none', color: '#88C65F', padding: '12px', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}>
+        <button onClick={() => setIsSidebarOpen(true)} style={{ background: '#0a2a16', border: 'none', color: '#cddc39', padding: '12px', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}>
           <LayoutDashboard size={24} />
         </button>
       </div>
@@ -495,9 +543,18 @@ export default function AdminDashboard() {
       <style dangerouslySetInnerHTML={{ __html: `
         .admin-sidebar {
           width: 85px;
-          transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
           overflow: hidden;
           z-index: 10001;
+          top: 15px !important;
+          bottom: 15px !important;
+          left: 15px !important;
+          height: calc(100vh - 30px) !important;
+          border-radius: 28px !important;
+          box-shadow: 0 25px 50px rgba(0,0,0,0.3) !important;
+          background: rgba(10, 42, 22, 0.85) !important;
+          backdrop-filter: blur(16px) !important;
+          border: 1px solid rgba(205, 220, 57, 0.1) !important;
         }
         .admin-sidebar:hover {
           width: 280px;
@@ -507,17 +564,24 @@ export default function AdminDashboard() {
           white-space: nowrap;
           transition: opacity 0.3s ease;
           pointer-events: none;
+          transform: translateX(-10px);
         }
         .admin-sidebar:hover .nav-label {
           opacity: 1;
           pointer-events: auto;
+          transform: translateX(0);
         }
         .admin-logo-text {
            opacity: 0;
            transition: 0.3s ease;
+           white-space: nowrap;
         }
         .admin-sidebar:hover .admin-logo-text {
            opacity: 1;
+        }
+        .nav-item-active {
+          background: linear-gradient(90deg, rgba(205, 220, 57, 0.1) 0%, rgba(205, 220, 57, 0) 100%);
+          box-shadow: inset 3px 0 0 #cddc39;
         }
       `}} />
 
@@ -531,29 +595,31 @@ export default function AdminDashboard() {
 
       {/* Sidebar Navigation */}
       <div className={`no-print admin-sidebar ${isSidebarOpen ? 'open' : ''}`} style={{ 
-        background: '#041c0b', 
-        height: '100vh',
         padding: '2rem 0', 
         display: 'flex', 
         flexDirection: 'column', 
         flexShrink: 0,
         position: 'fixed',
-        top: 0,
-        left: 0,
-        borderRight: '1px solid rgba(136, 198, 95, 0.05)'
       }}>
-        <div style={{ width: '280px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div style={{ padding: '0 20px', marginBottom: '3rem', width: '280px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '44px', height: '44px', background: 'transparent', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0, marginLeft: '0.5rem' }}>
-              <img src="/photo_2026-03-13_20-14-52 (1).png" alt="EcoZero" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ padding: '0 20px', marginBottom: '3.5rem', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '18px' }}>
+            <div style={{ 
+              width: '45px', height: '45px', 
+              background: 'rgba(255, 255, 255, 0.03)', 
+              borderRadius: '12px', 
+              display: 'flex', alignItems: 'center', justifyContent: 'center', 
+              overflow: 'hidden', flexShrink: 0, 
+              border: '1px solid rgba(255, 255, 255, 0.05)'
+            }}>
+              <img src="/photo_2026-03-13_20-14-52 (1).png" alt="EcoZero" style={{ width: '70%', height: '70%', objectFit: 'contain' }} />
             </div>
-            <h1 className="admin-logo-text" style={{ color: '#fff', fontSize: '1.4rem', fontWeight: 900, letterSpacing: '-0.5px', fontFamily: 'Oswald, sans-serif', margin: 0, textTransform: 'uppercase' }}>
-              ECO<span style={{ color: '#88C65F' }}>ZERO</span>
+            <h1 className="admin-logo-text" style={{ color: '#fff', fontSize: '1.3rem', fontWeight: 900, letterSpacing: '-0.5px', fontFamily: 'Oswald, sans-serif', margin: 0, textTransform: 'uppercase' }}>
+              ECO<span style={{ color: '#cddc39' }}>ZERO</span>
             </h1>
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', flex: 1, width: '280px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', flex: 1, width: '100%' }}>
           {[
             { id: 'overview', icon: LayoutDashboard, label: 'Dashboard' },
             { id: 'products', icon: PackageSearch, label: 'Inventory' },
@@ -567,30 +633,43 @@ export default function AdminDashboard() {
                 key={tab.id} 
                 onClick={() => setActiveTab(tab.id as any)}
                 style={{ 
-                  display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.8rem 0 0.8rem 20px', 
-                  width: '100%', position: 'relative', background: 'none', border: 'none', 
-                  color: isActive ? '#88C65F' : 'rgba(255,255,255,0.4)', cursor: 'pointer', transition: '0.3s' 
+                  display: 'flex', alignItems: 'center', gap: '1.5rem', padding: '0 20px', 
+                  width: '100%', height: '48px', position: 'relative', background: 'none', border: 'none', 
+                  color: isActive ? '#cddc39' : 'rgba(255,255,255,0.4)', cursor: 'pointer', transition: '0.3s' 
                 }}
+                className={isActive ? 'nav-item-active' : ''}
               >
-                {isActive && (
-                  <div style={{ position: 'absolute', left: 0, top: '20%', bottom: '20%', width: '3px', background: '#88C65F', borderRadius: '0 4px 4px 0' }}></div>
-                )}
-                <div style={{ width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, background: isActive ? 'rgba(136, 198, 95, 0.08)' : 'transparent', borderRadius: '14px' }}>
-                  <tab.icon size={20} strokeWidth={isActive ? 2.5 : 2.2} /> 
+                <div style={{ 
+                  width: '45px', height: '45px', 
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                  flexShrink: 0, 
+                  background: isActive ? 'rgba(205, 220, 57, 0.15)' : 'transparent', 
+                  borderRadius: '12px',
+                  color: isActive ? '#cddc39' : 'inherit',
+                  transition: '0.3s',
+                }}>
+                  <tab.icon size={22} strokeWidth={isActive ? 2.5 : 2} /> 
                 </div>
-                <span className="nav-label" style={{ fontWeight: isActive ? 800 : 700, fontSize: '0.9rem', letterSpacing: '0.5px' }}>{tab.label}</span>
+                <span className="nav-label" style={{ fontWeight: isActive ? 800 : 600, fontSize: '0.95rem', letterSpacing: '0.5px' }}>{tab.label}</span>
               </button>
             )
           })}
         </div>
 
-        <div style={{ marginTop: 'auto', padding: '2rem 0', width: '280px' }}>
+        <div style={{ padding: '2rem 0', width: '100%' }}>
           <Link href="/" className="exit-btn" style={{ 
-            display: 'flex', alignItems: 'center', gap: '1rem', width: '100%', 
-            color: 'rgba(255,255,255,0.5)', textDecoration: 'none', 
-            fontWeight: 800, fontSize: '0.85rem', transition: '0.2s', paddingLeft: '20px' 
+            display: 'flex', alignItems: 'center', gap: '1.5rem', width: '100%', 
+            color: 'rgba(255,255,255,0.4)', textDecoration: 'none', 
+            fontWeight: 800, fontSize: '0.85rem', transition: '0.2s', padding: '0 20px' 
           }}>
-            <div style={{ width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, background: 'rgba(255,255,255,0.03)', borderRadius: '14px' }}>
+            <div style={{ 
+              width: '45px', height: '45px', 
+              display: 'flex', alignItems: 'center', justifyContent: 'center', 
+              flexShrink: 0, 
+              background: 'rgba(255, 255, 255, 0.02)', 
+              borderRadius: '12px',
+              border: '1px solid rgba(255, 255, 255, 0.05)'
+            }}>
               <LogOut size={20} /> 
             </div>
             <span className="nav-label">Exit Terminal</span>
@@ -604,7 +683,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Main Container */}
-      <div className="admin-content" style={{ flex: 1, paddingLeft: '110px', minHeight: '100vh', overflowY: 'auto', paddingRight: '3.5rem', paddingTop: '3.5rem', paddingBottom: '3.5rem' }}>
+      <div className="admin-content" style={{ flex: 1, paddingLeft: '125px', minHeight: '100vh', overflowY: 'auto', paddingRight: '3.5rem', paddingTop: '3.5rem', paddingBottom: '3.5rem' }}>
         
         {/* Page Header */}
         <div className="no-print admin-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4rem' }}>
@@ -659,13 +738,13 @@ export default function AdminDashboard() {
             <div style={{ background: colors.surfaceSolid, borderRadius: '28px', border: `1px solid ${colors.border}`, overflow: 'hidden' }}>
               <div style={{ padding: '2rem', borderBottom: `1px solid ${colors.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <h3 style={{ fontSize: '1.4rem', fontWeight: 700, margin: 0 }}>Real-Time Activity</h3>
-                <button onClick={() => setActiveTab('delivery')} style={{ padding: '0.6rem 1.2rem', borderRadius: '12px', background: 'rgba(136, 198, 95, 0.1)', color: colors.accent, border: 'none', cursor: 'pointer', fontWeight: 600 }}>Logistics Hub &rarr;</button>
+                <button onClick={() => setActiveTab('delivery')} style={{ padding: '0.6rem 1.2rem', borderRadius: '12px', background: 'rgba(205, 220, 57, 0.1)', color: colors.accent, border: 'none', cursor: 'pointer', fontWeight: 600 }}>Logistics Hub &rarr;</button>
               </div>
               <div className="admin-table-wrap">
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                   <thead>
-                    <tr style={{ background: 'rgba(255,255,255,0.02)' }}>
-                      <th style={{ padding: '1.5rem 2.5rem', color: colors.pale, fontWeight: 600, fontSize: '0.9rem', textTransform: 'uppercase' }}>Entity</th>
+                    <tr style={{ background: 'rgba(255, 255, 255, 0.02)' }}>
+                      <th style={{ padding: '1.5rem 2.5rem', color: colors.accent, fontWeight: 700, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Entity</th>
                       <th style={{ padding: '1.5rem 2.5rem', color: colors.pale, fontWeight: 600, fontSize: '0.9rem', textTransform: 'uppercase' }}>Assets</th>
                       <th style={{ padding: '1.5rem 2.5rem', color: colors.pale, fontWeight: 600, fontSize: '0.9rem', textTransform: 'uppercase' }}>Status</th>
                       <th style={{ padding: '1.5rem 2.5rem', color: colors.pale, fontWeight: 600, fontSize: '0.9rem', textTransform: 'uppercase' }}>Value</th>
@@ -681,7 +760,7 @@ export default function AdminDashboard() {
                         <td style={{ padding: '1.5rem 2.5rem' }}>
                           <span style={{ 
                             padding: '0.4rem 1rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 700,
-                            background: order.status === 'Delivered' ? 'rgba(136, 198, 95, 0.15)' : 'rgba(255, 165, 0, 0.15)',
+                            background: order.status === 'Delivered' ? 'rgba(205, 220, 57, 0.15)' : 'rgba(255, 165, 0, 0.15)',
                             color: order.status === 'Delivered' ? colors.accent : '#ffa500'
                           }}>
                             {order.status?.toUpperCase() || 'LIVE'}
@@ -706,14 +785,15 @@ export default function AdminDashboard() {
               </button>
             </div>
 
-            <div style={{ background: '#fff', borderRadius: '28px', border: `1px solid ${colors.border}`, overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.03)' }}>
+            <div style={{ background: colors.surfaceSolid, borderRadius: '28px', border: `1px solid ${colors.border}`, overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}>
               <div className="admin-table-wrap">
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                   <thead>
-                    <tr style={{ background: 'rgba(0,0,0,0.02)', borderBottom: `2px solid ${colors.border}` }}>
-                      <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Visual</th>
+                    <tr style={{ background: 'rgba(255, 255, 255, 0.02)', borderBottom: `1px solid ${colors.border}` }}>
+                      <th style={{ padding: '1.2rem 2rem', color: colors.accent, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Visual</th>
                       <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Product Metadata</th>
                       <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Category</th>
+                      <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Type</th>
                       <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Supply</th>
                       <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Price</th>
                       <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'right' }}>Ops</th>
@@ -721,16 +801,19 @@ export default function AdminDashboard() {
                   </thead>
                   <tbody>
                     {products.map(product => (
-                      <tr key={product.id} style={{ borderBottom: `1px solid ${colors.border}`, transition: 'background 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(0,0,0,0.01)'} onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
+                      <tr key={product.id} style={{ borderBottom: `1px solid ${colors.border}`, transition: 'background 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)'} onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
                         <td style={{ padding: '1.2rem 2rem' }}>
-                          <img src={product.image || null} alt="" style={{ width: '56px', height: '56px', borderRadius: '12px', objectFit: 'cover', background: colors.surface }} />
+                          <img src={product.images?.[0] || product.image || null} alt="" style={{ width: '56px', height: '56px', borderRadius: '12px', objectFit: 'cover', background: colors.surface }} />
                         </td>
                         <td style={{ padding: '1.5rem 2rem' }}>
                           <div style={{ fontWeight: 700, color: colors.text, fontSize: '1.1rem' }}>{product.name}</div>
                           <div style={{ fontSize: '0.75rem', color: colors.textMuted, marginTop: '4px', fontFamily: 'monospace' }}>{product.id}</div>
                         </td>
-                        <td style={{ padding: '1.2rem 2rem' }}>
-                          <span style={{ padding: '0.4rem 0.8rem', borderRadius: '10px', background: 'rgba(4, 28, 11, 0.05)', color: colors.accent, fontWeight: 700, fontSize: '0.85rem' }}>{product.category}</span>
+                        <td style={{ padding: '1.2rem 2rem', verticalAlign: 'middle' }}>
+                          <span style={{ padding: '0.4rem 0.8rem', borderRadius: '10px', background: 'rgba(205, 220, 57, 0.1)', color: colors.accent, fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase' }}>{product.category || 'General'}</span>
+                        </td>
+                        <td style={{ padding: '1.2rem 2rem', verticalAlign: 'middle' }}>
+                          <span style={{ fontSize: '0.85rem', fontWeight: 700, color: colors.pale }}>{product.type || 'Physical'}</span>
                         </td>
                         <td style={{ padding: '1.2rem 2rem', fontWeight: 800, fontSize: '1.1rem', color: product.stock < 10 ? '#ef4444' : colors.text }}>{product.stock}</td>
                         <td style={{ padding: '1.2rem 2rem', fontWeight: 800, color: colors.accent, fontSize: '1.1rem' }}>
@@ -743,7 +826,7 @@ export default function AdminDashboard() {
                         </td>
                         <td style={{ padding: '1.2rem 2rem', textAlign: 'right' }}>
                           <div style={{ display: 'flex', gap: '0.8rem', justifyContent: 'flex-end' }}>
-                            <button onClick={() => startEditProduct(product)} style={{ padding: '0.6rem', background: 'rgba(4, 28, 11, 0.05)', border: 'none', borderRadius: '10px', color: colors.accent, cursor: 'pointer', transition: '0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(4, 28, 11, 0.1)'} onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(4, 28, 11, 0.05)'}><Edit2 size={18} /></button>
+                            <button onClick={() => startEditProduct(product)} style={{ padding: '0.6rem', background: 'rgba(255, 255, 255, 0.05)', border: 'none', borderRadius: '10px', color: colors.accent, cursor: 'pointer', transition: '0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'} onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'}><Edit2 size={18} /></button>
                             <button onClick={() => deleteProduct(product.id)} style={{ padding: '0.6rem', background: 'rgba(239, 68, 68, 0.1)', border: 'none', borderRadius: '10px', color: '#ef4444', cursor: 'pointer', transition: '0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)'} onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'}><Trash2 size={18} /></button>
                           </div>
                         </td>
@@ -759,17 +842,19 @@ export default function AdminDashboard() {
         {/* Deliveries Tab */}
         {activeTab === 'delivery' && (
           <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
-            <div style={{ background: '#fff', borderRadius: '28px', border: `1px solid ${colors.border}`, overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.03)' }}>
+            <div style={{ background: colors.surfaceSolid, borderRadius: '28px', border: `1px solid ${colors.border}`, overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}>
               <div className="admin-table-wrap">
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                   <thead>
                     <tr style={{ background: 'rgba(0,0,0,0.02)', borderBottom: `2px solid ${colors.border}` }}>
                       <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Order Segment</th>
-                      <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Recipient</th>
+                      <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>User</th>
+                      <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Type</th>
                       <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Assets</th>
+                      <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Order Date</th>
                       <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Total</th>
                       <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Status Pipeline</th>
-                      <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Schedule</th>
+                      <th style={{ padding: '1.2rem 2rem', color: colors.pale, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Delivery Date</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -782,10 +867,27 @@ export default function AdminDashboard() {
                         onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                       >
                         <td style={{ padding: '1.2rem 2rem', fontFamily: 'monospace', fontSize: '0.9rem', color: colors.textMuted, verticalAlign: 'middle' }}>{order.id?.slice(-8).toUpperCase() || 'ORDER-X'}</td>
-                        <td style={{ padding: '1.2rem 2rem', fontWeight: 700, color: colors.text, verticalAlign: 'middle' }}>{order.customer}</td>
+                        <td style={{ padding: '1.2rem 2rem', verticalAlign: 'middle' }}>
+                          <div style={{ fontWeight: 700, color: colors.text }}>{order.customer}</div>
+                          <div style={{ fontSize: '0.75rem', color: colors.textMuted }}>{order.email || 'guest_user'}</div>
+                        </td>
+                        <td style={{ padding: '1.2rem 2rem', verticalAlign: 'middle' }}>
+                          <span style={{ 
+                            padding: '0.4rem 0.6rem', borderRadius: '8px', 
+                            background: order.paymentMethod === 'cod' ? 'rgba(239, 68, 68, 0.05)' : 'rgba(205, 220, 57, 0.05)', 
+                            color: order.paymentMethod === 'cod' ? '#ef4444' : colors.accent, 
+                            fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase' 
+                          }}>
+                            {order.paymentMethod || 'Online'}
+                          </span>
+                        </td>
                         <td style={{ padding: '1.2rem 2rem', verticalAlign: 'middle' }}>
                           <div style={{ color: colors.text, fontSize: '0.95rem', fontWeight: 700 }}>{order.items?.[0]?.name || 'Real Order'}</div>
                           <div style={{ fontSize: '0.8rem', color: colors.textMuted, marginTop: '2px' }}>{order.items?.length > 1 ? `+ ${order.items.length - 1} more package(s)` : 'Single Asset Package'}</div>
+                        </td>
+                        <td style={{ padding: '1.2rem 2rem', verticalAlign: 'middle' }}>
+                          <div style={{ color: colors.text, fontWeight: 700, fontSize: '0.9rem' }}>{new Date(order.date).toLocaleDateString()}</div>
+                          <div style={{ color: colors.textMuted, fontSize: '0.75rem' }}>{new Date(order.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</div>
                         </td>
                         <td style={{ padding: '1.2rem 2rem', fontWeight: 800, color: colors.accent, fontSize: '1.2rem', verticalAlign: 'middle' }}>₹{(order.total || 0).toFixed(0)}</td>
                         <td style={{ padding: '1.2rem 2rem', verticalAlign: 'middle' }} onClick={(e) => e.stopPropagation()}>
@@ -796,7 +898,7 @@ export default function AdminDashboard() {
                               style={{ 
                                 width: '100%',
                                 appearance: 'none',
-                                background: '#f8faf2', 
+                                background: 'rgba(255, 255, 255, 0.03)', 
                                 color: colors.accent, 
                                 border: `1.5px solid ${colors.border}`, 
                                 padding: '0.6rem 1rem', 
@@ -820,7 +922,7 @@ export default function AdminDashboard() {
                             value={order.deliveryDate || ''} 
                             onChange={(e) => updateDeliveryDate(order.id, e.target.value)}
                             style={{ 
-                              background: '#f8faf2', 
+                              background: 'rgba(255, 255, 255, 0.03)', 
                               color: colors.accent, 
                               border: `1.5px solid ${colors.border}`, 
                               padding: '0.55rem 1rem', 
@@ -850,7 +952,7 @@ export default function AdminDashboard() {
                   key={user.id}
                   onClick={() => { setSelectedUser(user); setShowUserDetail(true); }}
                   style={{ background: colors.surfaceSolid, padding: '2rem', borderRadius: '28px', border: `1px solid ${colors.border}`, cursor: 'pointer', transition: 'transform 0.2s' }}
-                  onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
+                  onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-50px)'}
                   onMouseLeave={(e) => e.currentTarget.style.transform = 'none'}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem', marginBottom: '1.5rem' }}>
@@ -876,8 +978,7 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* Customers Tab Content Removed for brevity in chunk but will be kept */}
-        
+        {/* Notifications Tab */}
         {activeTab === 'notifications' && (
           <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '2.5rem' }}>
@@ -936,7 +1037,7 @@ export default function AdminDashboard() {
       {showAddModal && (
     <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(4, 28, 11, 0.4)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 20000, padding: '1rem' }}>
       <div className="admin-modal" style={{ 
-        background: '#fff', 
+        background: colors.bg, 
         border: `1px solid ${colors.border}`, 
         borderRadius: '32px', 
         width: '100%', 
@@ -948,7 +1049,7 @@ export default function AdminDashboard() {
         boxShadow: '0 30px 60px -12px rgba(4, 28, 11, 0.3)' 
       }}>
         <div className="admin-modal-inner" style={{ padding: '2.5rem' }}>
-          <button onClick={() => setShowAddModal(false)} style={{ position: 'absolute', top: '25px', right: '25px', border: 'none', color: colors.accent, fontSize: '1.5rem', cursor: 'pointer', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(20, 104, 69, 0.05)', transition: '0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(20, 104, 69, 0.1)'} onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(20, 104, 69, 0.05)'}>&times;</button>
+          <button onClick={() => setShowAddModal(false)} style={{ position: 'absolute', top: '25px', right: '25px', border: 'none', color: colors.accent, fontSize: '1.5rem', cursor: 'pointer', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255, 255, 255, 0.05)', transition: '0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'} onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'}>&times;</button>
           <h2 style={{ fontSize: '1.8rem', fontWeight: 900, marginBottom: '2.5rem', color: colors.accent, display: 'flex', alignItems: 'center', gap: '15px' }}>
             <Grid size={28} /> {editingProduct ? 'Edit Product' : 'Add New Product'}
           </h2>
@@ -957,46 +1058,110 @@ export default function AdminDashboard() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                   <label style={{ fontSize: '0.7rem', color: colors.textMuted, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>Asset Identifier / Label</label>
-                  <input required value={name} onChange={e=>setName(e.target.value)} placeholder="Product Name" style={{ padding: '1rem', borderRadius: '14px', background: '#f8faf2', border: `1px solid ${colors.border}`, color: colors.accent, fontWeight: 700, outline: 'none', fontSize: '1rem' }} />
+                  <input required value={name} onChange={e=>setName(e.target.value)} placeholder="Product Name" style={{ padding: '1rem', borderRadius: '14px', background: 'rgba(255, 255, 255, 0.03)', border: `1px solid ${colors.border}`, color: '#fff', fontWeight: 700, outline: 'none', fontSize: '1rem' }} />
                </div>
                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                   <label style={{ fontSize: '0.7rem', color: colors.textMuted, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>Inventory Count (Stock)</label>
-                  <input type="number" required value={stock} onChange={e=>setStock(e.target.value)} style={{ padding: '1rem', borderRadius: '14px', background: '#f8faf2', border: `1px solid ${colors.border}`, color: colors.accent, fontWeight: 700, outline: 'none', fontSize: '1rem' }} />
+                  <input type="number" required value={stock} onChange={e=>setStock(e.target.value)} style={{ padding: '1rem', borderRadius: '14px', background: 'rgba(255, 255, 255, 0.03)', border: `1px solid ${colors.border}`, color: '#fff', fontWeight: 700, outline: 'none', fontSize: '1rem' }} />
                </div>
             </div>
             
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.5rem' }}>
                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                   <label style={{ fontSize: '0.7rem', color: colors.textMuted, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>Live Price (₹)</label>
-                  <input type="number" step="0.01" required value={price} onChange={e=>setPrice(e.target.value)} style={{ padding: '1rem', borderRadius: '14px', background: '#f8faf2', border: `1px solid ${colors.border}`, color: colors.accent, fontWeight: 700, outline: 'none', fontSize: '1rem' }} />
+                  <input type="number" step="0.01" required value={price} onChange={e=>setPrice(e.target.value)} style={{ padding: '1rem', borderRadius: '14px', background: 'rgba(255, 255, 255, 0.03)', border: `1px solid ${colors.border}`, color: '#fff', fontWeight: 700, outline: 'none', fontSize: '1rem' }} />
                </div>
                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                   <label style={{ fontSize: '0.7rem', color: colors.textMuted, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>Strike Price (₹)</label>
-                  <input type="number" step="0.01" value={oldPrice} onChange={e=>setOldPrice(e.target.value)} placeholder="0.00" style={{ padding: '1rem', borderRadius: '14px', background: '#fff', border: `2px dashed ${colors.border}`, color: colors.textMuted, fontWeight: 700, outline: 'none', fontSize: '1rem' }} />
+                  <input type="number" step="0.01" value={oldPrice} onChange={e=>setOldPrice(e.target.value)} placeholder="0.00" style={{ padding: '1rem', borderRadius: '14px', background: 'rgba(255, 255, 255, 0.03)', border: `2px dashed ${colors.border}`, color: colors.textMuted, fontWeight: 700, outline: 'none', fontSize: '1rem' }} />
                </div>
-               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                  <label style={{ fontSize: '0.7rem', color: colors.textMuted, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>Classification</label>
-                  <input required value={category} onChange={e=>setCategory(e.target.value)} placeholder="Category" style={{ padding: '1rem', borderRadius: '14px', background: '#f8faf2', border: `1px solid ${colors.border}`, color: colors.accent, fontWeight: 700, outline: 'none', fontSize: '1rem' }} />
-               </div>
-               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                  <label style={{ fontSize: '0.7rem', color: colors.textMuted, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>State Badge</label>
-                  <input value={badge} onChange={e=>setBadge(e.target.value)} placeholder="NEW / SALE / HOT" style={{ padding: '1rem', borderRadius: '14px', background: '#f8faf2', border: `1px solid ${colors.border}`, color: colors.accent, fontWeight: 700, outline: 'none', fontSize: '1rem' }} />
-               </div>
-            </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                   <label style={{ fontSize: '0.7rem', color: colors.textMuted, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>Classification</label>
+                   <div style={{ position: 'relative' }}>
+                     <select 
+                       required 
+                       value={category} 
+                       onChange={e=>setCategory(e.target.value)} 
+                       style={{ 
+                         width: '100%',
+                         padding: '1rem', 
+                         borderRadius: '14px', 
+                         background: 'rgba(255, 255, 255, 0.03)', 
+                         border: `1px solid ${colors.border}`, 
+                         color: '#fff', 
+                         fontWeight: 700, 
+                         outline: 'none', 
+                         fontSize: '1rem',
+                         appearance: 'none',
+                         cursor: 'pointer'
+                       }}
+                     >
+                       <option value="" disabled>Select Category</option>
+                       {availableCategories.map(cat => (
+                         <option key={cat} value={cat}>{cat}</option>
+                       ))}
+                       <option value="other">+ Add New Category</option>
+                     </select>
+                     <ChevronDown size={18} style={{ position: 'absolute', right: '15px', top: '50%', transform: 'translateY(-50%)', color: colors.accent, pointerEvents: 'none' }} />
+                   </div>
+                </div>
+
+                {category === 'other' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', animation: 'fadeIn 0.3s ease' }}>
+                    <label style={{ fontSize: '0.7rem', color: colors.textMuted, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>New Category Name</label>
+                    <input 
+                      autoFocus
+                      placeholder="Enter category name..." 
+                      onBlur={(e) => {
+                        if (e.target.value) {
+                          setCategory(e.target.value);
+                        } else {
+                          setCategory('');
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          if ((e.target as HTMLInputElement).value) {
+                            setCategory((e.target as HTMLInputElement).value);
+                          }
+                        }
+                      }}
+                      style={{ padding: '1rem', borderRadius: '14px', background: '#fff', border: `2px dashed ${colors.accent}`, color: colors.accent, fontWeight: 700, outline: 'none', fontSize: '1rem' }} 
+                    />
+                  </div>
+                )}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                   <label style={{ fontSize: '0.7rem', color: colors.textMuted, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>Product Type</label>
+                   <select 
+                     value={productType} 
+                     onChange={e=>setProductType(e.target.value)} 
+                     style={{ padding: '1rem', borderRadius: '14px', background: 'rgba(255, 255, 255, 0.03)', border: `1px solid ${colors.border}`, color: '#fff', fontWeight: 700, outline: 'none', fontSize: '1rem', cursor: 'pointer' }}
+                   >
+                     <option value="Physical">Physical Asset</option>
+                     <option value="Digital">Digital Resource</option>
+                     <option value="Service">Service Plan</option>
+                   </select>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                   <label style={{ fontSize: '0.7rem', color: colors.textMuted, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>State Badge</label>
+                   <input value={badge} onChange={e=>setBadge(e.target.value)} placeholder="NEW / SALE / HOT" style={{ padding: '1rem', borderRadius: '14px', background: 'rgba(255, 255, 255, 0.03)', border: `1px solid ${colors.border}`, color: '#fff', fontWeight: 700, outline: 'none', fontSize: '1rem' }} />
+                </div>
+              </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                <label style={{ fontSize: '0.75rem', color: colors.textMuted, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Product Description</label>
-               <textarea value={description} onChange={e=>setDescription(e.target.value)} style={{ padding: '0.9rem', borderRadius: '12px', background: '#fff', border: `1px solid ${colors.border}`, color: colors.accent, outline: 'none', resize: 'vertical', minHeight: '80px', fontSize: '0.9rem' }} placeholder="Enter extended details..." />
+               <textarea value={description} onChange={e=>setDescription(e.target.value)} style={{ padding: '0.9rem', borderRadius: '12px', background: 'rgba(255, 255, 255, 0.03)', border: `1px solid ${colors.border}`, color: '#fff', outline: 'none', resize: 'vertical', minHeight: '80px', fontSize: '0.9rem' }} placeholder="Enter extended details..." />
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                   <label style={{ fontSize: '0.75rem', color: colors.textMuted, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Specifications</label>
-                  <textarea value={specifications} onChange={e=>setSpecifications(e.target.value)} style={{ padding: '0.9rem', borderRadius: '12px', background: '#fff', border: `1px solid ${colors.border}`, color: colors.accent, outline: 'none', resize: 'vertical', minHeight: '60px', fontSize: '0.85rem' }} placeholder="Weight, Capacity, Materials..." />
+                  <textarea value={specifications} onChange={e=>setSpecifications(e.target.value)} style={{ padding: '0.9rem', borderRadius: '12px', background: 'rgba(255, 255, 255, 0.03)', border: `1px solid ${colors.border}`, color: '#fff', outline: 'none', resize: 'vertical', minHeight: '60px', fontSize: '0.85rem' }} placeholder="Weight, Capacity, Materials..." />
                </div>
                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                   <label style={{ fontSize: '0.75rem', color: colors.textMuted, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Core Features</label>
-                  <textarea value={features} onChange={e=>setFeatures(e.target.value)} style={{ padding: '0.9rem', borderRadius: '12px', background: '#fff', border: `1px solid ${colors.border}`, color: colors.accent, outline: 'none', resize: 'vertical', minHeight: '60px', fontSize: '0.85rem' }} placeholder="Functional highlights..." />
+                  <textarea value={features} onChange={e=>setFeatures(e.target.value)} style={{ padding: '0.9rem', borderRadius: '12px', background: 'rgba(255, 255, 255, 0.03)', border: `1px solid ${colors.border}`, color: '#fff', outline: 'none', resize: 'vertical', minHeight: '60px', fontSize: '0.85rem' }} placeholder="Functional highlights..." />
                </div>
             </div>
 
@@ -1006,8 +1171,30 @@ export default function AdminDashboard() {
                    {/* Multiple Images Display */}
                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '10px' }}>
                       {images.map((img, idx) => (
-                        <div key={idx} style={{ position: 'relative', width: '80px', height: '80px', borderRadius: '12px', overflow: 'hidden', border: `2px solid ${colors.accent}` }}>
+                        <div key={idx} className="gallery-item" style={{ position: 'relative', width: '80px', height: '80px', borderRadius: '12px', overflow: 'hidden', border: `2px solid ${colors.accent}`, cursor: 'pointer' }} onClick={() => setCroppingImage({ url: img, index: idx })}>
                            <img src={img} alt="Product" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                           
+                           {/* Hover Actions Layer */}
+                           <div className="hover-actions" 
+                             onMouseEnter={(e) => e.currentTarget.style.opacity = '1'} 
+                             onMouseLeave={(e) => e.currentTarget.style.opacity = '0'}
+                             style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: '0.2s', zIndex: 5 }}
+                           >
+                              <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                                {idx > 0 && (
+                                  <button type="button" onClick={(e) => { e.stopPropagation(); moveImage(idx, 'left'); }} style={{ background: '#fff', border: 'none', borderRadius: '4px', padding: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <ChevronLeft size={14} color={colors.accent} />
+                                  </button>
+                                )}
+                                {idx < images.length - 1 && (
+                                  <button type="button" onClick={(e) => { e.stopPropagation(); moveImage(idx, 'right'); }} style={{ background: '#fff', border: 'none', borderRadius: '4px', padding: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <ChevronRight size={14} color={colors.accent} />
+                                  </button>
+                                )}
+                              </div>
+                              <Edit2 size={16} color="#fff" />
+                           </div>
+
                            <button 
                              type="button"
                              onClick={(e) => { e.stopPropagation(); removeImage(idx); }}
@@ -1043,7 +1230,7 @@ export default function AdminDashboard() {
                             gap: '8px',
                             padding: '0.8rem', 
                             borderRadius: '12px', 
-                            background: isUploading ? 'rgba(20, 104, 69, 0.1)' : colors.bg, 
+                            background: isUploading ? 'rgba(205, 220, 57, 0.1)' : colors.bg, 
                             border: `1.5px dashed ${isUploading ? colors.accent : colors.border}`, 
                             color: colors.accent,
                             cursor: 'pointer',
@@ -1089,7 +1276,7 @@ export default function AdminDashboard() {
 
                 <div style={{ marginTop: '1rem', display: 'flex', gap: '1.2rem', borderTop: `1px solid ${colors.border}`, paddingTop: '2.5rem' }}>
                    <button type="button" onClick={() => setShowAddModal(false)} style={{ flex: 1, padding: '1.1rem', borderRadius: '16px', border: `1.5px solid ${colors.border}`, background: 'transparent', color: colors.accent, fontWeight: 800, cursor: 'pointer', transition: '0.2s' }}>Cancel</button>
-                   <button type="submit" disabled={isUploading} style={{ flex: 2, padding: '1.1rem', borderRadius: '16px', border: 'none', background: colors.accent, color: '#fff', fontWeight: 900, cursor: isUploading ? 'not-allowed' : 'pointer', opacity: isUploading ? 0.7 : 1, boxShadow: '0 10px 25px rgba(20, 104, 69, 0.2)' }}>
+                   <button type="submit" disabled={isUploading} style={{ flex: 2, padding: '1.1rem', borderRadius: '16px', border: 'none', background: colors.accent, color: '#fff', fontWeight: 900, cursor: isUploading ? 'not-allowed' : 'pointer', opacity: isUploading ? 0.7 : 1, boxShadow: '0 10px 25px rgba(205, 220, 57, 0.2)' }}>
                       {editingProduct ? 'Save Changes' : 'Add Product'}
                    </button>
                 </div>
@@ -1097,8 +1284,8 @@ export default function AdminDashboard() {
                <style dangerouslySetInnerHTML={{ __html: `
                 .admin-modal::-webkit-scrollbar { width: 6px; }
                 .admin-modal::-webkit-scrollbar-track { background: transparent; }
-                .admin-modal::-webkit-scrollbar-thumb { background: rgba(20, 104, 69, 0.1); border-radius: 10px; }
-                .admin-modal::-webkit-scrollbar-thumb:hover { background: rgba(20, 104, 69, 0.2); }
+                .admin-modal::-webkit-scrollbar-thumb { background: rgba(205, 220, 57, 0.1); border-radius: 10px; }
+                .admin-modal::-webkit-scrollbar-thumb:hover { background: rgba(205, 220, 57, 0.2); }
               `}} />
               {successMsg && <p style={{ color: colors.accent, textAlign: 'center', marginTop: '1.5rem', fontWeight: 700 }}>{successMsg}</p>}
             </div>
@@ -1128,7 +1315,7 @@ export default function AdminDashboard() {
                 
                 <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 0.8fr', gap: '3rem', marginBottom: '3rem' }}>
                    <div>
-                      <p style={{ color: colors.accent, fontWeight: 700, textTransform: 'uppercase', marginBottom: '1rem' }}>Recipient Header</p>
+                      <p style={{ color: '#ffffff', opacity: 0.7, fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '1rem', letterSpacing: '1px' }}>Recipient Header</p>
                       <h4 style={{ fontSize: '1.4rem', margin: 0 }}>{selectedOrder.customer}</h4>
                       <p style={{ color: colors.textMuted, marginTop: '8px' }}>{selectedOrder.email}</p>
                       <p style={{ color: colors.textMuted, marginTop: '4px' }}>{selectedOrder.phone || 'No phone provided'}</p>
@@ -1137,7 +1324,7 @@ export default function AdminDashboard() {
                    <div style={{ textAlign: 'center' }}>
                       {selectedOrder.locationUrl ? (
                         <div className="qr-container" style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center' }}>
-                           <p style={{ color: colors.accent, fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.8rem', fontSize: '0.7rem' }}>Logistics QR Link</p>
+                           <p style={{ color: '#ffffff', opacity: 0.7, fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.8rem', fontSize: '0.7rem', letterSpacing: '1px' }}>Logistics QR Link</p>
                            <img 
                              className="qr-image"
                              src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(selectedOrder.locationUrl)}`} 
@@ -1148,31 +1335,31 @@ export default function AdminDashboard() {
                         </div>
                       ) : (
                         <div className="qr-container" style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', opacity: 0.3 }}>
-                           <p style={{ color: colors.accent, fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.8rem', fontSize: '0.7rem' }}>Logistics QR Link</p>
+                           <p style={{ color: '#ffffff', opacity: 0.7, fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.8rem', fontSize: '0.7rem', letterSpacing: '1px' }}>Logistics QR Link</p>
                            <div className="qr-image" style={{ background: 'rgba(255,255,255,0.05)', width: '100px', height: '100px', borderRadius: '12px', border: `1px dashed ${colors.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: colors.textMuted, fontSize: '0.6rem' }}>NO PIN</div>
                         </div>
                       )}
                    </div>
                    <div style={{ textAlign: 'right' }}>
-                      <p style={{ color: colors.accent, fontWeight: 700, textTransform: 'uppercase', marginBottom: '1rem' }}>Segment ID</p>
+                      <p style={{ color: '#ffffff', opacity: 0.7, fontWeight: 800, textTransform: 'uppercase', marginBottom: '1rem', fontSize: '0.75rem', letterSpacing: '1px' }}>Segment ID</p>
                       <h4 style={{ fontSize: '1.4rem', margin: 0, fontFamily: 'monospace' }}>{selectedOrder.id}</h4>
-                      <p style={{ color: colors.textMuted, marginTop: '8px' }}>{new Date(selectedOrder.date).toLocaleString()}</p>
+                      <p style={{ color: colors.textMuted, marginTop: '8px' }}>{new Date(selectedOrder.date).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short', hour12: true })}</p>
                    </div>
                 </div>
 
                 {/* Tracking Stepper Preview (Thematic) */}
                 <div className="no-print" style={{ 
-                  background: 'rgb(215, 232, 188)', 
+                  background: '#0a2a16', 
                   borderRadius: '24px', 
                   padding: '2.5rem 1.5rem', 
                   marginBottom: '3rem',
-                  border: '1px solid rgba(60, 120, 20, 0.2)'
+                  border: '1px solid rgba(205, 220, 57, 0.2)'
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', maxWidth: '600px', margin: '0 auto' }}>
-                    <div style={{ position: 'absolute', top: '22px', left: '30px', right: '30px', height: '2px', background: 'rgba(60, 120, 20, 0.2)', zIndex: 0 }}>
+                    <div style={{ position: 'absolute', top: '22px', left: '30px', right: '30px', height: '2px', background: 'rgba(205, 220, 57, 0.2)', zIndex: 0 }}>
                        <div style={{ 
                          height: '100%', 
-                         background: 'rgb(60, 120, 20)', 
+                         background: '#cddc39', 
                          width: selectedOrder.status === 'Delivered' ? '100%' : selectedOrder.status === 'Shipped' ? '50%' : '0%', 
                          transition: 'width 1s ease' 
                        }}></div>
@@ -1193,12 +1380,12 @@ export default function AdminDashboard() {
                             width: '44px', 
                             height: '44px', 
                             borderRadius: '50%', 
-                            background: isComplete ? 'rgb(136, 198, 95)' : 'rgba(60, 120, 20, 0.05)', 
+                            background: isComplete ? '#cddc39' : 'rgba(205, 220, 57, 0.05)', 
                             display: 'flex', 
                             alignItems: 'center', 
                             justifyContent: 'center',
                             color: 'rgb(4, 28, 11)',
-                            border: isComplete ? '2px solid rgb(60, 120, 20)' : '1px solid rgba(60, 120, 20, 0.1)',
+                            border: isComplete ? '2px solid #cddc39' : '1px solid rgba(60, 120, 20, 0.1)',
                             transition: '0.3s'
                           }}>
                             <Icon size={20} strokeWidth={2.5} />
@@ -1308,7 +1495,7 @@ export default function AdminDashboard() {
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                    <label style={{ fontSize: '0.9rem', color: colors.accent, fontWeight: 700, textTransform: 'uppercase' }}>Information Type</label>
-                   <select value={notifType} onChange={e=>setNotifType(e.target.value)} style={{ padding: '1.2rem', borderRadius: '16px', background: '#f8faf2', border: `1.5px solid ${colors.border}`, color: '#041c0b', fontWeight: 700, outline: 'none' }}>
+                   <select value={notifType} onChange={e=>setNotifType(e.target.value)} style={{ padding: '1.2rem', borderRadius: '16px', background: '#f8faf2', border: `1.5px solid ${colors.border}`, color: '#0a2a16', fontWeight: 700, outline: 'none' }}>
                       <option value="update">General Update</option>
                       <option value="offer">Special Offer</option>
                       <option value="order">Order Notice</option>
@@ -1317,11 +1504,11 @@ export default function AdminDashboard() {
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                    <label style={{ fontSize: '0.9rem', color: colors.accent, fontWeight: 700, textTransform: 'uppercase' }}>Target Audience</label>
-                   <select value={notifTarget} onChange={e=>setNotifTarget(e.target.value)} style={{ padding: '1.2rem', borderRadius: '16px', background: '#f8faf2', border: `1.5px solid ${colors.border}`, color: '#041c0b', fontWeight: 700, outline: 'none' }}>
+                   <select value={notifTarget} onChange={e=>setNotifTarget(e.target.value)} style={{ padding: '1.2rem', borderRadius: '16px', background: '#f8faf2', border: `1.5px solid ${colors.border}`, color: '#0a2a16', fontWeight: 700, outline: 'none' }}>
                       <option value="all">Global Broadcast (All Guests)</option>
-                      <optgroup label="Specific Profile" style={{ background: '#f8faf2', color: '#041c0b' }}>
+                      <optgroup label="Specific Profile" style={{ background: '#f8faf2', color: '#0a2a16' }}>
                          {users.map(u => (
-                           <option key={u.id} value={u.email} style={{ color: '#041c0b' }}>{u.name} ({u.email})</option>
+                           <option key={u.id} value={u.email} style={{ color: '#0a2a16' }}>{u.name} ({u.email})</option>
                          ))}
                       </optgroup>
                    </select>
@@ -1329,10 +1516,10 @@ export default function AdminDashboard() {
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', marginTop: '0.5rem' }}>
                    <label style={{ fontSize: '0.9rem', color: colors.accent, fontWeight: 700, textTransform: 'uppercase' }}>Linked Product (Optional)</label>
-                   <select value={notifLinkedProduct} onChange={e=>setNotifLinkedProduct(e.target.value)} style={{ padding: '1.2rem', borderRadius: '16px', background: '#f8faf2', border: `1.5px solid ${colors.border}`, color: '#041c0b', fontWeight: 700, outline: 'none' }}>
-                      <option value="" style={{ color: '#041c0b' }}>No Product Linked</option>
+                   <select value={notifLinkedProduct} onChange={e=>setNotifLinkedProduct(e.target.value)} style={{ padding: '1.2rem', borderRadius: '16px', background: '#f8faf2', border: `1.5px solid ${colors.border}`, color: '#0a2a16', fontWeight: 700, outline: 'none' }}>
+                      <option value="" style={{ color: '#0a2a16' }}>No Product Linked</option>
                       {products.map(p => (
-                        <option key={p.id} value={p.id} style={{ color: '#041c0b' }}>{p.name} (${p.price})</option>
+                        <option key={p.id} value={p.id} style={{ color: '#0a2a16' }}>{p.name} (${p.price})</option>
                       ))}
                    </select>
                 </div>
@@ -1344,7 +1531,7 @@ export default function AdminDashboard() {
                        value={notifOfferValue} 
                        onChange={e=>setNotifOfferValue(e.target.value)} 
                        placeholder="e.g. ₹199 or 20% OFF" 
-                       style={{ padding: '1.2rem', borderRadius: '16px', background: '#f8faf2', border: `1.5px solid ${colors.border}`, color: '#041c0b', fontWeight: 700, outline: 'none' }} 
+                       style={{ padding: '1.2rem', borderRadius: '16px', background: '#f8faf2', border: `1.5px solid ${colors.border}`, color: '#0a2a16', fontWeight: 700, outline: 'none' }} 
                      />
                   </div>
                 )}
@@ -1355,6 +1542,14 @@ export default function AdminDashboard() {
              </form>
           </div>
         </div>
+      )}
+      {/* Image Cropper Modal */}
+      {croppingImage && (
+        <ImageCropper 
+          image={croppingImage.url} 
+          onCropComplete={handleCropComplete} 
+          onCancel={() => setCroppingImage(null)} 
+        />
       )}
     </div>
   );

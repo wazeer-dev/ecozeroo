@@ -14,18 +14,18 @@ export default function MyOrdersPage() {
   const router = useRouter();
 
   const colors = {
-    bg: '#fcf7de',
-    accent: 'rgb(20, 104, 69)',
-    text: '#041c0b',
-    border: 'rgba(20, 104, 69, 0.08)',
-    textMuted: 'rgba(4, 28, 11, 0.5)'
+    bg: 'var(--bg-color)',
+    accent: '#cddc39',
+    text: '#ffffff',
+    border: 'rgba(255, 255, 255, 0.1)',
+    textMuted: 'rgba(255, 255, 255, 0.5)'
   };
 
   useEffect(() => {
     const email = localStorage.getItem('ecozero_user');
     setUserEmail(email);
     if (email) {
-      const q = query(collection(db, 'orders'), where('userEmail', '==', email));
+      const q = query(collection(db, 'orders'), where('email', '==', email));
       const unsubscribe = onSnapshot(q, (snapshot) => {
         const ordersData = snapshot.docs
           .map(doc => ({ id: doc.id, ...doc.data() as any }))
@@ -45,9 +45,9 @@ export default function MyOrdersPage() {
 
   const getStatusConfig = (status: string) => {
     switch(status) {
-      case 'Delivered': return { bg: '#e7f5ec', color: colors.accent, label: 'DELIVERED', icon: <PackageCheck size={12} /> };
-      case 'Shipped': return { bg: '#e6f4f1', color: '#006d77', label: 'SHIPPED', icon: <Truck size={12} /> };
-      default: return { bg: '#fff4e6', color: '#e07b00', label: 'PROCESSING', icon: <Loader2 size={12} className="animate-spin" /> };
+      case 'Delivered': return { bg: 'rgba(205, 220, 57, 0.1)', color: '#cddc39', label: 'DELIVERED', icon: <PackageCheck size={12} /> };
+      case 'Shipped': return { bg: 'rgba(0, 212, 255, 0.1)', color: '#00d4ff', label: 'SHIPPED', icon: <Truck size={12} /> };
+      default: return { bg: 'rgba(255, 215, 0, 0.1)', color: '#ffd700', label: 'PROCESSING', icon: <Loader2 size={12} className="animate-spin" /> };
     }
   };
 
@@ -63,21 +63,21 @@ export default function MyOrdersPage() {
     <div className="orders-page" style={{ minHeight: '100vh', background: colors.bg, paddingBottom: '100px' }}>
       <style dangerouslySetInnerHTML={{ __html: `
         @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700;900&display=swap');
-        .orders-container, .orders-header { padding-top: 140px; }
+        .orders-container, .orders-header { padding-top: 180px; }
         @media (max-width: 768px) {
           .orders-container, .orders-header { padding-top: 1.5rem !important; }
         }
         .order-card-refined:hover { border-color: ${colors.accent}; box-shadow: 0 10px 30px rgba(20, 104, 69, 0.05); }
       `}} />
 
-      <div className="orders-container" style={{ maxWidth: '700px', margin: '0 auto', padding: '0 20px' }}>
+      <div className="orders-container" style={{ maxWidth: '700px', margin: '0 auto', paddingLeft: '20px', paddingRight: '20px' }}>
 
         {/* HEADER */}
         <div className="orders-header" style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '15px' }}>
-           <button onClick={() => router.push('/menu')} style={{ background: '#fff', border: `1px solid ${colors.border}`, width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: colors.accent }}>
-              <ArrowLeft size={16} />
+           <button onClick={() => router.push('/menu')} style={{ background: 'rgba(255, 255, 255, 0.05)', border: `1px solid ${colors.border}`, width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#cddc39' }}>
+              <ArrowLeft size={20} />
            </button>
-            <h1 style={{ margin: 0, fontSize: '2.2rem', fontWeight: 900, fontFamily: 'Oswald, sans-serif', textTransform: 'uppercase', letterSpacing: '-0.5px' }}>
+            <h1 style={{ margin: 0, fontSize: '2.2rem', fontWeight: 900, fontFamily: 'Oswald, sans-serif', textTransform: 'uppercase', letterSpacing: '-0.5px', color: colors.text }}>
               My <span style={{ color: colors.accent }}>Orders</span>
             </h1>
         </div>
@@ -85,7 +85,7 @@ export default function MyOrdersPage() {
         {/* LIST */}
         {!userEmail ? (
           <div style={{ background: '#fff', padding: '4rem 2rem', borderRadius: '30px', textAlign: 'center', border: `1px solid ${colors.border}` }}>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 900, marginBottom: '1rem', fontFamily: 'Oswald, sans-serif' }}>Please Log In</h3>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: 900, marginBottom: '1rem', fontFamily: 'Oswald, sans-serif', color: colors.text }}>Please Log In</h3>
             <Link href="/login" style={{ padding: '0.8rem 2rem', borderRadius: '30px', background: colors.accent, color: '#fff', textDecoration: 'none', fontWeight: 800, fontSize: '0.9rem' }}>LOG IN NOW</Link>
           </div>
         ) : (
@@ -99,7 +99,7 @@ export default function MyOrdersPage() {
                   href={`/orders/${order.id}`}
                   key={order.id}
                   style={{ 
-                    background: '#ffffff', 
+                    background: 'rgba(255, 255, 255, 0.03)', 
                     borderRadius: '20px', 
                     padding: '1rem', 
                     border: `1px solid ${colors.border}`, 
@@ -135,7 +135,7 @@ export default function MyOrdersPage() {
                               background: '#fff', 
                               borderRadius: '12px', 
                               overflow: 'hidden', 
-                              border: '2px solid #fff',
+                              border: '2px solid rgba(255, 255, 255, 0.1)',
                               boxShadow: '0 4px 10px rgba(0,0,0,0.06)',
                               marginLeft: idx > 0 ? '-18px' : '0',
                               zIndex: 10 - idx,
@@ -173,7 +173,7 @@ export default function MyOrdersPage() {
                      </div>
                      <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 900, color: colors.text, textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {order.items && order.items[0] ? order.items[0].name : 'MANIFEST ENTRY'}
-                        {itemsCount > 1 && <span style={{ color: colors.accent, marginLeft: '6px', fontSize: '0.75rem', background: 'rgba(20, 104, 69, 0.05)', padding: '1px 6px', borderRadius: '4px' }}>{itemsCount} ITEMS</span>}
+                        {itemsCount > 1 && <span style={{ color: '#cddc39', marginLeft: '6px', fontSize: '0.75rem', background: 'rgba(205, 220, 57, 0.1)', padding: '1px 6px', borderRadius: '4px' }}>{itemsCount} ITEMS</span>}
                      </h4>
                      <p style={{ margin: 0, fontSize: '0.75rem', fontWeight: 600, color: colors.textMuted }}>
                         Ordered on {new Date(order.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}

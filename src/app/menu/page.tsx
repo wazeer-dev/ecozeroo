@@ -120,31 +120,31 @@ export default function MenuPage() {
            <button className="circle-btn" onClick={() => router.back()}>
              <ChevronLeft size={20} />
            </button>
-           <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'rgb(4, 28, 11)' }}>All Products</h2>
+           <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#ffffff' }}>All Products</h2>
            <div style={{ width: '40px' }} />
         </div>
 
         {/* Desktop Header */}
         <div className="desktop-only" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '2rem' }}>
           <div>
-            <h1 style={{ fontSize: '3rem', fontWeight: 800, color: 'rgb(4, 28, 11)', marginBottom: '0.5rem', letterSpacing: '-1px' }}>Eco Menu</h1>
+            <h1 style={{ fontSize: '3.5rem', fontWeight: 900, color: '#ffffff', marginBottom: '0.5rem', letterSpacing: '-2.5px' }}>Eco Menu</h1>
             <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', fontWeight: 500 }}>Browse our live catalog of premium eco-friendly products.</p>
           </div>
           
           <div style={{ 
-            display: 'flex', alignItems: 'center', background: '#fff', 
+            display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.05)', 
             padding: '0.8rem 1.5rem', borderRadius: '40px', 
-            border: '1.5px solid rgba(60, 120, 20, 0.2)', width: '100%', 
-            maxWidth: '350px', boxShadow: '0 4px 15px rgba(0,0,0,0.03)',
+            border: '1.5px solid rgba(205, 220, 57, 0.2)', width: '100%', 
+            maxWidth: '350px', boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
             transition: '0.3s'
           }} className="search-container">
-            <Search size={20} color="#146845" />
+            <Search size={20} color="#cddc39" />
             <input 
               type="text" 
               placeholder="Search products..." 
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              style={{ background: 'transparent', border: 'none', color: 'rgb(4, 28, 11)', marginLeft: '12px', outline: 'none', width: '100%', fontSize: '1rem', fontWeight: 600 }}
+              style={{ background: 'transparent', border: 'none', color: '#ffffff', marginLeft: '12px', outline: 'none', width: '100%', fontSize: '1rem', fontWeight: 600 }}
             />
           </div>
         </div>
@@ -168,7 +168,7 @@ export default function MenuPage() {
 
         {/* MOBILE: Product types label */}
         <div className="section-label-row" style={{ marginBottom: '1rem' }}>
-           <h3 className="section-label" style={{ color: 'rgb(4, 28, 11)' }}>Product types</h3>
+           <h3 className="section-label" style={{ color: '#ffffff' }}>Product types</h3>
         </div>
 
         {/* MOBILE: Category Pill Chips */}
@@ -189,7 +189,7 @@ export default function MenuPage() {
         {/* Desktop category pills */}
         <div className="categories-scroll-wrapper desktop-only" style={{ overflowX: 'auto', margin: '0 -16px 3rem', padding: '0 16px 10px', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
           <div className="categories-container" style={{ display: 'flex', gap: '0.8rem', alignItems: 'center', width: 'max-content', paddingRight: '16px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '8px', color: 'rgb(4, 28, 11)', fontWeight: 700, fontSize: '0.9rem', flexShrink: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '8px', color: '#ffffff', fontWeight: 700, fontSize: '0.9rem', flexShrink: 0 }}>
               <Filter size={18} /> CATEGORIES:
             </div>
             {categories.map((cat) => (
@@ -198,9 +198,9 @@ export default function MenuPage() {
                 onClick={() => setSelectedCategory(cat)}
                 style={{
                   padding: '10px 22px', borderRadius: '30px', border: 'none', fontSize: '0.95rem', fontWeight: 700, cursor: 'pointer',
-                  background: selectedCategory === cat ? '#3c7814' : 'rgba(60, 120, 20, 0.05)', color: selectedCategory === cat ? '#fff' : 'rgb(4, 28, 11)',
-                  boxShadow: selectedCategory === cat ? '0 8px 20px rgba(0, 0, 0, 0.1)' : '0 2px 8px rgba(0,0,0,0.05)',
-                  textTransform: 'capitalize', whiteSpace: 'nowrap'
+                  background: selectedCategory === cat ? '#cddc39' : 'rgba(255, 255, 255, 0.05)', color: selectedCategory === cat ? '#0a2a16' : '#ffffff',
+                  boxShadow: selectedCategory === cat ? '0 8px 20px rgba(205, 220, 57, 0.2)' : '0 2px 8px rgba(0,0,0,0.1)',
+                  textTransform: 'capitalize', whiteSpace: 'nowrap', border: '1px solid rgba(255, 255, 255, 0.1)'
                 }}
               >
                 {cat}
@@ -211,14 +211,14 @@ export default function MenuPage() {
 
         {/* Products header (Found count) */}
         <div className="section-label-row">
-           <h3 className="section-label" style={{ color: 'rgb(4, 28, 11)' }}>{filtered.length} products found</h3>
-           <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#3c7814' }}>See all</span>
+           <h3 className="section-label" style={{ color: '#ffffff' }}>{filtered.length} products found</h3>
+           <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#cddc39' }}>See all</span>
         </div>
 
         {isLoading ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '8rem 0' }}>
-            <Loader2 className="animate-spin" size={48} color="#3c7814" />
-            <p style={{ color: '#3c7814', fontSize: '1.1rem', marginTop: '1.5rem', fontWeight: 600 }}>Syncing Eco Inventory...</p>
+            <Loader2 className="animate-spin" size={48} color="#cddc39" />
+            <p style={{ color: '#cddc39', fontSize: '1.1rem', marginTop: '1.5rem', fontWeight: 600 }}>Syncing Eco Inventory...</p>
           </div>
         ) : (
           <div className="products-grid">
@@ -230,7 +230,7 @@ export default function MenuPage() {
                     
                     {/* DESKTOP VIEW CARD */}
                     <div className="desktop-only product-link" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                      <div className="product-image-container" style={{ position: 'relative', borderRadius: '28px', overflow: 'hidden', height: '320px', marginBottom: '1.2rem', background: '#fff', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
+                      <div className="product-image-container" style={{ position: 'relative', borderRadius: '28px', overflow: 'hidden', height: '320px', marginBottom: '1.2rem', background: 'rgba(255, 255, 255, 0.03)', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
                         <Image 
                           className="scaled-img" 
                           src={product.image || 'https://via.placeholder.com/600x600'} 
@@ -238,16 +238,16 @@ export default function MenuPage() {
                           fill
                           style={{ objectFit: 'cover', transition: 'transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)' }} 
                         />
-                        <div style={{ position: 'absolute', bottom: '15px', left: '15px', background: 'rgba(255,255,255,0.95)', padding: '6px 14px', borderRadius: '30px', fontSize: '0.75rem', fontWeight: 800, color: 'rgb(4, 28, 11)', backdropFilter: 'blur(10px)', zIndex: 2 }}>{product.badge || 'ESSENTIAL'}</div>
+                        <div style={{ position: 'absolute', bottom: '15px', left: '15px', background: 'rgba(10, 42, 22, 0.95)', padding: '6px 14px', borderRadius: '30px', fontSize: '0.75rem', fontWeight: 800, color: '#ffffff', backdropFilter: 'blur(10px)', zIndex: 2, border: '1px solid rgba(205, 220, 57, 0.2)' }}>{product.badge || 'ESSENTIAL'}</div>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '0 14px' }}>
                         <div>
-                          <h3 className="product-title" style={{ fontSize: '1.25rem', fontWeight: 800, color: 'rgb(4, 28, 11)', marginBottom: '0.3rem', height: '1.2em', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{product.name}</h3>
-                          <p style={{ color: '#5a7a40', fontSize: '0.9rem', fontWeight: 500 }}>{product.category || 'Eco-Friendly'}</p>
+                          <h3 className="product-title" style={{ fontSize: '1.25rem', fontWeight: 800, color: '#ffffff', marginBottom: '0.3rem', height: '1.2em', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{product.name}</h3>
+                          <p style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.9rem', fontWeight: 500 }}>{product.category || 'Eco-Friendly'}</p>
                         </div>
                         <div style={{ textAlign: 'right' }}>
-                          <p style={{ margin: 0, fontSize: '0.85rem', color: '#5a7a40', textDecoration: 'line-through' }}>₹{(parseFloat(product.price) * 1.25).toFixed(0)}</p>
-                          <p style={{ margin: 0, fontSize: '1.3rem', color: '#3c7814', fontWeight: 800 }}>₹{product.price}</p>
+                          <p style={{ margin: 0, fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.4)', textDecoration: 'line-through' }}>₹{(parseFloat(product.price) * 1.25).toFixed(0)}</p>
+                          <p style={{ margin: 0, fontSize: '1.3rem', color: '#cddc39', fontWeight: 800 }}>₹{product.price}</p>
                         </div>
                       </div>
                     </div>
@@ -260,7 +260,7 @@ export default function MenuPage() {
                            className="mobile-product-img" 
                            alt={product.name} 
                            fill
-                           style={{ objectFit: 'cover', mixBlendMode: 'multiply' }}
+                           style={{ objectFit: 'cover' }}
                          />
                          <div className="mobile-essential-tag" style={{ zIndex: 2 }}>{product.badge || 'ESSENTIAL'}</div>
                        </div>
@@ -287,7 +287,7 @@ export default function MenuPage() {
             ) : (
               <div style={{ gridColumn: '1 / -1', padding: '8rem 2rem', textAlign: 'center', background: '#fff', borderRadius: '32px', border: '2px dashed rgba(60, 120, 20, 0.1)' }}>
                 <PackageSearch size={64} color="#146845" style={{ margin: '0 auto 1.5rem', opacity: 0.8 }} />
-                <h3 style={{ fontSize: '1.8rem', marginBottom: '0.8rem', fontWeight: 800, color: 'rgb(4, 28, 11)' }}>No products matched</h3>
+                <h3 style={{ fontSize: '1.8rem', marginBottom: '0.8rem', fontWeight: 800, color: '#ffffff' }}>No products matched</h3>
                 <button 
                   onClick={() => {setSelectedCategory('All'); setSearchQuery('');}}
                   style={{ marginTop: '2rem', padding: '12px 30px', borderRadius: '40px', border: 'none', background: '#146845', color: '#fff', fontWeight: 700, cursor: 'pointer' }}
@@ -301,11 +301,11 @@ export default function MenuPage() {
       {/* FILTER BOTTOM DRAWER */}
       {showFilterDrawer && (
         <>
-          <div onClick={() => setShowFilterDrawer(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 9000, backdropFilter: 'blur(4px)' }} />
-          <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#fff', borderRadius: '28px 28px 0 0', padding: '1.5rem 1.5rem 7rem', zIndex: 9001, boxShadow: '0 -20px 60px rgba(0,0,0,0.15)', animation: 'slideUp 0.25s ease' }}>
-            <div style={{ width: '40px', height: '4px', borderRadius: '4px', background: '#e0e0e0', margin: '0 auto 1.5rem' }} />
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#111', marginBottom: '1.5rem' }}>Sort & Filter</h3>
-            <p style={{ fontSize: '0.72rem', fontWeight: 800, color: '#aaa', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.8rem' }}>Sort by</p>
+          <div onClick={() => setShowFilterDrawer(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 9000, backdropFilter: 'blur(8px)' }} />
+          <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#0a2a16', borderRadius: '28px 28px 0 0', padding: '1.5rem 1.5rem 7rem', zIndex: 9001, boxShadow: '0 -20px 60px rgba(0,0,0,0.4)', animation: 'slideUp 0.25s ease', border: '1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ width: '40px', height: '4px', borderRadius: '4px', background: 'rgba(255,255,255,0.1)', margin: '0 auto 1.5rem' }} />
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#ffffff', marginBottom: '1.5rem' }}>Sort & Filter</h3>
+            <p style={{ fontSize: '0.72rem', fontWeight: 800, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.8rem' }}>Sort by</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '1.5rem' }}>
               {[
                 { id: 'newest', label: 'Newest First' },
@@ -313,7 +313,7 @@ export default function MenuPage() {
                 { id: 'price-desc', label: 'Price: High to Low' },
               ].map(opt => (
                 <button key={opt.id} onClick={() => setSortBy(opt.id)}
-                  style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 18px', borderRadius: '16px', border: 'none', cursor: 'pointer', background: sortBy === opt.id ? '#041c0b' : '#f5f5f5', color: sortBy === opt.id ? '#fff' : '#111', fontWeight: 700, fontSize: '0.95rem', textAlign: 'left', transition: 'all 0.2s ease' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 18px', borderRadius: '16px', border: 'none', cursor: 'pointer', background: sortBy === opt.id ? '#cddc39' : 'rgba(255,255,255,0.05)', color: sortBy === opt.id ? '#0a2a16' : '#ffffff', fontWeight: 700, fontSize: '0.95rem', textAlign: 'left', transition: 'all 0.2s ease' }}
                 >
                   {opt.label}
                   {sortBy === opt.id && <span style={{ marginLeft: 'auto' }}>✓</span>}
@@ -321,7 +321,7 @@ export default function MenuPage() {
               ))}
             </div>
             <button onClick={() => setShowFilterDrawer(false)}
-              style={{ width: '100%', padding: '16px', borderRadius: '50px', background: '#146845', color: '#fff', border: 'none', fontWeight: 800, fontSize: '1rem', cursor: 'pointer' }}
+              style={{ width: '100%', padding: '16px', borderRadius: '50px', background: '#cddc39', color: '#0a2a16', border: 'none', fontWeight: 800, fontSize: '1rem', cursor: 'pointer' }}
             >Apply</button>
           </div>
         </>
@@ -336,12 +336,12 @@ export default function MenuPage() {
           transform: scale(1.08);
         }
         .product-link:hover .product-title {
-          color: #3c7814 !important;
+          color: #cddc39 !important;
         }
 
         .search-container:focus-within {
-          border-color: #146845 !important;
-          box-shadow: 0 4px 20px rgba(60, 120, 20, 0.1) !important;
+          border-color: #cddc39 !important;
+          box-shadow: 0 4px 20px rgba(205, 220, 57, 0.2) !important;
         }
 
         @media (max-width: 768px) {
@@ -357,9 +357,10 @@ export default function MenuPage() {
           }
           .circle-btn {
             width: 40px; height: 40px; border-radius: 50%;
-            background: #fff; border: 1.5px solid #eee;
+            background: rgba(255, 255, 255, 0.05); border: 1.5px solid rgba(255, 255, 255, 0.1);
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.03);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            color: #ffffff;
           }
           
           .search-filter-row {
@@ -368,11 +369,12 @@ export default function MenuPage() {
           }
           .mobile-search-bar {
             flex: 1; display: flex; align-items: center;
-            background: #fff; padding: 12px 18px; border-radius: 40px;
+            background: rgba(255, 255, 255, 0.05); padding: 12px 18px; border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
           }
           .filter-btn {
             width: 48px; height: 48px; border-radius: 50%;
-            background: #fff; color: #3c7814; border: none;
+            background: #cddc39; color: #0a2a16; border: none;
             display: flex; align-items: center; justify-content: center;
           }
           
@@ -380,21 +382,21 @@ export default function MenuPage() {
             display: flex; justify-content: space-between; align-items: center;
             margin-bottom: 15px;
           }
-          .section-label { font-size: 1rem; font-weight: 800; color: rgb(4, 28, 11); margin: 0; text-transform: none; letter-spacing: 0; }
+          .section-label { font-size: 1rem; font-weight: 800; color: #ffffff; margin: 0; text-transform: none; letter-spacing: 0; }
           
           .cat-chip {
             flex-shrink: 0; padding: 10px 20px; border-radius: 50px;
-            border: 1.5px solid rgba(60, 120, 20, 0.2);
-            background: #fff; color: rgb(4, 28, 11);
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05); color: #ffffff;
             font-size: 0.8rem; font-weight: 800;
             text-transform: capitalize; cursor: pointer;
             white-space: nowrap; transition: all 0.2s ease;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
           }
           .cat-chip--active {
-            background: #3c7814; color: #fff;
-            border-color: #3c7814;
-            box-shadow: 0 6px 20px rgba(60, 120, 20, 0.2);
+            background: #cddc39; color: #0a2a16;
+            border-color: #cddc39;
+            box-shadow: 0 6px 20px rgba(205, 220, 57, 0.3);
           }
           
           .products-grid {
@@ -405,45 +407,44 @@ export default function MenuPage() {
              padding: 0 4px 160px !important;
           }
           .mobile-product-card {
-            background: #fff; border-radius: 20px; padding: 10px;
+            background: rgba(255, 255, 255, 0.03); border-radius: 20px; padding: 10px;
             display: flex; flex-direction: column; position: relative;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            border: 1px solid #f2f2f2;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             height: 100% !important;
             min-height: 250px;
           }
           .mobile-product-img-wrapper {
             width: 100%; height: 140px; /* Reduced height for a smaller card */
-            background: #fdfdfd; border-radius: 14px;
+            background: rgba(255, 255, 255, 0.08); border-radius: 14px;
             margin-bottom: 12px; overflow: hidden;
             display: flex; align-items: center; justify-content: center;
             position: relative;
           }
           .mobile-product-img {
             width: 100%; height: 100%; object-fit: cover;
-            mix-blend-mode: multiply;
           }
           .mobile-essential-tag {
             position: absolute; bottom: 8px; left: 8px;
-            background: rgba(255,255,255,0.9); padding: 4px 10px;
+            background: rgba(10, 42, 22, 0.95); padding: 4px 10px;
             border-radius: 20px; font-size: 0.6rem; font-weight: 800;
-            color: #111; letter-spacing: 0.5px;
+            color: #ffffff; letter-spacing: 0.5px;
           }
           .mobile-product-info { 
             display: flex; flex-direction: column; flex: 1;
             gap: 0px; text-align: left;
           }
           .mobile-product-title { 
-            font-size: 0.85rem; font-weight: 800; color: #111; 
+            font-size: 0.85rem; font-weight: 800; color: #ffffff; 
             min-height: 1.2em; line-height: 1.15; margin-bottom: 0px;
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
             text-transform: capitalize;
           }
-          .mobile-product-weight { font-size: 0.7rem; color: #bbb; font-weight: 600; margin-bottom: 4px; }
-          .mobile-product-price { font-size: 1rem; font-weight: 900; color: #111; }
+          .mobile-product-weight { font-size: 0.7rem; color: rgba(255, 255, 255, 0.6); font-weight: 600; margin-bottom: 4px; }
+          .mobile-product-price { font-size: 1rem; font-weight: 900; color: #cddc39; }
           .mobile-add-btn {
             width: 30px; height: 30px; border-radius: 50%;
-            background: #111; color: #fff; border: none;
+            background: #cddc39; color: #0a2a16; border: none;
             display: flex; align-items: center; justify-content: center;
           }
           .discount-bubble {

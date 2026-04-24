@@ -83,7 +83,7 @@ export default function ProfilePage() {
       };
       fetchProfile();
 
-      getDocs(query(collection(db, 'orders'), where('userEmail', '==', email)))
+      getDocs(query(collection(db, 'orders'), where('email', '==', email)))
         .then(snap => setOrderCount(snap.size))
         .catch(() => setOrderCount(0));
     } else {
@@ -195,12 +195,12 @@ export default function ProfilePage() {
   ];
 
   const cardStyle: React.CSSProperties = {
-    background: '#fff',
+    background: 'rgba(255, 255, 255, 0.03)',
     borderRadius: '28px',
     padding: '1.8rem 2rem',
     marginBottom: '1.2rem',
-    boxShadow: '0 10px 30px rgba(60,120,20,0.06)',
-    border: '1px solid rgba(60,120,20,0.03)'
+    boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+    border: '1px solid rgba(255, 255, 255, 0.1)'
   };
 
   return (
@@ -213,10 +213,10 @@ export default function ProfilePage() {
           <div style={{ position: 'relative', flexShrink: 0 }}>
             <div style={{
               width: '90px', height: '90px', borderRadius: '50%',
-              background: 'linear-gradient(135deg, #3c7814, #88c65f)',
+              background: 'linear-gradient(135deg, #cddc39, #a8b61e)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '2.5rem', fontWeight: 800, color: '#fff',
-              overflow: 'hidden', boxShadow: '0 10px 30px rgba(60,120,20,0.15)',
+              fontSize: '2.5rem', fontWeight: 800, color: '#0a2a16',
+              overflow: 'hidden', boxShadow: '0 10px 30px rgba(205, 220, 57, 0.2)',
               position: 'relative', cursor: 'pointer'
             }}
             onClick={() => document.getElementById('avatarInput')?.click()}
@@ -255,7 +255,7 @@ export default function ProfilePage() {
               <div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                   <div style={{ flex: 1 }}>
-                    <p style={{ margin: '0 0 8px', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', color: '#5a7a40' }}>Display Name</p>
+                    <p style={{ margin: '0 0 8px', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', color: '#cddc39' }}>Display Name</p>
                     <input
                       type="text"
                       value={editName}
@@ -263,15 +263,15 @@ export default function ProfilePage() {
                       style={{
                         width: '100%',
                         padding: '12px 14px', borderRadius: '12px',
-                        border: '1.5px solid #3c7814',
-                        background: 'rgba(60,120,20,0.04)',
+                        background: 'rgba(255, 255, 255, 0.05)', 
+                        border: '1.5px solid #cddc39',
                         fontSize: '1rem', fontWeight: 600,
-                        color: 'rgb(4, 28, 11)', outline: 'none',
+                        color: '#ffffff', outline: 'none',
                       }}
                     />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <p style={{ margin: '0 0 8px', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', color: '#5a7a40' }}>Phone Number</p>
+                    <p style={{ margin: '0 0 8px', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', color: '#cddc39' }}>Phone Number</p>
                     <input
                       type="tel"
                       value={editPhone}
@@ -280,17 +280,16 @@ export default function ProfilePage() {
                       style={{
                         width: '100%',
                         padding: '12px 14px', borderRadius: '12px',
-                        border: '1.5px solid #3c7814',
-                        background: 'rgba(60,120,20,0.04)',
+                        background: 'rgba(255, 255, 255, 0.05)', border: '1.5px solid #cddc39',
                         fontSize: '1rem', fontWeight: 600,
-                        color: 'rgb(4, 28, 11)', outline: 'none',
+                        color: '#ffffff', outline: 'none',
                       }}
                     />
                   </div>
                   <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
                     <button onClick={handleSaveChanges} disabled={isSaving} style={{
                       flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                      padding: '12px', background: '#3c7814', color: '#fff',
+                      padding: '12px', background: '#cddc39', color: '#0a2a16',
                       border: 'none', borderRadius: '12px', fontWeight: 700,
                       cursor: 'pointer', fontSize: '1rem', opacity: isSaving ? 0.7 : 1
                     }}>
@@ -309,12 +308,12 @@ export default function ProfilePage() {
             ) : (
               /* ── VIEW MODE ── */
               <>
-                <h1 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: 'rgb(4, 28, 11)' }}>{userName}</h1>
-                <p style={{ margin: '2px 0 0', color: '#5a7a40', fontSize: '0.9rem' }}>{userEmail}</p>
-                {userPhone && <p style={{ margin: '2px 0 0', color: '#5a7a40', fontSize: '0.85rem', fontWeight: 600 }}>{userPhone}</p>}
+                <h1 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: '#ffffff' }}>{userName}</h1>
+                <p style={{ margin: '2px 0 0', color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.9rem' }}>{userEmail}</p>
+                {userPhone && <p style={{ margin: '2px 0 0', color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.85rem', fontWeight: 600 }}>{userPhone}</p>}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '10px' }}>
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#3c7814' }}></div>
-                  <span style={{ fontSize: '0.85rem', color: '#3c7814', fontWeight: 600 }}>Verified Account</span>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#cddc39' }}></div>
+                  <span style={{ fontSize: '0.85rem', color: '#cddc39', fontWeight: 600 }}>Verified Account</span>
                 </div>
               </>
             )}
@@ -326,13 +325,13 @@ export default function ProfilePage() {
               onClick={() => setIsEditing(true)}
               style={{
                 display: 'flex', alignItems: 'center', gap: '8px',
-                padding: '10px 20px', border: '1.5px solid #3c7814',
-                background: 'transparent', color: '#3c7814',
+                padding: '10px 20px', border: '1.5px solid #cddc39',
+                background: 'transparent', color: '#cddc39',
                 borderRadius: '50px', fontWeight: 700,
                 fontSize: '0.9rem', cursor: 'pointer', transition: '0.2s',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = '#3c7814'; e.currentTarget.style.color = '#fff'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#3c7814'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = '#cddc39'; e.currentTarget.style.color = '#0a2a16'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#cddc39'; }}
             >
               <Edit3 size={16} /> Edit Profile
             </button>
@@ -342,24 +341,24 @@ export default function ProfilePage() {
         {/* Quick Stats — real data */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '1.5rem' }}>
           {[
-            { label: 'Orders', value: orderCount === null ? '…' : String(orderCount), icon: <Package size={22} color="#3c7814" />, href: '/orders' },
-            { label: 'Wishlist', value: String(wishlistCount), icon: <Heart size={22} color="#3c7814" />, href: '/wishlist' },
-            { label: 'Addresses', value: String(addressCount), icon: <MapPin size={22} color="#3c7814" />, href: '/profile/addresses' },
+            { label: 'Orders', value: orderCount === null ? '…' : String(orderCount), icon: <Package size={22} color="#cddc39" />, href: '/orders' },
+            { label: 'Wishlist', value: String(wishlistCount), icon: <Heart size={22} color="#cddc39" />, href: '/wishlist' },
+            { label: 'Addresses', value: String(addressCount), icon: <MapPin size={22} color="#cddc39" />, href: '/profile/addresses' },
           ].map((stat, i) => (
             <Link key={i} href={stat.href} style={{ textDecoration: 'none' }}>
               <div style={{
-                background: '#fff', borderRadius: '24px', padding: '1.6rem 1rem',
-                boxShadow: '0 8px 25px rgba(60,120,20,0.04)', border: '1px solid rgba(60,120,20,0.02)',
+                background: 'rgba(255, 255, 255, 0.03)', borderRadius: '24px', padding: '1.6rem 1rem',
+                boxShadow: '0 8px 25px rgba(0,0,0,0.1)', border: '1px solid rgba(255, 255, 255, 0.1)',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px',
                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', cursor: 'pointer',
               }}
               className="stat-card"
               >
-                <div style={{ background: 'rgba(60,120,20,0.06)', padding: '14px', borderRadius: '50%', marginBottom: '4px' }}>
+                <div style={{ background: 'rgba(205, 220, 57, 0.1)', padding: '14px', borderRadius: '50%', marginBottom: '4px' }}>
                   {stat.icon}
                 </div>
-                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: 'rgb(4, 28, 11)', lineHeight: 1 }}>{stat.value}</div>
-                <div style={{ fontSize: '0.8rem', color: '#5a7a40', fontWeight: 600 }}>{stat.label}</div>
+                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#ffffff', lineHeight: 1 }}>{stat.value}</div>
+                <div style={{ fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.6)', fontWeight: 600 }}>{stat.label}</div>
               </div>
             </Link>
           ))}
@@ -368,31 +367,31 @@ export default function ProfilePage() {
         {/* Menu Groups */}
         {menuItems.map((group, gi) => (
           <div key={gi} style={{ marginBottom: '1.5rem' }}>
-            <p style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', color: '#3c7814', margin: '0 0 10px 10px' }}>
+            <p style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', color: '#cddc39', margin: '0 0 10px 10px' }}>
               {group.group}
             </p>
-            <div style={{ background: '#fff', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(60,120,20,0.04)', border: '1px solid rgba(60,120,20,0.02)' }}>
+            <div style={{ background: 'rgba(255, 255, 255, 0.03)', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
               {group.items.map((item, ii) => (
                 <Link key={ii} href={item.href} style={{ textDecoration: 'none' }}>
                   <div style={{
                     display: 'flex', alignItems: 'center', gap: '1.2rem',
-                    padding: '1.2rem 1.5rem', color: 'rgb(4, 28, 11)', transition: 'all 0.2s ease',
-                    borderBottom: ii < group.items.length - 1 ? '1px solid rgba(60,120,20,0.05)' : 'none',
+                    padding: '1.2rem 1.5rem', color: '#ffffff', transition: 'all 0.2s ease',
+                    borderBottom: ii < group.items.length - 1 ? '1px solid rgba(255, 255, 255, 0.05)' : 'none',
                   }}
                     onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(60,120,20,0.03)'; e.currentTarget.style.paddingLeft = '1.8rem'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.paddingLeft = '1.5rem'; }}
                   >
                     <div style={{
                       width: '46px', height: '46px', borderRadius: '14px',
-                      background: 'rgba(60,120,20,0.06)',
+                      background: 'rgba(205, 220, 57, 0.1)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      flexShrink: 0, color: '#3c7814', transition: '0.2s'
+                      flexShrink: 0, color: '#cddc39', transition: '0.2s'
                     }}>
                       {item.icon}
                     </div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 800, fontSize: '1rem', color: 'rgb(4, 28, 11)' }}>{item.label}</div>
-                      <div style={{ fontSize: '0.8rem', color: '#5a7a40', marginTop: '2px', fontWeight: 500 }}>{item.desc}</div>
+                      <div style={{ fontWeight: 800, fontSize: '1rem', color: '#ffffff' }}>{item.label}</div>
+                      <div style={{ fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.6)', marginTop: '2px', fontWeight: 500 }}>{item.desc}</div>
                     </div>
                     <ChevronRight size={18} color="#5a7a40" />
                   </div>
@@ -407,13 +406,13 @@ export default function ProfilePage() {
           <button onClick={handleLogout} style={{
             width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
             gap: '10px', padding: '1rem',
-            background: '#fff', border: '1.5px solid rgba(220,50,50,0.2)',
-            borderRadius: '16px', color: '#cc3333', fontWeight: 700,
+            background: 'rgba(255, 255, 255, 0.03)', border: '1.5px solid rgba(220,50,50,0.2)',
+            borderRadius: '16px', color: '#ff4d4d', fontWeight: 700,
             fontSize: '1rem', cursor: 'pointer', transition: '0.2s',
-            boxShadow: '0 2px 12px rgba(60,120,20,0.08)',
+            boxShadow: '0 2px 12px rgba(0,0,0,0.1)',
           }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = '#fff0f0'; e.currentTarget.style.borderColor = '#cc3333'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'rgba(220,50,50,0.2)'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(220,50,50,0.1)'; e.currentTarget.style.borderColor = '#ff4d4d'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'; e.currentTarget.style.borderColor = 'rgba(220,50,50,0.2)'; }}
           >
             <LogOut size={20} /> Sign Out
           </button>
@@ -425,7 +424,7 @@ export default function ProfilePage() {
         .avatar-overlay:hover { opacity: 1 !important; }
         .profile-page-wrapper {
           min-height: 100vh;
-          background: rgb(215, 232, 188); /* Kept exact user color */
+          background: var(--bg-color);
           padding-top: 100px;
         }
         .stat-card:hover {

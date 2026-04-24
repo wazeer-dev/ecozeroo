@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Script from 'next/script';
 import Link from 'next/link';
 import { CreditCard, PackageCheck, Loader2, ArrowLeft, ChevronDown, MapPin, CheckCircle2 } from 'lucide-react';
 import { collection, addDoc, doc, updateDoc, increment } from 'firebase/firestore';
@@ -45,18 +46,20 @@ export default function CheckoutPage() {
   const router = useRouter();
 
   const colors = {
-    bg: '#158225',
-    surface: 'rgba(20, 104, 69, 0.05)',
-    surfaceSolid: '#ffffff',
-    border: 'rgba(20, 104, 69, 0.12)',
-    accent: 'rgb(20, 104, 69)',
-    pale: '#5a7a40',
-    text: '#041c0b',
-    textMuted: 'rgba(4, 28, 11, 0.6)'
+    bg: 'var(--bg-color)',
+    surface: 'rgba(255, 255, 255, 0.03)',
+    surfaceSolid: '#0a2a16',
+    border: 'rgba(255, 255, 255, 0.1)',
+    accent: '#cddc39',
+    pale: '#e0f2f1',
+    text: '#ffffff',
+    textMuted: 'rgba(255, 255, 255, 0.6)'
   };
 
   const [showMap, setShowMap] = useState(false);
   const [mapCoords, setMapCoords] = useState<{lat: number, lng: number} | null>(null);
+  const [isGeocoding, setIsGeocoding] = useState(false);
+  const RAZORPAY_KEY_ID = "rzp_test_SavjbONhdqNazv";
 
   useEffect(() => {
     const savedSingle = localStorage.getItem('ecozero_checkout_item');
@@ -101,7 +104,7 @@ export default function CheckoutPage() {
     setIsLoading(false);
   }, []);
 
-  const handleSetLocation = () => {
+  const handleSetLocation = async () => {
     setShowMap(true);
   };
 
@@ -120,6 +123,7 @@ export default function CheckoutPage() {
     if (mapCoords) {
       const dist = calculateDistance(COMPANY_COORDS.lat, COMPANY_COORDS.lng, mapCoords.lat, mapCoords.lng);
       setDistance(dist);
+      setIsGeocoding(true);
       
       // Dynamic Shipping Fee based on distance
       let fee = 0;
@@ -141,27 +145,39 @@ export default function CheckoutPage() {
         const data = await response.json();
         if (data && data.address) {
           const addr = data.address;
-          const road = addr.road || addr.suburb || addr.neighbourhood || '';
-          const cityName = addr.city || addr.town || addr.village || addr.suburb || '';
+          const road = addr.road || addr.suburb || addr.neighbourhood || addr.pedestrian || addr.construction || '';
+          const cityName = addr.city || addr.town || addr.village || addr.suburb || addr.municipality || '';
           const stateName = addr.state || '';
           const pCode = addr.postcode || '';
-          const detail = addr.amenity || addr.tourism || addr.neighbourhood || addr.suburb || '';
+          const detail = addr.amenity || addr.tourism || addr.neighbourhood || addr.suburb || addr.building || '';
           
           if (road) setAddress(road);
           if (cityName) setCity(cityName);
           if (detail && detail !== road) setAddressDetail(detail);
+          
           if (stateName) {
-            const matchedState = indianStates.find(s => s.toLowerCase() === stateName.toLowerCase());
-            setState(matchedState || stateName);
+            // Find the closest match in indianStates
+            const matchedState = indianStates.find(s => 
+              stateName.toLowerCase().includes(s.toLowerCase()) || 
+              s.toLowerCase().includes(stateName.toLowerCase())
+            );
+            if (matchedState) setState(matchedState);
+            else setState(stateName);
           }
-          if (pCode) setPinCode(pCode.replace(/\s/g, '').slice(0, 6));
+          
+          if (pCode) {
+            // Clean postcode to 6 digits for India
+            const cleanCode = pCode.replace(/\D/g, '').slice(0, 6);
+            if (cleanCode.length === 6) setPinCode(cleanCode);
+          }
         }
       } catch (err) {
-        console.error("Geocoding error:", err);
+        console.error("Geocoding failed:", err);
+      } finally {
+        setIsGeocoding(false);
+        setShowMap(false);
+        alert("📍 Delivery pin synchronized and address auto-filled.");
       }
-
-      setShowMap(false);
-      alert("📍 Delivery pin synchronized and address auto-filled.");
     } else {
       alert("Please tap on the map to place your delivery pin first.");
     }
@@ -177,61 +193,92 @@ export default function CheckoutPage() {
     
     setProcessing(true);
     
-    try {
-      const subtotal = items.reduce((acc, it) => acc + (parseFloat(it.price) * (it.quantity || 1)), 0);
-      const discount = subtotal * 0.20;
-      const total = subtotal - discount;
+    const subtotal = items.reduce((acc, it) => acc + (parseFloat(it.price) * (it.quantity || 1)), 0);
+    const discount = subtotal * 0.20;
+    const finalTotal = subtotal - discount + shippingFee;
 
-      const newOrder = {
-        customer: customerName || 'Guest User',
-        email: email || '',
-        phone: `${countryCode} ${phone}`.trim(),
-        address: `${address}, ${addressDetail}, ${city}, ${state} - ${pinCode}`,
-        locationUrl: locationUrl || '',
-        distance: distance ? `${distance.toFixed(2)} km` : '0 km',
-        shippingFee: shippingFee,
-        paymentMethod: paymentMethod,
-        total: total + shippingFee,
-        status: 'Processing',
-        date: new Date().toISOString(),
-        items: items.map(it => ({ id: it.id, name: it.name, image: it.image, price: it.price, quantity: it.quantity || 1 }))
-      };
-      
-      await addDoc(collection(db, 'orders'), newOrder);
-      
-      const newAddress = { name: customerName, phone, address, detail: addressDetail, city, state, pin: pinCode, id: Date.now().toString() };
-      const savedAddresses = JSON.parse(localStorage.getItem('ecozero_addresses') || '[]');
-      const addressString = `${address}${city}${pinCode}`.toLowerCase().replace(/\s/g, '');
-      const alreadyExists = savedAddresses.some((a: any) => `${a.address}${a.city}${a.pin}`.toLowerCase().replace(/\s/g, '') === addressString);
-      if (!alreadyExists) {
-        localStorage.setItem('ecozero_addresses', JSON.stringify([...savedAddresses, newAddress]));
-      }
-
-      for (const it of items) {
-        if (it.id) {
-          try {
-            const productRef = doc(db, 'products', it.id);
-            await updateDoc(productRef, { stock: increment(-(it.quantity || 1)) });
-          } catch(err) {
-            console.error("Stock update error:", err);
+    const createOrderRecord = async (paymentId: string = "COD_PENDING") => {
+      try {
+        const newOrder = {
+          customer: customerName || 'Guest User',
+          email: email || '',
+          phone: `${countryCode} ${phone}`.trim(),
+          address: `${address}, ${addressDetail}, ${city}, ${state} - ${pinCode}`,
+          locationUrl: locationUrl || '',
+          distance: distance ? `${distance.toFixed(2)} km` : '0 km',
+          shippingFee: shippingFee,
+          paymentMethod: paymentMethod,
+          paymentId: paymentId,
+          total: finalTotal,
+          status: 'Processing',
+          date: new Date().toISOString(),
+          items: items.map(it => ({ id: it.id, name: it.name, image: it.image, price: it.price, quantity: it.quantity || 1 }))
+        };
+        
+        await addDoc(collection(db, 'orders'), newOrder);
+        
+        // Stock Update
+        for (const it of items) {
+          if (it.id) {
+            try {
+              const productRef = doc(db, 'products', it.id);
+              await updateDoc(productRef, { stock: increment(-(it.quantity || 1)) });
+            } catch(err) {
+              console.error("Stock update error:", err);
+            }
           }
         }
-      }
-      
-      setProcessing(false);
-      setSuccess(true);
-      
-      const wishlist = JSON.parse(localStorage.getItem('ecozero_wishlist') || '[]');
-      const purchasedIds = items.map(it => it.id);
-      localStorage.setItem('ecozero_wishlist', JSON.stringify(wishlist.filter((wi: any) => !purchasedIds.includes(wi.id))));
 
-      localStorage.removeItem('ecozero_checkout_item');
-      localStorage.removeItem('ecozero_cart');
-      window.dispatchEvent(new Event('cartUpdated'));
-    } catch (error) {
-      console.error("Error processing order:", error);
-      alert("Error processing transaction. Check configuration.");
-      setProcessing(false);
+        setProcessing(false);
+        setSuccess(true);
+        
+        // Cleanup
+        localStorage.removeItem('ecozero_checkout_item');
+        localStorage.removeItem('ecozero_cart');
+        window.dispatchEvent(new Event('cartUpdated'));
+      } catch (err) {
+        console.error("Error creating order:", err);
+        alert("Critical failure during order persistence.");
+        setProcessing(false);
+      }
+    };
+
+    if (paymentMethod === 'online') {
+      if (!(window as any).Razorpay) {
+        alert("Razorpay SDK could not be loaded. Please check your internet connection and try again.");
+        setProcessing(false);
+        return;
+      }
+
+      const options = {
+        key: RAZORPAY_KEY_ID,
+        amount: Math.round(finalTotal * 100), // amount in paise
+        currency: "INR",
+        name: "EcoZero",
+        description: "Organic & Sustainable Marketplace",
+        image: "https://i.ibb.co/bc2b31e802ebfbc0450bf45cfef8cf02/logo.png",
+        handler: function (response: any) {
+          createOrderRecord(response.razorpay_payment_id);
+        },
+        prefill: {
+          name: customerName,
+          email: email,
+          contact: phone
+        },
+        theme: {
+          color: "#cddc39"
+        },
+        modal: {
+          ondismiss: function() {
+            setProcessing(false);
+          }
+        }
+      };
+      
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+    } else {
+      await createOrderRecord();
     }
   };
 
@@ -365,19 +412,25 @@ export default function CheckoutPage() {
     padding: '1.2rem',
     borderRadius: '16px',
     border: `1px solid ${colors.border}`,
-    background: 'rgba(20, 104, 69, 0.05)',
-    color: '#041c0b',
+    background: 'rgba(255, 255, 255, 0.05)',
+    color: '#ffffff',
     fontSize: '1rem',
     outline: 'none',
     marginBottom: '1.2rem',
   };
 
   return (
-    <div className="page-main-wrapper" style={{ background: '#158225', paddingBottom: '6rem', color: '#fff', fontFamily: 'var(--font-inter), sans-serif' }}>
+    <div className="page-main-wrapper" style={{ background: 'var(--bg-color)', paddingBottom: '6rem', color: '#fff', fontFamily: 'var(--font-inter), sans-serif' }}>
       <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
         
+        <Script 
+          id="razorpay-checkout-js"
+          src="https://checkout.razorpay.com/v1/checkout.js"
+          strategy="lazyOnload"
+        />
+
         {success ? (
-          <div className="success-card" style={{ background: colors.surfaceSolid, border: `1px solid ${colors.border}`, padding: '6rem 2rem', borderRadius: '40px', textAlign: 'center' }}>
+          <div className="success-card" style={{ background: 'rgba(255, 255, 255, 0.03)', border: `1px solid ${colors.border}`, padding: '6rem 2rem', borderRadius: '40px', textAlign: 'center' }}>
             <div style={{ background: 'rgba(20, 104, 69, 0.1)', width: '100px', height: '100px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2.5rem' }}>
               <CheckCircle2 size={50} color={colors.accent} />
             </div>
@@ -400,7 +453,7 @@ export default function CheckoutPage() {
         ) : (
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '3rem', paddingTop: '120px' }}>
-              <Link href="/menu" onClick={(e) => { if (checkoutStep === 2) { e.preventDefault(); setCheckoutStep(1); } }} style={{ color: '#fcf7de', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700 }}>
+              <Link href="/menu" onClick={(e) => { if (checkoutStep === 2) { e.preventDefault(); setCheckoutStep(1); } }} style={{ color: '#cddc39', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700 }}>
                 <ArrowLeft size={20} /> {checkoutStep === 1 ? 'BACK TO MENU' : 'BACK TO INFO'}
               </Link>
             </div>
@@ -426,11 +479,11 @@ export default function CheckoutPage() {
                     <>
                       {/* SECTION 01 */}
                       <div className="form-card-section" style={{ 
-                        background: '#ffffff', 
+                        background: 'rgba(255, 255, 255, 0.03)', 
                         borderRadius: '28px', 
                         padding: '2rem', 
                         border: `1px solid ${colors.border}`,
-                        boxShadow: '0 4px 20px rgba(0,0,0,0.02)'
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
                       }}>
                         <h3 style={{ 
                           fontSize: '1.2rem', 
@@ -475,11 +528,11 @@ export default function CheckoutPage() {
 
                       {/* SECTION 02 */}
                       <div className="form-card-section" style={{ 
-                        background: '#ffffff', 
+                        background: 'rgba(255, 255, 255, 0.03)', 
                         borderRadius: '28px', 
                         padding: '2rem', 
                         border: `1px solid ${colors.border}`,
-                        boxShadow: '0 4px 20px rgba(0,0,0,0.02)'
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
                       }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.8rem', gap: '10px' }}>
                           <h3 style={{ 
@@ -542,7 +595,7 @@ export default function CheckoutPage() {
                                   <div 
                                     key={s} 
                                     onClick={() => { setState(s); setIsStateDropdownOpen(false); }}
-                                    style={{ padding: '0.8rem 1rem', cursor: 'pointer', fontSize: '0.9rem' }}
+                                    style={{ padding: '0.8rem 1rem', cursor: 'pointer', fontSize: '0.9rem', color: colors.text }}
                                     className="state-option"
                                   >
                                     {s}
@@ -567,7 +620,7 @@ export default function CheckoutPage() {
 
                   {checkoutStep === 2 && (
                     <div className="form-card-section" style={{ 
-                      background: '#ffffff', 
+                      background: 'rgba(255, 255, 255, 0.03)', 
                       borderRadius: '28px', 
                       padding: '2rem', 
                       border: `2px solid ${colors.accent}`,
@@ -600,8 +653,8 @@ export default function CheckoutPage() {
                              {paymentMethod === 'online' && <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: colors.accent }} />}
                           </div>
                           <div>
-                             <p style={{ margin: 0, fontWeight: 800, fontSize: '1rem' }}>Online Payment</p>
-                             <p style={{ margin: 0, fontSize: '0.75rem', opacity: 0.6 }}>Credit/Debit Card, UPI, Net Banking</p>
+                             <p style={{ margin: 0, fontWeight: 800, fontSize: '1rem', color: '#ffffff' }}>Online Payment</p>
+                             <p style={{ margin: 0, fontSize: '0.75rem', color: 'rgba(4, 28, 11, 0.6)' }}>Credit/Debit Card, UPI, Net Banking</p>
                           </div>
                         </div>
 
@@ -625,8 +678,8 @@ export default function CheckoutPage() {
                              {paymentMethod === 'cod' && <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: colors.accent }} />}
                           </div>
                           <div>
-                             <p style={{ margin: 0, fontWeight: 800, fontSize: '1rem' }}>Cash on Delivery (COD)</p>
-                             <p style={{ margin: 0, fontSize: '0.75rem', opacity: 0.6 }}>
+                             <p style={{ margin: 0, fontWeight: 800, fontSize: '1rem', color: '#ffffff' }}>Cash on Delivery (COD)</p>
+                             <p style={{ margin: 0, fontSize: '0.75rem', color: 'rgba(4, 28, 11, 0.6)' }}>
                                 {distance && distance > 15 
                                   ? `Not available for this distance (${distance.toFixed(1)} km)` 
                                   : 'Pay when you receive your order'
@@ -670,8 +723,8 @@ export default function CheckoutPage() {
               </div>
 
               <div className="checkout-summary-col">
-                <div className="summary-card" style={{ background: '#fff', borderRadius: '35px', padding: '2.5rem', border: `1px solid ${colors.border}`, boxShadow: '0 20px 40px rgba(0,0,0,0.03)' }}>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 900, marginBottom: '2.5rem', color: '#041c0b', fontFamily: 'Oswald, sans-serif', textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className="summary-card" style={{ background: 'rgba(255, 255, 255, 0.03)', borderRadius: '35px', padding: '2.5rem', border: `1px solid ${colors.border}`, boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 900, marginBottom: '2.5rem', color: '#ffffff', fontFamily: 'Oswald, sans-serif', textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     Cart Summary <span style={{ fontSize: '0.7rem', fontWeight: 700, padding: '4px 10px', background: 'rgba(20, 104, 69, 0.1)', color: colors.accent, borderRadius: '20px' }}>SECURE</span>
                   </h3>
                   
@@ -686,7 +739,7 @@ export default function CheckoutPage() {
                           <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, textTransform: 'uppercase' }}>{it.name}</h4>
                           <p style={{ margin: '2px 0 0', fontSize: '0.8rem', color: colors.textMuted, fontWeight: 600 }}>₹{parseFloat(it.price).toFixed(0)} / unit</p>
                         </div>
-                        <div style={{ fontWeight: 900, color: '#041c0b' }}>₹{(parseFloat(it.price) * (it.quantity || 1)).toFixed(0)}</div>
+                        <div style={{ fontWeight: 900, color: '#ffffff' }}>₹{(parseFloat(it.price) * (it.quantity || 1)).toFixed(0)}</div>
                       </div>
                     ))}
                   </div>
@@ -717,7 +770,7 @@ export default function CheckoutPage() {
              <div className="map-modal-inner" style={{ padding: '2.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
                   <div>
-                    <h3 style={{ margin: 0, color: '#041c0b', fontSize: '2.2rem', fontWeight: 900, fontFamily: 'Oswald, sans-serif', textTransform: 'uppercase' }}>Select Delivery <span style={{ color: colors.accent }}>Pin</span></h3>
+                    <h3 style={{ margin: 0, color: '#ffffff', fontSize: '2.2rem', fontWeight: 900, fontFamily: 'Oswald, sans-serif', textTransform: 'uppercase' }}>Select Delivery <span style={{ color: colors.accent }}>Pin</span></h3>
                     <p style={{ color: colors.pale, margin: '8px 0 0', fontWeight: 600, fontSize: '0.9rem' }}>Tap exactly where you want your order delivered.</p>
                   </div>
                   <button onClick={() => setShowMap(false)} style={{ background: '#f8f8f8', border: 'none', width: '44px', height: '44px', borderRadius: '50%', cursor: 'pointer', fontSize: '1.5rem' }}>&times;</button>
@@ -725,7 +778,19 @@ export default function CheckoutPage() {
                 <div id="map-picker" style={{ width: '100%', height: '400px', borderRadius: '24px', background: '#f0f0f0', border: '1px solid #eee' }}></div>
                 <div className="confirm-btn-wrap" style={{ marginTop: '2.5rem', display: 'flex', gap: '1.2rem' }}>
                    <button onClick={() => setShowMap(false)} style={{ flex: 1, padding: '1.2rem', borderRadius: '40px', border: '2px solid #eee', background: 'transparent', fontWeight: 800, cursor: 'pointer' }}>Cancel</button>
-                   <button onClick={confirmMapLocation} style={{ flex: 2, padding: '1.2rem', borderRadius: '40px', border: 'none', background: colors.accent, color: '#fff', fontWeight: 900, cursor: 'pointer', textTransform: 'uppercase' }}>Confirm Pin</button>
+                   <button 
+                     onClick={confirmMapLocation} 
+                     disabled={isGeocoding}
+                     style={{ 
+                       flex: 2, padding: '1.2rem', borderRadius: '40px', border: 'none', 
+                       background: colors.accent, color: '#fff', fontWeight: 900, 
+                       cursor: isGeocoding ? 'not-allowed' : 'pointer', textTransform: 'uppercase',
+                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+                       opacity: isGeocoding ? 0.7 : 1
+                     }}
+                   >
+                     {isGeocoding ? <><Loader2 size={20} className="animate-spin" /> Identifying...</> : 'Confirm Pin'}
+                   </button>
                 </div>
              </div>
           </div>

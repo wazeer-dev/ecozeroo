@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: ['lucide-react', 'firebase'],
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'firebase'],
+  },
   images: {
     remotePatterns: [
       {

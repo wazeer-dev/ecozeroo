@@ -8,13 +8,13 @@ import { auth, db } from '@/firebase/config';
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, OAuthProvider } from 'firebase/auth';
 
 const colors = {
-  bg: '#fcf7de',
-  primary: '#146845',
-  accent: '#146845',
-  text: 'rgb(4, 28, 11)',
-  textMuted: 'rgba(4, 28, 11, 0.6)',
-  border: 'rgba(4, 28, 11, 0.08)',
-  inputBg: 'rgba(255, 255, 255, 0.8)',
+  bg: 'var(--bg-color)',
+  primary: '#cddc39',
+  accent: '#cddc39',
+  text: '#ffffff',
+  textMuted: 'rgba(255, 255, 255, 0.6)',
+  border: 'rgba(255, 255, 255, 0.1)',
+  inputBg: 'rgba(255, 255, 255, 0.05)',
 };
 
 export default function SignupPage() {
@@ -194,7 +194,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="login-root" style={{ height: '100vh', width: '100vw', display: 'flex', overflow: 'hidden', background: '#fcf7de' }}>
+    <div className="login-root" style={{ height: '100vh', width: '100vw', display: 'flex', overflow: 'hidden', background: 'var(--bg-color)' }}>
       {/* Left Pane - Hero Visual */}
       <div className="login-hero" style={{ 
         flex: 1, 
@@ -245,7 +245,7 @@ export default function SignupPage() {
       </div>
 
       {/* Right Pane - Form Card */}
-      <div className="login-form-container" style={{ width: '45%', minWidth: '500px', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '2.5rem 5rem', background: '#fff', overflowY: 'auto' }}>
+      <div className="login-form-container" style={{ width: '45%', minWidth: '500px', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '2.5rem 5rem', background: 'var(--bg-color)', overflowY: 'auto' }}>
         <div style={{ width: '100%', maxWidth: '420px', animation: 'fadeIn 0.8s ease-out', position: 'relative' }}>
           <Link href="/" style={{ 
             display: 'flex', 
@@ -299,7 +299,7 @@ export default function SignupPage() {
               </div>
             </div>
 
-            <button type="submit" style={{ width: '100%', padding: '1.3rem', fontSize: '1.1rem', fontWeight: 900, marginTop: '1rem', borderRadius: '20px', background: colors.text, color: '#fff', border: 'none', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px' }} disabled={isSubmitting}>
+            <button type="submit" style={{ width: '100%', padding: '1.3rem', fontSize: '1.1rem', fontWeight: 900, marginTop: '1rem', borderRadius: '20px', background: '#cddc39', color: '#0a2a16', border: 'none', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px' }} disabled={isSubmitting}>
               {isSubmitting ? <><Loader2 className="animate-spin" size={20} /> Creating Account...</> : (<>Create Account <ArrowRight size={20} /></>)}
             </button>
           </form>
@@ -316,7 +316,7 @@ export default function SignupPage() {
             <button 
               type="button"
               onClick={handleGoogleSignup}
-              style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '1rem', borderRadius: '18px', border: `1.5px solid ${colors.border}`, background: '#fff', cursor: 'pointer', fontWeight: 700, transition: '0.2s', color: colors.text }}
+              style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '1rem', borderRadius: '18px', border: `1.5px solid ${colors.border}`, background: 'rgba(255, 255, 255, 0.03)', cursor: 'pointer', fontWeight: 700, transition: '0.2s', color: '#fff' }}
             >
               <svg width="20" height="20" viewBox="0 0 24 24">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>

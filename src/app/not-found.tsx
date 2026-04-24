@@ -7,7 +7,7 @@ export default function NotFound() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#041c0b',
+      background: '#0a2a16',
       color: '#fff',
       display: 'flex',
       alignItems: 'center',
@@ -20,14 +20,14 @@ export default function NotFound() {
       <div style={{
         position: 'absolute', top: '20%', left: '15%',
         width: '400px', height: '400px',
-        background: 'rgba(136, 198, 95, 0.06)',
+        background: 'rgba(205, 220, 57, 0.06)',
         filter: 'blur(100px)', borderRadius: '50%',
         pointerEvents: 'none',
       }} />
       <div style={{
         position: 'absolute', bottom: '20%', right: '15%',
         width: '300px', height: '300px',
-        background: 'rgba(136, 198, 95, 0.04)',
+        background: 'rgba(205, 220, 57, 0.04)',
         filter: 'blur(80px)', borderRadius: '50%',
         pointerEvents: 'none',
       }} />
@@ -39,7 +39,7 @@ export default function NotFound() {
           fontWeight: 900,
           lineHeight: 1,
           letterSpacing: '-10px',
-          background: 'linear-gradient(135deg, #88c65f 0%, rgba(136,198,95,0.2) 100%)',
+          background: 'linear-gradient(135deg, #cddc39 0%, rgba(205,220,57,0.2) 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
@@ -52,7 +52,7 @@ export default function NotFound() {
 
         <div style={{
           width: '80px', height: '3px',
-          background: 'linear-gradient(to right, transparent, #88c65f, transparent)',
+          background: 'linear-gradient(to right, transparent, #cddc39, transparent)',
           margin: '0 auto 2rem',
         }} />
 
@@ -66,7 +66,7 @@ export default function NotFound() {
         </h1>
 
         <p style={{
-          color: 'rgba(215, 232, 188, 0.6)',
+          color: 'rgba(255, 255, 255, 0.6)',
           fontSize: '1.15rem',
           maxWidth: '460px',
           margin: '0 auto 3rem',
@@ -80,14 +80,14 @@ export default function NotFound() {
             href="/"
             style={{
               display: 'inline-flex', alignItems: 'center', gap: '10px',
-              background: '#88c65f', color: '#041c0b',
+              background: '#cddc39', color: '#0a2a16',
               padding: '0.9rem 2rem', borderRadius: '50px',
               fontWeight: 800, fontSize: '1rem',
               textDecoration: 'none', transition: 'all 0.3s',
-              boxShadow: '0 4px 20px rgba(136,198,95,0.25)',
+              boxShadow: '0 4px 20px rgba(205,220,57,0.25)',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 30px rgba(136,198,95,0.4)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(136,198,95,0.25)'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 30px rgba(205,220,57,0.4)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(205,220,57,0.25)'; }}
           >
             <Home size={20} /> Back to Home
           </Link>
@@ -96,14 +96,14 @@ export default function NotFound() {
             href="/menu"
             style={{
               display: 'inline-flex', alignItems: 'center', gap: '10px',
-              background: 'transparent', color: '#88c65f',
+              background: 'transparent', color: '#cddc39',
               padding: '0.9rem 2rem', borderRadius: '50px',
               fontWeight: 700, fontSize: '1rem',
               textDecoration: 'none', transition: 'all 0.3s',
-              border: '1px solid rgba(136,198,95,0.4)',
+              border: '1px solid rgba(205,220,57,0.4)',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(136,198,95,0.08)'; e.currentTarget.style.borderColor = '#88c65f'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(136,198,95,0.4)'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(205,220,57,0.08)'; e.currentTarget.style.borderColor = '#cddc39'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(205,220,57,0.4)'; }}
           >
             <ShoppingBag size={20} /> Browse Menu
           </Link>

@@ -204,15 +204,15 @@ export default function ProductDetailPage() {
 
   if (isLoading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgb(215, 232, 188)' }}>
-        <Loader2 className="animate-spin" size={40} color="#3c7814" />
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-color)' }}>
+        <Loader2 className="animate-spin" size={40} color="#cddc39" />
       </div>
     );
   }
 
   if (!product) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgb(215, 232, 188)', color: 'rgb(4, 28, 11)', fontSize: '2rem', fontWeight: 800 }}>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-color)', color: '#ffffff', fontSize: '2rem', fontWeight: 800 }}>
         Product Not Found
       </div>
     );
@@ -236,11 +236,11 @@ export default function ProductDetailPage() {
         @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;500;600;700;800&display=swap');
         
         .buy-page {
-          background-color: rgb(215, 232, 188);
+          background-color: var(--bg-color);
           min-height: 100vh;
           padding: 120px 20px 80px;
           font-family: 'Inter', sans-serif;
-          color: rgb(4, 28, 11);
+          color: #ffffff;
         }
         .buy-container {
           max-width: 1100px;
@@ -259,9 +259,10 @@ export default function ProductDetailPage() {
         }
         .main-image {
           position: relative;
-          background: transparent;
+          background: rgba(255, 255, 255, 0.08);
           border-radius: 40px;
           padding: 0;
+          border: 1px solid rgba(255, 255, 255, 0.1);
           aspect-ratio: 1.1;
           display: flex;
           align-items: center;
@@ -299,7 +300,8 @@ export default function ProductDetailPage() {
           box-shadow: 0 8px 24px rgba(0,0,0,0.12);
         }
         .carousel-btn:hover {
-          background: #fff;
+          background: #cddc39;
+          color: #0a2a16;
           transform: translateY(-50%) scale(1.1);
         }
         .carousel-btn.prev { left: 15px; }
@@ -318,12 +320,12 @@ export default function ProductDetailPage() {
           width: 8px;
           height: 8px;
           border-radius: 50%;
-          background: rgba(0,0,0,0.2);
+          background: rgba(255, 255, 255, 0.1);
           cursor: pointer;
           transition: 0.2s;
         }
         .dot.active {
-          background: #3c7814;
+          background: #cddc39;
           width: 24px;
           border-radius: 12px;
         }
@@ -342,7 +344,7 @@ export default function ProductDetailPage() {
           display: none;
         }
         .thumb-box {
-          background: #fff;
+          background: rgba(255, 255, 255, 0.08);
           border-radius: 12px;
           width: 58px;
           height: 58px;
@@ -351,7 +353,7 @@ export default function ProductDetailPage() {
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          border: 1.5px solid #fff;
+          border: 1.5px solid rgba(255, 255, 255, 0.1);
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           box-shadow: 0 4px 12px rgba(0,0,0,0.06);
           overflow: hidden;
@@ -359,13 +361,13 @@ export default function ProductDetailPage() {
           padding: 2px;
         }
         .thumb-box.active {
-          border-color: #3c7814;
+          border-color: #cddc39;
           border-width: 2px;
           transform: translateY(-2px) scale(1.05);
           box-shadow: 0 8px 24px rgba(60, 120, 20, 0.15);
         }
         .thumb-box:hover:not(.active) {
-          border-color: #3c7814;
+          border-color: #cddc39;
           opacity: 0.8;
           transform: translateY(-1px);
         }
@@ -382,10 +384,10 @@ export default function ProductDetailPage() {
           text-transform: uppercase;
           letter-spacing: -0.5px;
           margin-bottom: 8px;
-          color: rgb(4, 28, 11);
+          color: #ffffff;
         }
         .product-subtitle {
-          color: #666;
+          color: rgba(255, 255, 255, 0.6);
           font-size: 0.95rem;
           margin-bottom: 30px;
         }
@@ -396,7 +398,7 @@ export default function ProductDetailPage() {
           margin-bottom: 25px;
         }
         .old-price {
-          color: #888;
+          color: rgba(255, 255, 255, 0.4);
           text-decoration: line-through;
           font-size: 1.2rem;
           font-weight: 700;
@@ -404,11 +406,11 @@ export default function ProductDetailPage() {
         .new-price {
           font-size: 2.2rem;
           font-weight: 800;
-          color: rgb(4, 28, 11);
+          color: #ffffff;
         }
         .discount-badge {
-          background: #3c7814;
-          color: #fff;
+          background: #cddc39;
+          color: #0a2a16;
           font-size: 0.75rem;
           font-weight: 700;
           padding: 4px 12px;
@@ -426,7 +428,7 @@ export default function ProductDetailPage() {
           gap: 2px;
         }
         .review-count-text {
-          color: #666;
+          color: rgba(255, 255, 255, 0.6);
           font-size: 0.85rem;
           font-weight: 600;
         }
@@ -438,7 +440,7 @@ export default function ProductDetailPage() {
           font-size: 0.85rem;
           font-weight: 700;
           margin-bottom: 12px;
-          color: rgb(4, 28, 11);
+          color: #ffffff;
         }
         .color-options {
           display: flex;
@@ -453,7 +455,7 @@ export default function ProductDetailPage() {
           outline-offset: 3px;
         }
         .color-circle.active {
-          outline: 2px solid #3c7814;
+          outline: 2px solid #cddc39;
         }
         
         .accordions-container {
@@ -463,9 +465,9 @@ export default function ProductDetailPage() {
           margin-bottom: 40px;
         }
         .accordion {
-          background: #fff;
+          background: rgba(255, 255, 255, 0.08);
           border-radius: 8px;
-          border: 1px solid rgba(0,0,0,0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
           overflow: hidden;
         }
         .accordion-header {
@@ -476,16 +478,16 @@ export default function ProductDetailPage() {
           font-size: 0.9rem;
           font-weight: 700;
           cursor: pointer;
-          background: #fff;
+          background: transparent;
           border: none;
           width: 100%;
-          color: #111;
+          color: #ffffff;
           text-align: left;
         }
         .accordion-content {
           padding: 0 20px 20px;
           font-size: 0.85rem;
-          color: #666;
+          color: rgba(255, 255, 255, 0.7);
           line-height: 1.6;
         }
         
@@ -495,9 +497,9 @@ export default function ProductDetailPage() {
         }
         .btn-add {
           flex: 1;
-          background: #fff;
-          color: #3c7814;
-          border: 2px solid #3c7814;
+          background: transparent;
+          color: #cddc39;
+          border: 2px solid #cddc39;
           padding: 16px;
           border-radius: 12px;
           font-weight: 800;
@@ -506,13 +508,13 @@ export default function ProductDetailPage() {
           transition: background 0.2s;
         }
         .btn-add:hover {
-          background: rgba(60, 120, 20, 0.05);
+          background: rgba(205, 220, 57, 0.1);
         }
         .btn-checkout {
           flex: 1;
-          background: #3c7814;
-          color: #fff;
-          border: 2px solid #3c7814;
+          background: #cddc39;
+          color: #0a2a16;
+          border: 2px solid #cddc39;
           padding: 16px;
           border-radius: 12px;
           font-weight: 800;
@@ -521,7 +523,7 @@ export default function ProductDetailPage() {
           transition: background 0.2s;
         }
         .btn-checkout:hover {
-          background: #2a5a0e;
+          background: #b8c832;
         }
         
         .reviews-section {
@@ -531,7 +533,7 @@ export default function ProductDetailPage() {
         }
         .reviews-title {
           font-family: 'Oswald', sans-serif;
-          color: rgb(4, 28, 11);
+          color: #ffffff;
           font-size: 2rem;
           text-transform: uppercase;
           letter-spacing: 0.5px;
@@ -546,7 +548,7 @@ export default function ProductDetailPage() {
           display: flex;
           align-items: baseline;
           font-family: 'Oswald', sans-serif;
-          color: rgb(4, 28, 11);
+          color: #ffffff;
         }
         .big-rating-number {
           font-size: 6rem;
@@ -555,12 +557,12 @@ export default function ProductDetailPage() {
         }
         .big-rating-slash {
           font-size: 1.5rem;
-          color: #888;
+          color: rgba(255, 255, 255, 0.4);
           font-family: 'Inter', sans-serif;
           margin-left: 5px;
         }
         .review-count-small {
-          color: rgb(4, 28, 11);
+          color: #ffffff;
           font-weight: 700;
           font-size: 0.8rem;
           margin: 10px 0 25px;
@@ -587,13 +589,13 @@ export default function ProductDetailPage() {
         .progress-track {
           flex: 1;
           height: 6px;
-          background: rgba(0,0,0,0.1);
+          background: rgba(255, 255, 255, 0.1);
           border-radius: 10px;
           overflow: hidden;
         }
         .progress-fill {
           height: 100%;
-          background: #3c7814;
+          background: #cddc39;
           border-radius: 10px;
         }
         
@@ -603,12 +605,12 @@ export default function ProductDetailPage() {
           gap: 25px;
         }
         .review-card {
-          background: #fff;
+          background: rgba(255, 255, 255, 0.08);
           border-radius: 12px;
           padding: 24px;
           display: flex;
           flex-direction: column;
-          border: 1px solid rgba(0,0,0,0.04);
+          border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .review-card-header {
           display: flex;
@@ -618,11 +620,11 @@ export default function ProductDetailPage() {
         }
         .review-author {
           font-weight: 700;
-          color: #111;
+          color: #ffffff;
           font-size: 0.9rem;
         }
         .review-text {
-          color: #666;
+          color: rgba(255, 255, 255, 0.6);
           font-size: 0.85rem;
           line-height: 1.6;
           margin-bottom: 25px;
@@ -656,14 +658,14 @@ export default function ProductDetailPage() {
           grid-column: span 2;
           text-align: center;
           padding: 60px;
-          background: #fff;
+          background: rgba(255, 255, 255, 0.08);
           border-radius: 16px;
-          border: 2px dashed #ddd;
-          color: #888;
+          border: 2px dashed rgba(255, 255, 255, 0.1);
+          color: rgba(255, 255, 255, 0.4);
         }
         
         .load-more-btn {
-          background: #3c7814;
+          background: #cddc39;
           color: #fff;
           border: none;
           padding: 12px 30px;
@@ -676,7 +678,7 @@ export default function ProductDetailPage() {
         }
         
         @media (max-width: 900px) {
-          .buy-page { padding: 0 !important; background: rgb(215, 232, 188) !important; overflow-x: hidden; }
+          .buy-page { padding: 0 !important; background: var(--bg-color) !important; overflow-x: hidden; }
           .buy-container { width: 100% !important; padding: 0 !important; overflow-x: hidden; }
           .main-grid { display: flex !important; flex-direction: column !important; gap: 0 !important; width: 100% !important; overflow-x: hidden; }
           .image-showcase { background: transparent; padding: 0; position: relative; border-radius: 40px; overflow: hidden; margin: 0; width: 100% !important; max-width: 100% !important; }
@@ -691,59 +693,59 @@ export default function ProductDetailPage() {
             justify-content: space-between; align-items: center;
             background: var(--bg-color); z-index: 1000;
           }
-          .mobile-header-title { font-weight: 700; font-size: 1.1rem; color: #111; }
+          .mobile-header-title { font-weight: 700; font-size: 1.1rem; color: #ffffff; }
           .circle-btn {
             width: 40px; height: 40px; border-radius: 50%;
-            background: #fff; border: 1.5px solid #eee;
+            background: 'rgba(255, 255, 255, 0.05)'; border: 1.5px solid rgba(255, 255, 255, 0.1);
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 4px 8px rgba(0,0,0,0.03);
             cursor: pointer;
           }
           
-          .mobile-details-body { padding: 25px 20px 140px; position: relative; width: 100%; box-sizing: border-box; background: rgb(215, 232, 188); color: rgb(4, 28, 11); }
-          .product-title { font-size: 1.6rem !important; font-family: 'Inter', sans-serif !important; text-transform: none !important; font-weight: 800 !important; letter-spacing: -0.5px !important; margin-bottom: 8px !important; line-height: 1.2 !important; color: rgb(4, 28, 11) !important; }
-          .product-subtitle { margin-bottom: 24px !important; font-size: 0.88rem !important; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: #666 !important; }
+          .mobile-details-body { padding: 25px 20px 140px; position: relative; width: 100%; box-sizing: border-box; background: var(--bg-color); color: #ffffff; }
+          .product-title { font-size: 1.6rem !important; font-family: 'Inter', sans-serif !important; text-transform: none !important; font-weight: 800 !important; letter-spacing: -0.5px !important; margin-bottom: 8px !important; line-height: 1.2 !important; color: #ffffff !important; }
+          .product-subtitle { margin-bottom: 24px !important; font-size: 0.88rem !important; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: rgba(255, 255, 255, 0.6) !important; }
           
           .quantity-capsule {
             display: flex !important; width: fit-content; margin: 0 auto 24px;
-            background: #fff; border: 1px solid #f0f0f0; border-radius: 40px;
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 40px;
             padding: 4px; align-items: center; gap: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             position: relative; z-index: 10;
           }
           .qty-btn { width: 36px; height: 36px; border-radius: 50%; border: none; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; font-weight: 500; }
           .qty-btn-minus { background: transparent; color: #999; }
-          .qty-btn-plus { background: #000; color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+          .qty-btn-plus { background: #cddc39; color: #0a2a16; box-shadow: 0 4px 10px rgba(205, 220, 57, 0.2); }
           
           .info-pills-row { display: flex; align-items: center; gap: 10px; margin-top: 20px; flex-wrap: wrap; width: 100%; }
-          .new-price { font-size: 1.8rem !important; font-weight: 900 !important; color: rgb(4, 28, 11) !important; }
-          .old-price { font-size: 1.1rem !important; color: #888 !important; text-decoration: line-through; font-weight: 700; }
-          .discount-badge { background: #3c7814 !important; color: #fff !important; font-size: 0.7rem !important; font-weight: 900 !important; padding: 5px 12px !important; border-radius: 12px !important; }
+          .new-price { font-size: 1.8rem !important; font-weight: 900 !important; color: #ffffff !important; }
+          .old-price { font-size: 1.1rem !important; color: rgba(255, 255, 255, 0.4) !important; text-decoration: line-through; font-weight: 700; }
+          .discount-badge { background: #cddc39 !important; color: #0a2a16 !important; font-size: 0.7rem !important; font-weight: 900 !important; padding: 5px 12px !important; border-radius: 12px !important; }
           
           .promo-banner {
             display: flex !important; padding: 14px 18px; border-radius: 12px;
-            background: linear-gradient(135deg, #fffbeb 0%, #fff7ed 100%);
-            border: 1px solid #fef3c7;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             margin: 20px 0; gap: 12px; align-items: flex-start;
           }
-          .promo-banner p { font-size: 0.78rem; margin: 0; line-height: 1.5; color: #92400e; font-weight: 600; }
+          .promo-banner p { font-size: 0.78rem; margin: 0; line-height: 1.5; color: #cddc39; font-weight: 600; }
           
           .description-section { margin-top: 25px; }
           .description-title { font-weight: 800; font-size: 1rem; margin-bottom: 12px; display: block; }
-          .description-text { font-size: 0.85rem; line-height: 1.6; color: rgb(4, 28, 11); }
+          .description-text { font-size: 0.85rem; line-height: 1.6; color: rgba(255, 255, 255, 0.7); }
           
           .mobile-footer-cta {
              position: fixed; bottom: 0; left: 0; right: 0;
-             padding: 15px 20px 35px; background: rgba(215, 232, 188, 0.95); backdrop-filter: blur(10px); 
-             border-top: 1px solid rgba(0,0,0,0.1); z-index: 100;
+             padding: 15px 20px 35px; background: rgba(10, 42, 22, 0.95); backdrop-filter: blur(10px); 
+             border-top: 1px solid rgba(255, 255, 255, 0.1); z-index: 100;
           }
           .mobile-btn-cart {
             width: 100%; padding: 18px; border-radius: 50px;
-            background: #3c7814; color: #fff; border: none;
+            background: #cddc39; color: #0a2a16; border: none;
             font-weight: 800; font-size: 1.05rem;
             display: flex; align-items: center; justify-content: center; gap: 12px;
             cursor: pointer;
-            box-shadow: 0 8px 25px rgba(60, 120, 20, 0.2);
+            box-shadow: 0 8px 25px rgba(205, 220, 57, 0.2);
           }
 
           .desktop-only { display: none !important; }
@@ -755,7 +757,7 @@ export default function ProductDetailPage() {
           .big-rating-number { font-size: 4rem; }
           .big-rating-slash { font-size: 1.2rem; }
           .progress-bars { max-width: 100%; }
-          .review-card { padding: 20px; border: 1.5px solid #eee; }
+          .review-card { padding: 20px; border: 1.5px solid rgba(255, 255, 255, 0.05); background: rgba(255, 255, 255, 0.02); }
           .thumbnails { 
             padding: 10px 25px !important;
             margin-top: 10px !important;
@@ -789,12 +791,12 @@ export default function ProductDetailPage() {
 
       <div className="buy-page">
         <div className="mobile-only" style={{ padding: '20px 25px 30px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', zIndex: 10 }}>
-           <button onClick={() => router.back()} style={{ width: '45px', height: '45px', borderRadius: '50%', background: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 25px rgba(0,0,0,0.06)', cursor: 'pointer' }}>
-             <ChevronLeft size={24} color="#111" strokeWidth={2.5} />
+           <button onClick={() => router.back()} style={{ width: '45px', height: '45px', borderRadius: '50%', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 25px rgba(0,0,0,0.1)', cursor: 'pointer' }}>
+             <ChevronLeft size={24} color="#ffffff" strokeWidth={2.5} />
            </button>
            
-           <button onClick={() => router.push('/cart')} style={{ position: 'relative', width: '45px', height: '45px', borderRadius: '50%', background: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 25px rgba(0,0,0,0.06)', cursor: 'pointer' }}>
-             <ShoppingCart size={22} color="#111" strokeWidth={2.5} />
+           <button onClick={() => router.push('/cart')} style={{ position: 'relative', width: '45px', height: '45px', borderRadius: '50%', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 25px rgba(0,0,0,0.1)', cursor: 'pointer' }}>
+             <ShoppingCart size={22} color="#ffffff" strokeWidth={2.5} />
              {cartCount > 0 && (
                <span style={{ position: 'absolute', top: '-2px', right: '-2px', background: '#FF5A35', color: '#fff', width: '18px', height: '18px', borderRadius: '50%', fontSize: '0.65rem', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #fff' }}>
                  {cartCount}
@@ -928,27 +930,27 @@ export default function ProductDetailPage() {
               <div className="action-buttons-wrap" style={{ marginTop: '40px', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
                 <div style={{ 
                   display: 'flex', alignItems: 'center', gap: '8px', 
-                  background: '#f8f8f8', border: '1px solid #eee', 
+                  background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.1)', 
                   borderRadius: '35px', padding: '6px 12px',
-                  boxShadow: '0 4px 10px rgba(0,0,0,0.02)'
+                  boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
                 }}>
-                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#fff', border: '1px solid #eee', color: '#111', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>-</button>
-                  <span style={{ fontWeight: 800, minWidth: '35px', textAlign: 'center', fontSize: '1.1rem', color: '#111' }}>{quantity}</span>
-                  <button onClick={() => setQuantity(quantity + 1)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#fff', border: '1px solid #eee', color: '#111', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>+</button>
+                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'transparent', border: '1px solid rgba(255, 255, 255, 0.1)', color: '#ffffff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>-</button>
+                  <span style={{ fontWeight: 800, minWidth: '35px', textAlign: 'center', fontSize: '1.1rem', color: '#ffffff' }}>{quantity}</span>
+                  <button onClick={() => setQuantity(quantity + 1)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#cddc39', border: 'none', color: '#0a2a16', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>+</button>
                 </div>
                 
                 <button 
                   onClick={toggleWishlist} 
                   style={{ 
                     width: '56px', height: '56px', borderRadius: '50%', 
-                    border: '1px solid #eee', 
-                    background: isWishlisted ? '#fff5f5' : '#fff', 
+                    border: '1px solid rgba(255, 255, 255, 0.1)', 
+                    background: isWishlisted ? 'rgba(255, 77, 77, 0.1)' : 'rgba(255, 255, 255, 0.05)', 
                     cursor: 'pointer', transition: '0.3s', 
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    boxShadow: '0 8px 20px rgba(0,0,0,0.04)'
+                    boxShadow: '0 8px 20px rgba(0,0,0,0.1)'
                   }}
                 >
-                  <Heart size={22} fill={isWishlisted ? "#ff4d4d" : "none"} color={isWishlisted ? "#ff4d4d" : "#ddd"} />
+                  <Heart size={22} fill={isWishlisted ? "#ff4d4d" : "none"} color={isWishlisted ? "#ff4d4d" : "#ffffff"} />
                 </button>
 
                 <button 
@@ -956,8 +958,8 @@ export default function ProductDetailPage() {
                   onClick={handleAddToCart}
                   style={{ 
                     height: '56px', padding: '0 30px', borderRadius: '35px', 
-                    border: '2px solid #3c7814', background: 'transparent',
-                    color: '#3c7814', fontWeight: 900, cursor: 'pointer',
+                    border: '2px solid #cddc39', background: 'transparent',
+                    color: '#cddc39', fontWeight: 900, cursor: 'pointer',
                     fontSize: '1rem', flex: 1, minWidth: '180px',
                     transition: '0.3s'
                   }}
@@ -970,10 +972,10 @@ export default function ProductDetailPage() {
                   onClick={handleBuyNow}
                   style={{ 
                     height: '56px', padding: '0 40px', borderRadius: '35px', 
-                    border: 'none', background: '#3c7814',
-                    color: '#fff', fontWeight: 900, cursor: 'pointer',
+                    border: 'none', background: '#cddc39',
+                    color: '#0a2a16', fontWeight: 900, cursor: 'pointer',
                     fontSize: '1.2rem', flex: 1.5, minWidth: '220px',
-                    boxShadow: '0 12px 25px rgba(60, 120, 20, 0.15)',
+                    boxShadow: '0 12px 25px rgba(205, 220, 57, 0.25)',
                     transition: '0.3s'
                   }}
                 >
@@ -986,8 +988,8 @@ export default function ProductDetailPage() {
                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                  <div style={{ flex: 1 }}>
                     <h1 className="product-title" style={{ fontSize: '1.4rem', fontWeight: 900 }}>{product.name}</h1>
-                    <div className="product-subtitle" style={{ color: '#666', fontWeight: 700, marginTop: '4px' }}>
-                      <Zap size={14} fill="#8BC34A" stroke="#8BC34A" style={{ marginRight: '4px' }} /> Available on fast delivery
+                    <div className="product-subtitle" style={{ color: 'rgba(255, 255, 255, 0.6)', fontWeight: 700, marginTop: '4px' }}>
+                      <Zap size={14} fill="#cddc39" stroke="#cddc39" style={{ marginRight: '4px' }} /> Available on fast delivery
                     </div>
                  </div>
                  <button onClick={toggleWishlist} style={{ background: 'none', border: 'none', color: isWishlisted ? '#ff4d4d' : '#ccc', padding: '5px' }}>
@@ -1104,7 +1106,7 @@ export default function ProductDetailPage() {
                       <button 
                         onClick={() => setShowReviewForm(!showReviewForm)}
                         style={{ 
-                          background: showReviewForm ? '#777' : '#3c7814', color: '#fff', border: 'none', 
+                          background: showReviewForm ? '#444' : '#cddc39', color: showReviewForm ? '#fff' : '#0a2a16', border: 'none', 
                           padding: '10px 22px', borderRadius: '30px', fontWeight: 800, cursor: 'pointer' 
                         }}
                       >
@@ -1115,7 +1117,7 @@ export default function ProductDetailPage() {
                 </div>
                 
                 {reviews.length > 0 && (
-                  <button className="load-more-btn" onClick={() => setShowReviewForm(!showReviewForm)} style={{ background: showReviewForm ? '#777' : '#3c7814', textTransform: 'uppercase', letterSpacing: '1px', padding: '16px 35px', borderRadius: '40px', fontSize: '0.9rem' }}>
+                  <button className="load-more-btn" onClick={() => setShowReviewForm(!showReviewForm)} style={{ background: showReviewForm ? '#444' : '#cddc39', color: showReviewForm ? '#fff' : '#0a2a16', textTransform: 'uppercase', letterSpacing: '1px', padding: '16px 35px', borderRadius: '40px', fontSize: '0.9rem' }}>
                     {showReviewForm ? 'Cancel Review' : 'Write a Review'}
                   </button>
                 )}
@@ -1170,7 +1172,7 @@ export default function ProductDetailPage() {
                       </div>
 
                       <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                        <button type="submit" disabled={isSubmittingReview || isUploadingImage} style={{ flex: 2, background:'#3c7814', color:'#fff', padding:'12px 24px', borderRadius:'12px', border:'none', fontWeight:900, cursor:'pointer', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                        <button type="submit" disabled={isSubmittingReview || isUploadingImage} style={{ flex: 2, background:'#cddc39', color:'#0a2a16', padding:'12px 24px', borderRadius:'12px', border:'none', fontWeight:900, cursor:'pointer', textTransform: 'uppercase', letterSpacing: '1px' }}>
                           {isSubmittingReview ? 'Posting...' : 'Post Review'}
                         </button>
                         <button type="button" onClick={() => setShowReviewForm(false)} style={{ flex: 1, background: '#f5f5f5', color: '#666', padding: '12px 24px', borderRadius: '12px', border: '1px solid #ddd', fontWeight: 700, cursor: 'pointer' }}>
