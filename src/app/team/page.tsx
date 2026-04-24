@@ -24,7 +24,7 @@ export default function TeamPage() {
                 style={{ width: '120px', height: '120px', borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--accent)', margin: '0 auto 1.5rem' }}
               />
               <h3>{member.name}</h3>
-              <p style={{ color: 'var(--text-muted)' }}>{member.role}</p>
+              <p style={{ color: 'rgba(255, 255, 255, 0.6)' }}>{member.role}</p>
             </div>
           ))}
         </div>
