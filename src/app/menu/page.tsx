@@ -197,7 +197,7 @@ export default function MenuPage() {
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
                 style={{
-                  padding: '10px 22px', borderRadius: '30px', border: 'none', fontSize: '0.95rem', fontWeight: 700, cursor: 'pointer',
+                  padding: '10px 22px', borderRadius: '30px', fontSize: '0.95rem', fontWeight: 700, cursor: 'pointer',
                   background: selectedCategory === cat ? '#cddc39' : 'rgba(255, 255, 255, 0.05)', color: selectedCategory === cat ? '#0a2a16' : '#ffffff',
                   boxShadow: selectedCategory === cat ? '0 8px 20px rgba(205, 220, 57, 0.2)' : '0 2px 8px rgba(0,0,0,0.1)',
                   textTransform: 'capitalize', whiteSpace: 'nowrap', border: '1px solid rgba(255, 255, 255, 0.1)'
