@@ -111,23 +111,23 @@ export default function Home() {
           ` }} />
         </section>
         {/* 1.5 BEST SELLERS (BRUTALIST FASHION DECK) */}
-        <section style={{ background: '#041c0b', padding: '150px 0', position: 'relative', overflow: 'hidden' }}>
+        <section style={{ background: '#cddc39', padding: '150px 0', position: 'relative', overflow: 'hidden' }}>
           
           <div className="container" style={{ position: 'relative', zIndex: 10 }}>
             {/* Header Area */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '80px' }} className="bestsellers-header">
               <div>
-                <p style={{ color: '#cddc39', fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '4px', marginBottom: '12px' }}>Luxury Performance</p>
-                <h2 className="bestsellers-heading" style={{ color: '#fff', fontWeight: 900, textTransform: 'uppercase', lineHeight: 0.9, letterSpacing: '-2px' }}>
+                <p style={{ color: '#0a2a16', fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '4px', marginBottom: '12px' }}>Luxury Performance</p>
+                <h2 className="bestsellers-heading" style={{ color: '#0a2a16', fontWeight: 900, textTransform: 'uppercase', lineHeight: 0.9, letterSpacing: '-2px' }}>
                   Best<br/>Sellers
                 </h2>
               </div>
               
               <div style={{ display: 'flex', alignItems: 'center', gap: '30px', paddingBottom: '10px' }} className="nav-controls">
                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-                    <span style={{ color: '#fff', fontSize: '1.4rem', fontWeight: 900 }}>0{activeIdx + 1}</span>
-                    <span style={{ color: 'rgba(255,255,255,0.1)', fontSize: '1rem', fontWeight: 900 }}>/</span>
-                    <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '1rem', fontWeight: 900 }}>0{featuredProducts.length}</span>
+                    <span style={{ color: '#0a2a16', fontSize: '1.4rem', fontWeight: 900 }}>0{activeIdx + 1}</span>
+                    <span style={{ color: 'rgba(10, 42, 22, 0.1)', fontSize: '1rem', fontWeight: 900 }}>/</span>
+                    <span style={{ color: 'rgba(10, 42, 22, 0.3)', fontSize: '1rem', fontWeight: 900 }}>0{featuredProducts.length}</span>
                   </div>
                   <div style={{ display: 'flex', gap: '10px' }}>
                     <button onClick={() => setActiveIdx(getIndex(-1))} className="nav-icon-btn"><ChevronLeft size={20} /></button>
@@ -140,8 +140,8 @@ export default function Home() {
             <div className="carousel-window" style={{ overflow: 'visible', padding: '40px 0' }}>
               {loading ? (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                   <div className="brutalist-loader" />
-                   <span style={{ color: '#fff', fontWeight: 900 }}>INITIALIZING...</span>
+                   <div className="brutalist-loader" style={{ borderColor: '#0a2a16', borderTopColor: 'transparent' }} />
+                   <span style={{ color: '#0a2a16', fontWeight: 900 }}>INITIALIZING...</span>
                 </div>
               ) : (
                 <div 
@@ -169,7 +169,7 @@ export default function Home() {
                           transition: '0.8s'
                         }}
                       >
-                        <div style={{ position: 'relative', border: '1px solid rgba(255,255,255,0.1)', background: '#111' }}>
+                        <div style={{ position: 'relative', border: '1px solid rgba(255, 255, 255, 0.1)', background: '#0a2a16' }}>
                           <img src={product.image || product.imageUrl} style={{ width: '100%', aspectRatio: '3/4', objectFit: 'cover' }} alt={product.name} />
                           
                           {/* Top-Right Price Pop */}
@@ -195,7 +195,7 @@ export default function Home() {
                               addToBag(product);
                             }}
                             style={{ 
-                              marginTop: '20px', width: '100%', padding: '20px', background: 'transparent', border: '1px solid #fff', color: '#fff', fontWeight: 900, textTransform: 'uppercase', cursor: 'pointer', transition: '0.3s'
+                              marginTop: '20px', width: '100%', padding: '20px', background: 'transparent', border: '1px solid #0a2a16', color: '#0a2a16', fontWeight: 900, textTransform: 'uppercase', cursor: 'pointer', transition: '0.3s'
                             }} 
                             className="brutalist-buy-btn"
                           >
@@ -213,11 +213,11 @@ export default function Home() {
 
         <style dangerouslySetInnerHTML={{ __html: `
           .bestsellers-heading { font-size: 4rem; transition: 0.3s; }
-          .nav-icon-btn { width: 44px; height: 44px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; }
-          .nav-icon-btn:hover { background: #fff; color: #000; border-color: #fff; transform: scale(1.05); }
-          .brutalist-buy-btn:hover { background: #fff; color: #000; }
+          .nav-icon-btn { width: 44px; height: 44px; background: rgba(10, 42, 22, 0.05); border: 1px solid rgba(10, 42, 22, 0.1); color: #0a2a16; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; }
+          .nav-icon-btn:hover { background: #0a2a16; color: #fff; border-color: #0a2a16; transform: scale(1.05); }
+          .brutalist-buy-btn:hover { background: #0a2a16; color: #fff; }
           .focused { z-index: 50; }
-          .focused div { border-color: #cddc39 !important; }
+          .focused div { border-color: #0a2a16 !important; }
           
           .brutalist-loader { width: 30px; height: 30px; border: 4px solid #cddc39; border-top-color: transparent; animation: spin 0.8s linear infinite; }
           @keyframes spin { to { transform: rotate(360deg); } }
