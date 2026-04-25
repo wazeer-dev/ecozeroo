@@ -231,12 +231,11 @@ export default function MenuPage() {
                     {/* DESKTOP VIEW CARD */}
                     <div className="desktop-only product-link" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                       <div className="product-image-container" style={{ position: 'relative', borderRadius: '28px', overflow: 'hidden', height: '320px', marginBottom: '1.2rem', background: 'rgba(255, 255, 255, 0.03)', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
-                        <Image 
+                        <img 
                           className="scaled-img" 
-                          src={product.image || 'https://via.placeholder.com/600x600'} 
+                          src={(product.images && product.images.length > 0) ? product.images[0] : (product.image || '/toothbrush_eco.png')} 
                           alt={product.name} 
-                          fill
-                          style={{ objectFit: 'cover', transition: 'transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)' }} 
+                          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)' }} 
                         />
                         <div style={{ position: 'absolute', bottom: '15px', left: '15px', background: 'rgba(10, 42, 22, 0.95)', padding: '6px 14px', borderRadius: '30px', fontSize: '0.75rem', fontWeight: 800, color: '#ffffff', backdropFilter: 'blur(10px)', zIndex: 2, border: '1px solid rgba(205, 220, 57, 0.2)' }}>{product.badge || 'ESSENTIAL'}</div>
                       </div>
@@ -255,12 +254,11 @@ export default function MenuPage() {
                     {/* MOBILE VIEW CARD (STANDARD UNIFORM DESIGN) */}
                     <div className="mobile-product-card mobile-only" onClick={() => router.push(`/product/${product.id}`)}>
                        <div className="mobile-product-img-wrapper" style={{ position: 'relative' }}>
-                         <Image 
-                           src={product.image || 'https://via.placeholder.com/600x600'} 
+                         <img 
+                           src={(product.images && product.images.length > 0) ? product.images[0] : (product.image || '/toothbrush_eco.png')} 
                            className="mobile-product-img" 
                            alt={product.name} 
-                           fill
-                           style={{ objectFit: 'cover' }}
+                           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
                          />
                          <div className="mobile-essential-tag" style={{ zIndex: 2 }}>{product.badge || 'ESSENTIAL'}</div>
                        </div>

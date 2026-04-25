@@ -96,10 +96,10 @@ function DockItem({
             style={{
               position: 'absolute',
               inset: '-2px',
-              background: 'linear-gradient(135deg, #146845 0%, #2a9d8f 100%)',
+              background: '#cddc39',
               borderRadius: '20px',
               zIndex: 0,
-              boxShadow: '0 8px 20px rgba(20, 104, 69, 0.25)'
+              boxShadow: '0 8px 20px rgba(205, 220, 57, 0.25)'
             }}
             transition={{ type: 'spring', bounce: 0.4, duration: 0.6 }}
           />
@@ -117,7 +117,7 @@ function DockItem({
         {React.cloneElement(icon as React.ReactElement, { 
           size: 24, 
           strokeWidth: isActive ? 3 : 2,
-          color: isActive ? '#FFFFFF' : '#666666'
+          color: isActive ? '#0a2a16' : '#cddc39'
         })}
         
         {badge !== undefined && badge !== 0 && (
@@ -131,8 +131,8 @@ function DockItem({
                 position: 'absolute',
                 top: '-12px',
                 right: '-12px',
-                backgroundColor: isActive ? '#FFFFFF' : '#146845',
-                color: isActive ? '#146845' : '#FFFFFF',
+                backgroundColor: isActive ? '#0a2a16' : '#cddc39',
+                color: isActive ? '#cddc39' : '#0a2a16',
                 borderRadius: '50%',
                 width: '20px',
                 height: '20px',
@@ -168,21 +168,29 @@ export default function Dock({
 
   return (
     <motion.div
+      initial={{ y: 100, opacity: 0, scale: 0.9 }}
+      animate={{ y: 0, opacity: 1, scale: 1 }}
+      transition={{ 
+        type: 'spring', 
+        stiffness: 150, 
+        damping: 20, 
+        delay: 0.8 // Appear slightly after hero animation
+      }}
       onMouseMove={(e) => mouseX.set(e.pageX)}
       onMouseLeave={() => mouseX.set(Infinity)}
       style={{ 
         height: panelHeight,
-        background: '#FFFFFF',
+        background: 'linear-gradient(180deg, rgba(18, 53, 31, 0.95) 0%, rgba(10, 42, 22, 0.98) 100%)',
         borderRadius: '50px',
         padding: '0 12px',
-        boxShadow: '0 15px 40px rgba(0,0,0,0.12)',
+        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         gap: '8px',
         width: 'max-content',
         maxWidth: 'calc(100vw - 32px)',
-        border: '1px solid rgba(0,0,0,0.03)',
+        border: '1px solid rgba(205, 220, 57, 0.25)',
         margin: '0 auto'
       }}
       className={className}

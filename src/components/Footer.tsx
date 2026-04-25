@@ -7,7 +7,7 @@ import { Twitter, Facebook, Instagram, Youtube, ArrowUpRight, Mail, MapPin, Phon
 const Footer = () => {
   return (
     <footer style={{ 
-      backgroundColor: '#0a2a16', 
+      backgroundColor: '#041c0b', 
       padding: '100px 8% 40px',
       color: '#ffffff',
       position: 'relative',
@@ -28,7 +28,7 @@ const Footer = () => {
           {/* BRAND COLUMN */}
           <div className="footer-brand-col" style={{ gridColumn: 'span 5' }}>
             <img 
-              src="/photo_2026-03-13_20-14-52 (1).png" 
+              src="/logo.png" 
               alt="ecozero" 
               style={{ 
                 height: '50px', 
@@ -55,14 +55,15 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* CATALOG COLUMN */}
+          {/* CATEGORIES COLUMN */}
           <div className="footer-link-col" style={{ gridColumn: 'span 2' }}>
-            <h4 style={columnTitleStyle}>Catalog</h4>
+            <h4 style={columnTitleStyle}>Categories</h4>
             <nav style={navColumnStyle}>
-              <Link href="/menu" style={footerLinkStyle}>All Products</Link>
-              <Link href="/menu?cat=Dairy Products" style={footerLinkStyle}>Dairy Fresh</Link>
-              <Link href="/menu?cat=Fruits and Vegetables" style={footerLinkStyle}>Eco Gardens</Link>
-              <Link href="/menu?cat=Snacks" style={footerLinkStyle}>Planet Snacks</Link>
+              <Link href="/menu" style={footerLinkStyle}>All Collections</Link>
+              <Link href="/menu?cat=Smoothies" style={footerLinkStyle}>Organic Smoothies</Link>
+              <Link href="/menu?cat=Juices" style={footerLinkStyle}>Cold-Pressed Juices</Link>
+              <Link href="/menu?cat=Sustainability" style={footerLinkStyle}>Eco Essentials</Link>
+              <Link href="/menu?cat=Combos" style={footerLinkStyle}>Eco Kits</Link>
             </nav>
           </div>
 
@@ -70,20 +71,50 @@ const Footer = () => {
           <div className="footer-link-col" style={{ gridColumn: 'span 2' }}>
             <h4 style={columnTitleStyle}>Foundation</h4>
             <nav style={navColumnStyle}>
-              <Link href="/about" style={footerLinkStyle}>Our Story</Link>
+              <Link href="/about" style={footerLinkStyle}>Our Mission</Link>
               <Link href="/contact" style={footerLinkStyle}>Collaborate</Link>
-              <Link href="/faq" style={footerLinkStyle}>Help Terminal</Link>
+              <Link href="/faq" style={footerLinkStyle}>Help Center</Link>
               <Link href="/terms" style={footerLinkStyle}>Eco Terms</Link>
             </nav>
           </div>
 
-          {/* TERMINAL COLUMN */}
-          <div className="footer-link-col" style={{ gridColumn: 'span 3' }}>
-            <h4 style={columnTitleStyle}>Terminal</h4>
-            <div style={navColumnStyle}>
-              <div style={contactRowStyle}><Mail size={16} /> hi@ecozero.eco</div>
-              <div style={contactRowStyle}><Phone size={16} /> +91 eco-zero-99</div>
-              <div style={contactRowStyle}><MapPin size={16} /> Global Green Zone</div>
+          {/* NEWSLETTER COLUMN */}
+          <div className="footer-newsletter-col" style={{ gridColumn: 'span 3' }}>
+            <h4 style={columnTitleStyle}>Newsletter</h4>
+            <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.6)', marginBottom: '20px', lineHeight: 1.5 }}>
+              Subscribe to get eco-tips and exclusive launch offers.
+            </p>
+            <div style={{ position: 'relative', display: 'flex' }}>
+              <input 
+                type="email" 
+                placeholder="Your email" 
+                style={{ 
+                  width: '100%', 
+                  padding: '14px 20px', 
+                  borderRadius: '30px', 
+                  background: 'rgba(255, 255, 255, 0.05)', 
+                  border: '1px solid rgba(255, 255, 255, 0.1)', 
+                  color: '#ffffff',
+                  fontSize: '0.9rem',
+                  outline: 'none'
+                }} 
+              />
+              <button style={{ 
+                position: 'absolute', 
+                right: '5px', 
+                top: '5px', 
+                bottom: '5px', 
+                padding: '0 20px', 
+                borderRadius: '25px', 
+                background: '#cddc39', 
+                color: '#0a2a16', 
+                border: 'none', 
+                fontWeight: 800, 
+                fontSize: '0.8rem',
+                cursor: 'pointer' 
+              }}>
+                JOIN
+              </button>
             </div>
           </div>
         </div>

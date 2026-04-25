@@ -338,7 +338,7 @@ export default function Navbar() {
               onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
               style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
             >
-              Garments <ChevronDown size={14} style={{ transform: isCategoriesOpen ? 'rotate(180deg)' : 'none', transition: '0.3s' }} />
+              CATEGORIES <ChevronDown size={14} style={{ transform: isCategoriesOpen ? 'rotate(180deg)' : 'none', transition: '0.3s' }} />
             </button>
             <AnimatePresence>
               {isCategoriesOpen && (
@@ -349,14 +349,14 @@ export default function Navbar() {
                   className="premium-dropdown" 
                   style={{ left: '50%', transform: 'translateX(-50%)' }}
                 >
-                  <Link href="/menu" className="dd-item" onClick={() => setIsCategoriesOpen(false)}>
-                    <Grid size={16} /> Eco Products
+                  <Link href="/menu?cat=Juices" className="dd-item" onClick={() => setIsCategoriesOpen(false)}>
+                    <Grid size={16} /> Cold-Pressed Juices
                   </Link>
-                  <Link href="/menu" className="dd-item" onClick={() => setIsCategoriesOpen(false)}>
-                    <Package size={16} /> Carbon Tracking
+                  <Link href="/menu?cat=Smoothies" className="dd-item" onClick={() => setIsCategoriesOpen(false)}>
+                    <Package size={16} /> Organic Smoothies
                   </Link>
-                  <Link href="/menu" className="dd-item" onClick={() => setIsCategoriesOpen(false)}>
-                    <LayoutGrid size={16} /> Zero-Waste Home
+                  <Link href="/menu?cat=Blends" className="dd-item" onClick={() => setIsCategoriesOpen(false)}>
+                    <LayoutGrid size={16} /> Eco-Fresh Blends
                   </Link>
                 </motion.div>
               )}

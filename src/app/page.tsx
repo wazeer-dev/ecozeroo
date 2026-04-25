@@ -1,477 +1,618 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowDownRight, Heart, ShoppingBag, SlidersHorizontal, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight, ShieldCheck, Globe, Users, DollarSign, Quote, ArrowUpRight, ShoppingBag, Bookmark } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { collection, getDocs, limit, query } from 'firebase/firestore';
+import { collection, getDocs, query, limit } from 'firebase/firestore';
 import { db } from '@/firebase/config';
+import { useRouter } from 'next/navigation';
 
-const TESTIMONIALS = [
-// ... (keep testimonials as is)
-  { id: 1, name: 'Sarah M.', role: 'Eco Activist', quote: 'This platform completely changed how I source my daily essentials.', img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop', top: '35%', left: '15%', size: 60 },
-  { id: 2, name: 'David L.', role: 'Chef', quote: 'The organic blends are exactly what my kitchen needed. Unmatched quality.', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop', top: '70%', left: '25%', size: 80 },
-  { id: 3, name: 'Jessica T.', role: 'Yoga Instructor', quote: 'Truly sustainable and incredibly well packaged. Highly recommend!', img: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=200&auto=format&fit=crop', top: '15%', left: '46%', size: 70 },
-  { id: 4, name: 'Michael B.', role: 'Student', quote: 'Affordable eco-friendly products that actually work. Im impressed.', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop', top: '15%', left: '62%', size: 65 },
-  { id: 5, name: 'Emily R.', role: 'Graphic Designer', quote: 'Joining this eco-community has been life-changing. The products are incredibly high-quality, and the practices help me find inner peace while saving the planet.', img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop', top: '35%', left: '75%', size: 70 },
-];
+const COLORS = {
+  bg: '#0a2a16',
+  surface: '#12351f',
+  white: '#1a472a',
+  accent: '#cddc39',
+  text: '#ffffff',
+  textMuted: '#e0f2f1',
+};
 
 export default function Home() {
+  const router = useRouter();
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [activeIdx, setActiveIdx] = useState(0);
-  const [activeTestimonial, setActiveTestimonial] = useState<number | null>(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [activeThumbnails, setActiveThumbnails] = useState<Record<string, number>>({});
+  const [favorites, setFavorites] = useState<Record<string, boolean>>({});
+  const [isLoadingFeatured, setIsLoadingFeatured] = useState(true);
+
+  const nextSlide = () => {
+    if (featuredProducts.length > 0) {
+      setCurrentSlide(prev => (prev + 1) % featuredProducts.length);
+    }
+  };
+
+  const prevSlide = () => {
+    if (featuredProducts.length > 0) {
+      setCurrentSlide(prev => (prev - 1 + featuredProducts.length) % featuredProducts.length);
+    }
+  };
+
+  useEffect(() => {
+    if (featuredProducts.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % featuredProducts.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [featuredProducts.length]);
 
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
-        const q = query(collection(db, 'products'), limit(6));
+        const q = query(collection(db, 'products'), limit(10));
         const snapshot = await getDocs(q);
-        const products = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        setFeaturedProducts(products);
-      } catch (err) {
-        console.error("Error fetching featured products:", err);
+        const fetched = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setFeaturedProducts(fetched);
+      } catch (e) {
+        console.error("Error fetching featured products:", e);
       } finally {
-        setLoading(false);
+        setIsLoadingFeatured(false);
       }
     };
     fetchFeatured();
   }, []);
 
-  const addToBag = (product: any) => {
-    try {
-      const savedCart = JSON.parse(localStorage.getItem('ecozero_cart') || '[]');
-      const existing = savedCart.find((it: any) => it.id === product.id);
-      
-      if (existing) {
-        existing.quantity = (existing.quantity || 1) + 1;
-      } else {
-        savedCart.push({ ...product, quantity: 1 });
-      }
-      
-      localStorage.setItem('ecozero_cart', JSON.stringify(savedCart));
-      window.dispatchEvent(new Event('cartUpdated'));
-      alert(`Added ${product.name} to bag!`);
-    } catch (e) {
-      console.error("Error adding to cart:", e);
-    }
-  };
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
 
-  const currentProduct = featuredProducts[activeIdx];
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
 
-  const getIndex = (offset: number) => {
-    if (featuredProducts.length === 0) return 0;
-    return (activeIdx + offset + featuredProducts.length) % featuredProducts.length;
-  };
+    const revealElements = document.querySelectorAll('.scroll-reveal');
+    revealElements.forEach(el => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <>
-      <main className="main-content visible" style={{ paddingTop: '100px', backgroundColor: 'var(--bg-color)', minHeight: '100vh', paddingBottom: '100px' }}>
-        
-        {/* 1. HERO SECTION */}
-        <section className="hero-section" style={{ position: 'relative', marginTop: '20px', width: '100%', padding: '0 4%', overflow: 'visible' }}>
-          <div style={{ 
-            background: 'linear-gradient(90deg, rgba(10, 42, 22, 0.95) 30%, rgba(10, 42, 22, 0) 100%), url(/toothbrush-hero.png) center/cover', 
-            borderRadius: '80px', 
-            padding: '100px 80px', 
-            display: 'flex', 
-            flexWrap: 'wrap', 
-            position: 'relative', 
-            overflow: 'hidden', 
-            minHeight: '650px', 
-            alignItems: 'center' 
-          }}>
-             
-             {/* Left Content */}
-             <div style={{ flex: '1 1 500px', zIndex: 10, display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative' }}>
-                <div style={{ display: 'inline-block', backgroundColor: 'transparent', border: '1.5px solid rgba(205, 220, 57, 0.2)', borderRadius: '30px', padding: '8px 24px', fontSize: '0.9rem', fontWeight: 700, color: '#cddc39', marginBottom: '40px', alignSelf: 'flex-start' }}>
-                   Eco-Friendly Living
-                </div>
-                <h1 style={{ fontSize: 'clamp(3.5rem, 6vw, 6rem)', lineHeight: 0.95, fontWeight: 900, color: '#ffffff', marginBottom: '32px', letterSpacing: '-3px', fontFamily: 'var(--font-heading), sans-serif' }}>
-                  Achieve balance in <br /> mind, body, and earth.
-                </h1>
-                <p style={{ fontSize: '1.25rem', color: '#e0f2f1', lineHeight: 1.5, maxWidth: '480px', fontWeight: 500 }}>
-                  Discover EcoZero — premium organic blends and eco-friendly products crafted for your well-being and the planet's future.
-                </p>
-             </div>
-             
-             {/* Right Graphic Area - Emptied for cleaner look */}
-             <div style={{ flex: '1 1 400px', position: 'relative', zIndex: 1 }}></div>
-          </div>
-          
-          <style dangerouslySetInnerHTML={{ __html: `
-            @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-            
-            @media (max-width: 768px) {
-              .main-content { padding-top: 32px !important; }
-              .hero-section { margin-top: 0px !important; }
-            }
-          ` }} />
-        </section>
-        {/* 1.5 BEST SELLERS (BRUTALIST FASHION DECK) */}
-        <section style={{ background: '#0a2a16', padding: '150px 0', position: 'relative', overflow: 'hidden' }}>
-          
-          <div className="container" style={{ position: 'relative', zIndex: 10 }}>
-            {/* Header Area */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '80px' }} className="bestsellers-header">
-              <div>
-                <p style={{ color: '#cddc39', fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '4px', marginBottom: '12px' }}>Luxury Performance</p>
-                <h2 className="bestsellers-heading" style={{ color: '#fff', fontWeight: 900, textTransform: 'uppercase', lineHeight: 0.9, letterSpacing: '-2px' }}>
-                  Best<br/>Sellers
-                </h2>
-              </div>
-              
-              <div style={{ display: 'flex', alignItems: 'center', gap: '30px', paddingBottom: '10px' }} className="nav-controls">
-                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-                    <span style={{ color: '#fff', fontSize: '1.4rem', fontWeight: 900 }}>0{activeIdx + 1}</span>
-                    <span style={{ color: 'rgba(255,255,255,0.1)', fontSize: '1rem', fontWeight: 900 }}>/</span>
-                    <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '1rem', fontWeight: 900 }}>0{featuredProducts.length}</span>
-                  </div>
-                  <div style={{ display: 'flex', gap: '10px' }}>
-                    <button onClick={() => setActiveIdx(getIndex(-1))} className="nav-icon-btn"><ChevronLeft size={20} /></button>
-                    <button onClick={() => setActiveIdx(getIndex(1))} className="nav-icon-btn"><ChevronRight size={20} /></button>
-                  </div>
-              </div>
-            </div>
+    <div style={{ backgroundColor: COLORS.bg, minHeight: '100vh', color: COLORS.text, fontFamily: 'var(--font-sans), sans-serif', overflowX: 'hidden' }}>
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          footer:not(.ecozero-footer) { display: none !important; }
+          #notification-toast { display: none !important; }
+          .gradual-blur-container { display: none !important; }
 
-            {/* Asymmetric Staggered Track */}
-            <div className="carousel-window" style={{ overflow: 'visible', padding: '40px 0' }}>
-              {loading ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                   <div className="brutalist-loader" />
-                   <span style={{ color: '#fff', fontWeight: 900 }}>INITIALIZING...</span>
-                </div>
-              ) : (
-                <div 
-                  className="carousel-track" 
-                  style={{ 
-                    display: 'flex', 
-                    gap: '60px', 
-                    transition: 'transform 1.4s cubic-bezier(0.23, 1, 0.32, 1)', 
-                    transform: `translateX(calc(0% - ${activeIdx * (400 + 60)}px))` 
-                  }}
-                >
-                  {featuredProducts.map((product, index) => {
-                    const isActive = activeIdx === index;
-                    const isStaggered = index % 2 === 1;
-                    return (
-                      <div 
-                        key={product.id}
-                        onClick={() => setActiveIdx(index)}
-                        className={`staggered-card ${isActive ? 'focused' : ''}`}
-                        style={{ 
-                          flex: '0 0 400px', 
-                          marginTop: isStaggered ? '120px' : '0',
-                          opacity: isActive ? 1 : 0.4,
-                          transform: isActive ? 'scale(1.05)' : 'scale(1)',
-                          transition: '0.8s'
-                        }}
-                      >
-                        <div style={{ position: 'relative', border: '1px solid rgba(255,255,255,0.1)', background: '#111' }}>
-                          <img src={product.image || product.imageUrl} style={{ width: '100%', aspectRatio: '3/4', objectFit: 'cover' }} alt={product.name} />
-                          
-                          {/* Top-Right Price Pop */}
-                          <div style={{ position: 'absolute', top: '-1px', right: '-1px', background: '#cddc39', color: '#0a2a16', padding: '15px 25px', fontSize: '1.2rem', fontWeight: 900 }}>
-                            ₹{product.price}
-                          </div>
-
-                          {/* Hover Label */}
-                          <div className="card-overlay" style={{ position: 'absolute', bottom: '0', left: '0', padding: '30px', background: 'linear-gradient(to top, #000, transparent)', width: '100%' }}>
-                            <h3 style={{ color: '#fff', fontSize: '1.5rem', fontWeight: 900, textTransform: 'uppercase', marginBottom: '4px' }}>{product.name}</h3>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                              <span style={{ color: 'var(--accent-secondary)', fontSize: '0.7rem', fontWeight: 800 }}>Limited Edition</span>
-                              <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#cddc39' }}></div>
-                              <span style={{ color: '#cddc39', fontSize: '0.7rem', fontWeight: 800 }}>Shop Now</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {isActive && (
-                          <button 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              addToBag(product);
-                            }}
-                            style={{ 
-                              marginTop: '20px', width: '100%', padding: '20px', background: 'transparent', border: '1px solid #fff', color: '#fff', fontWeight: 900, textTransform: 'uppercase', cursor: 'pointer', transition: '0.3s'
-                            }} 
-                            className="brutalist-buy-btn"
-                          >
-                            Add to bag
-                          </button>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
-
-        <style dangerouslySetInnerHTML={{ __html: `
-          .bestsellers-heading { font-size: 4rem; transition: 0.3s; }
-          .nav-icon-btn { width: 44px; height: 44px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; }
-          .nav-icon-btn:hover { background: #fff; color: #000; border-color: #fff; transform: scale(1.05); }
-          .brutalist-buy-btn:hover { background: #fff; color: #000; }
-          .focused { z-index: 50; }
-          .focused div { border-color: #cddc39 !important; }
-          
-          .brutalist-loader { width: 30px; height: 30px; border: 4px solid #cddc39; border-top-color: transparent; animation: spin 0.8s linear infinite; }
-          @keyframes spin { to { transform: rotate(360deg); } }
-
-          @media (max-width: 1024px) {
-            .carousel-track { transform: translateX(calc(50% - 175px - ${activeIdx * (350 + 40)}px)) !important; }
-            .carousel-track > div { flex: 0 0 350px !important; }
+          @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
           }
+          .marquee-track {
+            display: flex;
+            width: max-content;
+            animation: marquee 20s linear infinite;
+          }
+          .marquee-track:hover { animation-play-state: paused; }
 
           @media (max-width: 768px) {
-            section { padding: 60px 0 !important; }
-            .bestsellers-heading { font-size: 2.2rem !important; }
-            .bestsellers-header { flex-direction: column !important; align-items: flex-start !important; gap: 30px !important; margin-bottom: 50px !important; }
-            .nav-controls { width: 100%; justify-content: space-between !important; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px; }
-            .carousel-track { transform: translateX(calc(50% - 140px - ${activeIdx * (280 + 20)}px)) !important; gap: 20px !important; }
-            .carousel-track > div { flex: 0 0 280px !important; margin-top: 0 !important; }
-            .nav-icon-btn { width: 48px; height: 48px; }
-          }
-        ` }} />
-
-
-
-        {/* 2. BENTO CARDS SECTION (Mapping to reference layout styles using EcoZero content) */}
-        <section className="container" style={{ marginTop: '80px', marginBottom: '100px', zIndex: 10, position: 'relative' }}>
-            <style>{`
-               .bento-grid {
-                  display: grid;
-                  grid-template-columns: repeat(12, 1fr);
-                  grid-auto-rows: 280px;
-                  gap: 24px;
-               }
-               
-               /* Desktop Spans */
-               .card-blue { grid-column: span 5; grid-row: span 2; }
-               .card-pink { grid-column: span 4; grid-row: span 1; }
-               .card-chart { grid-column: span 3; grid-row: span 2; }
-               .card-green { grid-column: span 4; grid-row: span 1; }
-               .card-yellow { grid-column: span 5; grid-row: span 1; }
-               .card-typo { grid-column: span 7; grid-row: span 1; }
-
-               @media (max-width: 1100px) {
-                  .bento-grid {
-                     grid-template-columns: repeat(2, 1fr);
-                     grid-auto-rows: auto;
-                  }
-                  .card-blue, .card-pink, .card-chart, .card-green, .card-yellow, .card-typo { 
-                     grid-column: span 2 !important; 
-                     grid-row: auto !important;
-                     min-height: 350px;
-                  }
-                  .card-pink, .card-chart { grid-column: span 1 !important; }
-               }
-
-               @media (max-width: 768px) {
-                  .bento-grid {
-                     grid-template-columns: 1fr;
-                  }
-                  .card-blue, .card-pink, .card-chart, .card-green, .card-yellow, .card-typo { 
-                     grid-column: span 1 !important; 
-                     min-height: 320px;
-                  }
-                  .card-chart { min-height: 500px !important; }
-               }
-               
-               .bento-card {
-                  border-radius: 32px;
-                  padding: 32px;
-                  position: relative;
-                  overflow: hidden;
-                  display: flex;
-                  flex-direction: column;
-                  box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-                  transition: transform 0.3s;
-               }
-               .bento-card:hover { transform: translateY(-4px); }
-               
-               .scatter-pill {
-                  position: absolute;
-                  background: var(--accent-secondary);
-                  color: #0a2a16;
-                  font-weight: 800;
-                  padding: 8px 16px;
-                  border-radius: 20px;
-                  font-size: 0.9rem;
-                  box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
-                  border: 1px solid rgba(0,0,0,0.05);
-                  pointer-events: none;
-               }
-            `}</style>
+            main { padding: 80px 0 0 !important; }
+            section { margin-top: 60px !important; }
             
-            <div className="bento-grid">
-               
-               {/* CARD 1: Soft Pearl (Home Essentials) */}
-               <div className="bento-card blue card-blue" style={{ background: 'linear-gradient(135deg, #0a2a16, #146845)' }}>
-                  <h3 style={{ fontSize: 'clamp(3rem, 5vw, 4.5rem)', fontWeight: 800, letterSpacing: '-2px', color: '#ffffff', lineHeight: 1, position: 'relative', zIndex: 10 }}>
-                     eco<br/>essentials
-                  </h3>
-                  <div style={{ position: 'absolute', bottom: '-20px', right: '-20px', width: '80%', height: '70%', background: 'url(https://images.unsplash.com/photo-1618220179428-22790b461013?q=80&w=600&auto=format&fit=crop) center/cover', borderRadius: '32px', border: '8px solid rgba(255,255,255,0.1)', transform: 'rotate(-4deg)' }} />
-               </div>
+            /* Hero */
+            .hero-section { flex-direction: column !important; padding: 30px 15px !important; min-height: auto !important; text-align: center; }
+            .hero-section > div:first-child { align-items: center !important; display: flex; flex-direction: column; }
+            .hero-section h1 { font-size: 2.2rem !important; margin-bottom: 16px !important; }
+            .hero-section p { font-size: 0.95rem !important; margin-bottom: 24px !important; }
+            .hero-section > div:last-child { position: relative !important; right: auto !important; top: auto !important; transform: none !important; width: 100% !important; height: 220px !important; margin-top: 24px; border-radius: 24px !important; }
+            
+            /* Features */
+            .features-grid { grid-template-columns: 1fr !important; grid-template-rows: auto !important; }
+            .features-grid > div { grid-column: auto !important; grid-row: auto !important; min-height: 250px; }
+            .features-grid h3 { font-size: 3rem !important; }
+            .features-grid-header h2 { font-size: 2.2rem !important; }
 
-               {/* CARD 2: Jewel (Self Care / Tag) */}
-               <div className="bento-card pink card-pink" style={{ background: 'var(--primary-color)', position: 'relative', overflow: 'hidden' }}>
-                  <h3 style={{ fontSize: '3.5rem', fontWeight: 800, letterSpacing: '-1px', color: '#ffffff', textShadow: '4px 4px 0px rgba(0,0,0,0.1)', position: 'relative', zIndex: 10, margin: 0 }}>
-                     # selfcare
-                  </h3>
-                  <div style={{ 
-                    position: 'absolute', 
-                    bottom: '-30px', 
-                    right: '-30px', 
-                    width: '220px', 
-                    height: '220px', 
-                    background: 'url(https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=400&auto=format&fit=crop) center/cover', 
-                    borderRadius: '40px', 
-                    border: '6px solid rgba(255,255,255,0.3)', 
-                    transform: 'rotate(6deg)',
-                    boxShadow: '0 15px 35px rgba(0,0,0,0.2)'
-                  }} />
-               </div>
+            /* Quote & Stats */
+            .quote-stats { 
+              padding: 40px 24px !important; 
+              gap: 40px !important; 
+              background: linear-gradient(135deg, rgba(18, 53, 31, 0.8) 0%, rgba(10, 42, 22, 0.95) 100%) !important;
+              backdrop-filter: blur(20px);
+              border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            }
+            .quote-top { flex-direction: column !important; gap: 24px !important; text-align: center; }
+            .quote-top img { width: 80px !important; height: 80px !important; margin: 0 auto; border: 2px solid var(--primary-color) !important; }
+            .quote-top p:last-child { font-size: 1.35rem !important; line-height: 1.5 !important; font-weight: 500 !important; color: #ffffff !important; }
+            .quote-top > div:nth-child(2) { width: 60px !important; height: 2px !important; margin: 0 auto !important; background: var(--primary-color) !important; opacity: 0.5; }
+            .stats-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+            .stats-grid > div { padding: 24px !important; gap: 20px !important; }
 
-               {/* CARD 3: Crypto-style Line Chart (Testimonials) */}
-               <div className="bento-card chart card-chart" style={{ background: 'linear-gradient(to bottom, #0a2a16 0%, #1a3c26 80%)', padding: '24px', border: '1px solid rgba(205, 220, 57, 0.1)' }}>
-                  <div style={{ textAlign: 'center', marginBottom: '20px', zIndex: 10 }}>
-                     <h4 style={{ fontSize: '1.5rem', fontWeight: 800 }}>#Impact</h4>
-                     <p style={{ color: 'var(--primary-color)', fontWeight: 700, fontSize: '0.9rem' }}>+57k (eco-points) Today</p>
-                  </div>
-                  
-                  {/* The Chart Area */}
-                  <div style={{ flex: 1, position: 'relative', marginTop: '20px' }}>
-                     {/* SVG Line Chart */}
-                     <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 1 }}>
-                        <defs>
-                           <linearGradient id="chartFade" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="0%" stopColor="rgba(74, 222, 128, 0.4)" />
-                              <stop offset="100%" stopColor="rgba(74, 222, 128, 0)" />
-                           </linearGradient>
-                        </defs>
-                        {/* Fill area */}
-                        <path d="M 0 60 L 25 75 L 50 40 L 75 55 L 100 20 L 100 100 L 0 100 Z" fill="url(#chartFade)" />
-                        {/* Solid line stroke */}
-                        <polyline points="0,60 25,75 50,40 75,55 100,20" fill="none" stroke="var(--primary-color)" strokeWidth="2.5" vectorEffect="non-scaling-stroke" />
-                     </svg>
+            /* Logos */
+            .logo-grid { grid-template-columns: 1fr 1fr !important; }
 
-                     {/* Avatar Nodes matching the SVG path vertices */}
-                     {[ 
-                        { id: 1, x: '0%', y: '60%', t: TESTIMONIALS[0] },
-                        { id: 2, x: '25%', y: '75%', t: TESTIMONIALS[1] },
-                        { id: 3, x: '50%', y: '40%', t: TESTIMONIALS[2] },
-                        { id: 4, x: '75%', y: '55%', t: TESTIMONIALS[3] },
-                        { id: 5, x: '100%', y: '20%', t: TESTIMONIALS[4] }
-                     ].map(node => {
-                        const isActive = activeTestimonial === node.id;
-                        const isFirst = node.id === 1;
-                        const isLast = node.id === 5;
-                        const isLow = parseInt(node.y) > 50;
+            /* Best Sellers (Cover Flow) */
+            .best-sellers-header { flex-direction: column !important; align-items: flex-start !important; gap: 16px !important; }
+            .cover-flow-container { height: 400px !important; --cover-offset: 110px !important; }
+            .cover-flow-card { width: 220px !important; height: 320px !important; }
+            .cover-flow-details { width: 100% !important; max-width: 280px !important; margin: 0 auto !important; }
+            .cover-flow-bottom { flex-direction: row !important; flex-wrap: wrap !important; justify-content: space-between !important; gap: 16px !important; }
+            .desktop-only { display: none !important; }
 
-                        return (
-                           <div 
-                              key={node.id} 
-                              style={{ position: 'absolute', left: node.x, top: node.y, transform: 'translate(-50%, -50%)', zIndex: isActive ? 50 : 5, cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-                              onMouseEnter={() => setActiveTestimonial(node.id)}
-                              onMouseLeave={() => setActiveTestimonial(null)}
-                           >
-                              {isActive && (
-                                 <div style={{ position: 'absolute', width: '56px', height: '56px', backgroundColor: 'rgba(74, 222, 128, 0.4)', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center', pointerEvents: 'none', zIndex: 0 }}>
-                                    <div style={{ width: '44px', height: '44px', backgroundColor: 'rgba(74, 222, 128, 0.8)', borderRadius: '50%' }}></div>
-                                 </div>
-                              )}
+            /* Testimonials */
+            .testimonials { flex-direction: column !important; gap: 40px !important; }
+            .testimonials > div { max-width: 100% !important; width: 100% !important; }
+            .testimonials > div:last-child { padding: 40px 20px !important; }
+            .testimonials h2 { font-size: 2.2rem !important; }
 
-                              <img src={node.t.img} style={{ width: '32px', height: '32px', borderRadius: '50%', border: isActive ? '2px solid #fff' : '2px solid var(--primary-color)', objectFit: 'cover', background: '#fff', position: 'relative', zIndex: 1, transition: 'all 0.2s ease' }} alt={node.t.name} />
+            /* CTA */
+            .cta-section { flex-direction: column !important; margin-bottom: 40px !important; }
+            .cta-section > div:first-child { width: 100% !important; height: 250px !important; }
+            .cta-section > div:last-child { padding: 40px 20px !important; }
+            .cta-section h2 { font-size: 2.2rem !important; }
 
-                              {/* Tooltip Card */}
-                              <div 
-                                 style={{ 
-                                    position: 'absolute', 
-                                    top: isLow ? 'auto' : '100%', 
-                                    bottom: isLow ? '100%' : 'auto',
-                                    left: isFirst ? '0' : (isLast ? 'auto' : '50%'),
-                                    right: isLast ? '0' : 'auto',
-                                    marginLeft: (isFirst || isLast) ? '0' : '-110px',
-                                    marginTop: isLow ? '0' : '15px',
-                                    marginBottom: isLow ? '15px' : '0',
-                                    backgroundColor: '#1a2421', 
-                                    color: 'var(--white)', 
-                                    padding: '16px', 
-                                    borderRadius: '16px', 
-                                    width: '220px', 
-                                    boxShadow: '0 10px 30px rgba(0,0,0,0.15)', 
-                                    zIndex: 60, 
-                                    pointerEvents: 'none', 
-                                    transformOrigin: isLow ? 'bottom center' : 'top center',
-                                    opacity: isActive ? 1 : 0,
-                                    transform: isActive ? 'translateY(0) scale(1)' : (isLow ? 'translateY(10px) scale(0.95)' : 'translateY(-10px) scale(0.95)'),
-                                    transition: 'all 0.2s ease-out'
-                                 }}
-                              >
-                                 <p style={{ fontSize: '0.8rem', lineHeight: 1.4, marginBottom: '12px', opacity: 0.9 }}>"{node.t.quote}"</p>
-                                 <div>
-                                    <strong style={{ display: 'block', fontSize: '0.9rem', color: '#a2d67a' }}>{node.t.name}</strong>
-                                    <span style={{ fontSize: '0.75rem', opacity: 0.6 }}>{node.t.role}</span>
-                                 </div>
-                              </div>
-                           </div>
-                        );
-                     })}
-                  </div>
+            /* Footer */
+            .ecozero-footer { padding: 40px 20px 20px !important; border-radius: 24px 24px 0 0 !important; }
+            .footer-top { flex-direction: column !important; gap: 40px !important; }
+            .footer-brand { max-width: 100% !important; }
+            .footer-links { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 32px !important; }
+            .footer-bottom { flex-direction: column !important; gap: 12px !important; text-align: center !important; }
+          }
 
-                  <button style={{ width: '100%', padding: '14px', background: 'var(--primary-color)', color: '#fff', border: 'none', borderRadius: '20px', fontWeight: 700, marginTop: '20px', cursor: 'pointer', zIndex: 10, boxShadow: '0 4px 15px rgba(14,165,233,0.3)' }}>
-                     View Testimonials
-                  </button>
-               </div>
+          @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+          }
+          .floating-icon {
+            animation: float 4s ease-in-out infinite;
+          }
+        `
+      }} />
 
-               {/* CARD 4: Jewel Green (Pill scatter) */}
-               <div className="bento-card green card-green" style={{ backgroundColor: '#146845', position: 'relative' }}>
-                  <div className="scatter-pill" style={{ top: '20%', left: '10%', transform: 'rotate(-5deg)', color: '#0a2a16' }}>Community</div>
-                  <div className="scatter-pill" style={{ top: '45%', right: '15%', transform: 'rotate(8deg)', color: '#0a2a16' }}>Zero-Waste</div>
-                  <div className="scatter-pill" style={{ bottom: '25%', left: '30%', transform: 'rotate(-2deg)', color: '#0a2a16' }}>Active Users</div>
-                  <div className="scatter-pill" style={{ top: '15%', right: '10%', transform: 'rotate(12deg)', color: '#0a2a16' }}>2025</div>
-                  <div className="scatter-pill" style={{ bottom: '15%', left: '8%', transform: 'rotate(-10deg)', color: '#0a2a16' }}>Organic</div>
-               </div>
-
-               {/* CARD 5: Dark Forest CTA */}
-               <div className="bento-card yellow card-yellow" style={{ backgroundColor: '#0a2a16', border: '1px solid rgba(205, 220, 57, 0.1)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  <h4 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#fff', marginBottom: '16px', lineHeight: 1.1 }}>Share<br/>Moments</h4>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                     <input type="email" placeholder="Your email..." style={{ flex: 1, padding: '12px 20px', borderRadius: '30px', border: '1px solid rgba(255, 255, 255, 0.1)', outline: 'none', fontSize: '1rem', background: 'rgba(255,255,255,0.05)', color: '#fff' }} />
-                     <button style={{ background: '#cddc39', color: '#0a2a16', padding: '12px 24px', borderRadius: '30px', border: 'none', fontWeight: 700, cursor: 'pointer' }}>Join</button>
-                  </div>
-               </div>
-               
-               {/* CARD 6: Typography showcase */}
-               <div className="card-typo" style={{ background: '#0a2a16', border: '1px solid rgba(205, 220, 57, 0.1)', borderRadius: '32px', padding: '32px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-                     <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b' }}>EcoZero Typeface</span>
-                     <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#ec4899', background: '#fce7f3', padding: '4px 12px', borderRadius: '12px' }}>Bold</span>
-                  </div>
-                  <h2 style={{ fontSize: 'clamp(3rem, 6vw, 5rem)', fontWeight: 800, color: '#ffffff', lineHeight: 1, letterSpacing: '-2px' }}>AaBbCc</h2>
-               </div>
-
+      <main style={{ padding: '120px 0 0', maxWidth: '100%', margin: '0' }}>
+      <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '0 32px' }}>
+        {/* HERO SECTION */}
+        <section className="hero-section" style={{ backgroundColor: COLORS.surface, borderRadius: '40px', padding: '80px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', overflow: 'hidden', minHeight: '600px' }}>
+          <div style={{ maxWidth: '500px', zIndex: 10 }}>
+            <h1 style={{ fontSize: '4.5rem', fontWeight: 500, lineHeight: 1.1, letterSpacing: '-2px', marginBottom: '24px' }}>
+              Go Green. Live Clean. Shop EcoZero.
+            </h1>
+            <p style={{ fontSize: '1.1rem', color: COLORS.textMuted, marginBottom: '40px', maxWidth: '400px', lineHeight: 1.5 }}>
+              Discover eco-friendly, sustainable products crafted for everyday living — good for you, great for the planet.
+            </p>
+            <button onClick={() => router.push('/products')} style={{ backgroundColor: COLORS.white, color: COLORS.text, border: 'none', borderRadius: '40px', padding: '12px 24px', fontSize: '1rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '16px', cursor: 'pointer', transition: 'transform 0.2s', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+              Shop Now
+              <div style={{ backgroundColor: COLORS.text, color: COLORS.white, borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <ArrowRight size={16} />
+              </div>
+            </button>
+            <div style={{ display: 'flex', gap: '16px', marginTop: '60px', fontSize: '0.8rem', color: COLORS.textMuted, textTransform: 'uppercase', letterSpacing: '1px' }}>
+              <span>Eco</span> / <span>Organic</span> / <span>Sustainable</span>
             </div>
+          </div>
+          
+          <div style={{ position: 'absolute', right: '-5%', top: '50%', transform: 'translateY(-50%)', width: '65%', height: '120%' }}>
+            <img 
+              src="https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?q=80&w=1200&auto=format&fit=crop" 
+              alt="Eco-Fresh Drink" 
+              style={{ height: '500px', width: 'auto', objectFit: 'contain', zIndex: 5, filter: 'drop-shadow(0 20px 50px rgba(0,0,0,0.2))' }} 
+            />
+          </div>
         </section>
 
-        <style jsx global>{`
-          @keyframes spin { 100% { transform: rotate(360deg); } }
+        {/* FEATURES GRID */}
+        <section className="features-grid-header scroll-reveal" style={{ marginTop: '120px', textAlign: 'center' }}>
+          <h2 style={{ fontSize: '3rem', fontWeight: 500, letterSpacing: '-1px', marginBottom: '8px' }}>Why Choose<br/>EcoZero?</h2>
+          <p style={{ color: COLORS.textMuted, marginBottom: '60px' }}>Products that protect you and the planet</p>
+
+          <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gridTemplateRows: '220px 220px', gap: '20px' }}>
+            
+            {/* Large Card Left */}
+            <div style={{ gridColumn: '1 / 2', gridRow: '1 / 3', borderRadius: '32px', overflow: 'hidden', position: 'relative', backgroundColor: 'rgba(255,255,255,0.05)' }}>
+              {isLoadingFeatured ? (
+                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <img src="/logo.png" style={{ width: '40px', opacity: 0.2, filter: 'grayscale(1)' }} />
+                </div>
+              ) : (
+                <img src={(featuredProducts[0 % featuredProducts.length]?.images?.[0] || featuredProducts[0 % featuredProducts.length]?.image || "/toothbrush_eco.png")} alt="EcoZero Product" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              )}
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center', padding: '30px' }}>
+                <div style={{ 
+                  position: 'relative', 
+                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
+                  backdropFilter: 'blur(20px)', 
+                  WebkitBackdropFilter: 'blur(20px)', 
+                  padding: '35px 30px 25px', 
+                  borderRadius: '24px', 
+                  width: '100%', 
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  boxShadow: '0 20px 40px rgba(0,0,0,0.3)'
+                }}>
+                  <div style={{ position: 'absolute', top: '-24px', left: '50%', transform: 'translateX(-50%)', backgroundColor: COLORS.accent, color: '#111', width: '48px', height: '48px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 20px rgba(205, 220, 57, 0.3)' }}>
+                    <ArrowUpRight size={24} />
+                  </div>
+                  <p style={{ color: '#ffffff', fontSize: '1.2rem', textAlign: 'center', fontWeight: 600, letterSpacing: '-0.2px' }}>100% natural ingredients, zero harmful chemicals.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Top Right 1 */}
+            <div style={{ borderRadius: '32px', overflow: 'hidden', position: 'relative', backgroundColor: 'rgba(255,255,255,0.05)' }}>
+              {isLoadingFeatured ? (
+                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <img src="/logo.png" style={{ width: '40px', opacity: 0.2, filter: 'grayscale(1)' }} />
+                </div>
+              ) : (
+                <img src={(featuredProducts[1 % featuredProducts.length]?.images?.[0] || featuredProducts[1 % featuredProducts.length]?.image || "/toothbrush_eco.png")} alt="User" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              )}
+              <div style={{ position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)', width: '85%', textAlign: 'center' }}>
+                <p style={{ 
+                  color: '#ffffff', 
+                  fontSize: '0.9rem', 
+                  fontWeight: 800, 
+                  background: 'rgba(10, 42, 22, 0.6)', 
+                  backdropFilter: 'blur(16px)', 
+                  WebkitBackdropFilter: 'blur(16px)', 
+                  padding: '14px', 
+                  borderRadius: '16px', 
+                  border: '1px solid rgba(205, 220, 57, 0.2)',
+                  letterSpacing: '1px',
+                  textTransform: 'uppercase'
+                }}>
+                  Plastic-Free Packaging
+                </p>
+              </div>
+            </div>
+
+            {/* Tall Right */}
+            <div style={{ gridColumn: '3 / 4', gridRow: '1 / 3', borderRadius: '32px', overflow: 'hidden', position: 'relative', backgroundColor: 'rgba(255,255,255,0.05)' }}>
+              {isLoadingFeatured ? (
+                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <img src="/logo.png" style={{ width: '40px', opacity: 0.2, filter: 'grayscale(1)' }} />
+                </div>
+              ) : (
+                <img src={(featuredProducts[2 % featuredProducts.length]?.images?.[0] || featuredProducts[2 % featuredProducts.length]?.image || "/toothbrush_eco.png")} alt="Abstract" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.6 }} />
+              )}
+              <div style={{ position: 'absolute', inset: 0, padding: '30px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ backgroundColor: COLORS.accent, color: '#111', width: '48px', height: '48px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', alignSelf: 'flex-end', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }}>
+                  <ArrowUpRight size={24} />
+                </div>
+                <div style={{ 
+                  textAlign: 'center', 
+                  background: 'rgba(10, 42, 22, 0.4)', 
+                  backdropFilter: 'blur(12px)', 
+                  WebkitBackdropFilter: 'blur(12px)', 
+                  padding: '30px', 
+                  borderRadius: '24px', 
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  width: '100%'
+                }}>
+                  <h3 style={{ fontSize: '4rem', fontWeight: 800, marginBottom: '5px', color: '#ffffff', lineHeight: 1 }}>100%</h3>
+                  <p style={{ fontSize: '0.9rem', fontWeight: 700, color: COLORS.accent, textTransform: 'uppercase', letterSpacing: '1px' }}>Biodegradable & Earth-Safe</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Right 1 - Glass Effect Card */}
+            <div style={{ 
+              borderRadius: '32px', 
+              background: 'linear-gradient(135deg, rgba(205, 220, 57, 0.15) 0%, rgba(205, 220, 57, 0.05) 100%)',
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)',
+              padding: '40px', 
+              display: 'flex', 
+              flexDirection: 'column', 
+              justifyContent: 'space-between', 
+              color: '#ffffff',
+              border: '1px solid rgba(205, 220, 57, 0.2)',
+              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.25)',
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              {/* Subtle Glowing Pulse in background */}
+              <div style={{ position: 'absolute', top: '-20%', right: '-20%', width: '100px', height: '100px', background: COLORS.accent, filter: 'blur(60px)', opacity: 0.3, borderRadius: '50%' }} />
+              
+              <ShieldCheck size={36} color={COLORS.accent} />
+              <p style={{ fontSize: '1.4rem', fontWeight: 600, textAlign: 'left', lineHeight: 1.2, color: '#ffffff' }}>
+                Certified <span style={{ color: COLORS.accent }}>Organic</span> & Safe
+              </p>
+            </div>
+
+          </div>
+        </section>
+
+        {/* COMBINED QUOTE & STATS SECTION */}
+        <section className="quote-stats scroll-reveal" style={{ marginTop: '120px', backgroundColor: COLORS.surface, borderRadius: '40px', padding: '60px 80px', display: 'flex', flexDirection: 'column', gap: '60px' }}>
           
-          .hover-card:hover { transform: translateY(-5px); }
+          {/* Top: Quote */}
+          <div className="quote-top" style={{ display: 'flex', gap: '60px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', minWidth: '150px' }}>
+              <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=200&auto=format&fit=crop" alt="Dr. Kayo Sarouco" style={{ width: '64px', height: '64px', borderRadius: '16px', objectFit: 'cover' }} />
+              <div>
+                <p style={{ fontWeight: 600, fontSize: '0.9rem' }}>Wazeer Ahmed</p>
+                <p style={{ fontSize: '0.8rem', color: COLORS.textMuted }}>Founder, EcoZero</p>
+              </div>
+            </div>
+            
+            <div style={{ width: '2px', backgroundColor: 'rgba(255,255,255,0.05)', alignSelf: 'stretch' }}></div>
+            
+            <p style={{ fontSize: '1.8rem', fontWeight: 400, lineHeight: 1.4, letterSpacing: '-0.5px' }}>
+              "At EcoZero, we believe every purchase is a vote for the kind of world you want to live in. Our mission is simple — make sustainable living accessible, beautiful, and affordable for everyone."
+            </p>
+          </div>
+
+          <div style={{ height: '1px', backgroundColor: 'rgba(255,255,255,0.05)', width: '100%' }}></div>
+
+          {/* Bottom: Stats */}
+          <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '40px' }}>
+            {[
+              { icon: <ShoppingBag size={24} color={'#111'} />, stat: '500+', label: 'Eco-friendly products available' },
+              { icon: <Users size={24} color={'#111'} />, stat: '10K+', label: 'Happy customers across India' },
+              { icon: <Globe size={24} color={'#111'} />, stat: '100%', label: 'Plastic-free & sustainable packaging' }
+            ].map((item, idx) => (
+              <div key={idx} className="scroll-reveal" style={{ backgroundColor: COLORS.white, borderRadius: '32px', padding: '30px', display: 'flex', alignItems: 'center', gap: '24px' }}>
+                <div className="floating-icon" style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: COLORS.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, animationDelay: `${idx * 0.5}s` }}>
+                  {item.icon}
+                </div>
+                <div>
+                  <h4 style={{ fontSize: '2rem', fontWeight: 500, marginBottom: '4px' }}>{item.stat}</h4>
+                  <p style={{ fontSize: '0.85rem', color: COLORS.textMuted, lineHeight: 1.4 }}>{item.label}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+        </section>
+
+        {/* MARQUEE TICKER — full width breakout */}
+        </div>
+        <section style={{ marginTop: '40px', overflow: 'hidden', transform: 'rotate(-1.5deg)', position: 'relative' }}>
+          <div style={{ backgroundColor: COLORS.accent, padding: '16px 0' }}>
+            <div className="marquee-track">
+              {['Eco Friendly', 'Zero Waste', 'Organic', 'Sustainable', 'Plastic Free', 'Natural', 'Biodegradable', 'Green Living', 'Earth Safe', 'Clean Beauty', 'Go Green', 'Shop Eco',
+                'Eco Friendly', 'Zero Waste', 'Organic', 'Sustainable', 'Plastic Free', 'Natural', 'Biodegradable', 'Green Living', 'Earth Safe', 'Clean Beauty', 'Go Green', 'Shop Eco'
+              ].map((text, idx) => (
+                <span key={idx} style={{ display: 'inline-flex', alignItems: 'center', gap: '24px', padding: '0 24px', fontSize: '0.85rem', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase', color: '#111', whiteSpace: 'nowrap' }}>
+                  {text}
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#111', display: 'inline-block', opacity: 0.4 }}></span>
+                </span>
+              ))}
+            </div>
+          </div>
+        </section>
+        <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '0 32px' }}>
+
+          {/* BEST SELLERS SECTION (COVER FLOW CAROUSEL) */}
+          <section className="scroll-reveal" style={{ marginTop: '120px', display: 'flex', flexDirection: 'column', gap: '40px' }}>
+            
+            {/* Header */}
+            <div className="best-sellers-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '20px' }}>
+              <div>
+                <p style={{ color: COLORS.textMuted, fontSize: '0.8rem', fontWeight: 600, letterSpacing: '2px', marginBottom: '8px', textTransform: 'uppercase' }}>Top Picks</p>
+                <h2 style={{ fontSize: '2.5rem', fontWeight: 600, color: '#fff', letterSpacing: '-1px', textTransform: 'uppercase' }}>Best Sellers</h2>
+              </div>
+              <button style={{ backgroundColor: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', padding: '10px 20px', borderRadius: '8px', fontSize: '0.9rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <ArrowRight size={16} /> Discover all items
+              </button>
+            </div>
+
+            {/* Carousel Area */}
+            <div className="cover-flow-container" style={{ position: 'relative', height: '500px', display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden', '--cover-offset': '200px' } as React.CSSProperties}>
+            
+            {featuredProducts.length > 0 && featuredProducts.map((product, index) => {
+              let offset = index - currentSlide;
+              const len = featuredProducts.length;
+              if (len > 2) {
+                if (offset > Math.floor(len / 2)) offset -= len;
+                if (offset < -Math.floor(len / 2)) offset += len;
+              }
+
+              const isCenter = offset === 0;
+              const isVisible = Math.abs(offset) <= 1;
+
+              return (
+                <div 
+                  key={product.id || index}
+                  className="cover-flow-card"
+                  onClick={() => isCenter ? null : (offset > 0 ? nextSlide() : prevSlide())}
+                  style={{ 
+                    position: 'absolute',
+                    width: '320px',
+                    height: '420px',
+                    backgroundColor: '#111',
+                    borderRadius: '16px',
+                    overflow: 'hidden',
+                    transition: 'all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1)',
+                    zIndex: isCenter ? 10 : 5 - Math.abs(offset),
+                    transform: isCenter 
+                      ? 'translateX(0) scale(1)' 
+                      : `translateX(calc(${offset} * var(--cover-offset))) scale(0.85)`,
+                    opacity: isCenter ? 1 : (isVisible ? 0.4 : 0),
+                    pointerEvents: isVisible ? 'auto' : 'none',
+                    cursor: isCenter ? 'default' : 'pointer',
+                    boxShadow: isCenter ? '0 30px 60px rgba(0,0,0,0.5)' : 'none'
+                  }}
+                >
+                  {/* Main Images Crossfade */}
+                  {((product.images && product.images.length > 0) ? product.images : [product.image || '/toothbrush_eco.png']).map((imgUrl: string, idx: number) => {
+                     const isActive = (activeThumbnails[product.id] || 0) === idx;
+                     return (
+                       <img 
+                         key={idx} 
+                         src={imgUrl} 
+                         alt={`${product.name} view ${idx + 1}`} 
+                         style={{ 
+                           position: 'absolute', 
+                           inset: 0, 
+                           width: '100%', 
+                           height: '100%', 
+                           objectFit: 'cover', 
+                           opacity: isActive ? 1 : 0, 
+                           transition: 'opacity 0.4s ease',
+                           pointerEvents: 'none',
+                           zIndex: 1
+                         }} 
+                       />
+                     );
+                  })}
+
+                  {isCenter && (
+                    <div 
+                      onClick={(e) => { e.stopPropagation(); setFavorites(prev => ({...prev, [product.id]: !prev[product.id]})) }}
+                      style={{ position: 'absolute', top: '16px', right: '16px', backgroundColor: favorites[product.id] ? COLORS.accent : 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', padding: '6px', borderRadius: '4px', cursor: 'pointer', zIndex: 10, transition: 'all 0.3s ease' }}
+                    >
+                      <Bookmark size={16} color={favorites[product.id] ? '#111' : '#fff'} fill={favorites[product.id] ? 'currentColor' : 'none'} />
+                    </div>
+                  )}
+                  {isCenter && (
+                    <div style={{ position: 'absolute', bottom: '16px', left: '50%', transform: 'translateX(-50%)', backgroundColor: 'rgba(18, 53, 31, 0.85)', backdropFilter: 'blur(10px)', padding: '6px', borderRadius: '12px', display: 'flex', gap: '6px', border: '1px solid rgba(205, 220, 57, 0.2)', zIndex: 10 }}>
+                      {((product.images && product.images.length > 0) ? product.images : [product.image]).slice(0, 4).map((imgUrl: string, idx: number) => {
+                        const isActive = (activeThumbnails[product.id] || 0) === idx;
+                        return (
+                          <div 
+                            key={idx}
+                            onClick={(e) => { e.stopPropagation(); setActiveThumbnails(prev => ({...prev, [product.id]: idx})) }}
+                            style={{ width: '36px', height: '36px', borderRadius: '8px', border: isActive ? '2px solid #fff' : '2px solid transparent', opacity: isActive ? 1 : 0.5, overflow: 'hidden', cursor: 'pointer', transition: 'all 0.3s ease' }}
+                          >
+                            <img src={imgUrl} alt={`${product.name} thumbnail ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Center Product Details */}
+          {featuredProducts.length > 0 && (
+            <div className="cover-flow-details" style={{ margin: '0 auto', width: '320px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                    <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px', lineHeight: 1.3, margin: 0 }}>
+                      {featuredProducts[currentSlide]?.name || 'EcoZero Product'}
+                    </h3>
+                    {(() => {
+                      const price = Number(featuredProducts[currentSlide]?.price);
+                      const compare = Number(featuredProducts[currentSlide]?.comparePrice || featuredProducts[currentSlide]?.originalPrice);
+                      if (compare > price && price > 0) {
+                        const discount = Math.round(((compare - price) / compare) * 100);
+                        return (
+                          <span style={{ backgroundColor: '#ef5350', color: '#fff', fontSize: '0.7rem', fontWeight: 800, padding: '3px 8px', borderRadius: '20px', whiteSpace: 'nowrap' }}>
+                            -{discount}%
+                          </span>
+                        );
+                      }
+                      return null;
+                    })()}
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right', marginLeft: '12px' }}>
+                  <p style={{ fontSize: '1rem', fontWeight: 800, color: COLORS.accent, lineHeight: 1 }}>
+                    ₹{featuredProducts[currentSlide]?.price ?? '—'}
+                  </p>
+                  {(featuredProducts[currentSlide]?.comparePrice || featuredProducts[currentSlide]?.originalPrice) && (
+                    <p style={{ fontSize: '0.75rem', color: '#ef5350', textDecoration: 'line-through', marginTop: '4px', fontWeight: 600 }}>
+                      ₹{featuredProducts[currentSlide]?.comparePrice || featuredProducts[currentSlide]?.originalPrice}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <button onClick={() => router.push(`/product/${featuredProducts[currentSlide].id}`)} style={{ width: '100%', backgroundColor: '#fff', color: '#111', border: 'none', padding: '14px', borderRadius: '8px', fontSize: '0.9rem', fontWeight: 700, cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', transition: 'background-color 0.2s' }} onMouseOver={e => e.currentTarget.style.backgroundColor = '#f0f0f0'} onMouseOut={e => e.currentTarget.style.backgroundColor = '#fff'}>
+                 <ShoppingBag size={16} color="#111" /> Add to Cart
+              </button>
+            </div>
+          )}
+
+          {/* Bottom Controls */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px' }}>
+            
+            <div style={{ backgroundColor: 'rgba(255,255,255,0.1)', padding: '8px 16px', borderRadius: '20px', fontSize: '0.9rem', color: '#fff' }}>
+              0{currentSlide + 1} / 0{Math.max(1, featuredProducts.length)}
+            </div>
+
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button onClick={prevSlide} style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#fff' }}><ChevronLeft size={16}/></button>
+              <button onClick={nextSlide} style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#fff' }}><ChevronRight size={16}/></button>
+            </div>
+          </div>
+
+        </section>
+
+        {/* TESTIMONIALS */}
+        <section className="testimonials scroll-reveal" style={{ marginTop: '120px', display: 'flex', justifyContent: 'space-between' }}>
+          <div style={{ maxWidth: '300px' }}>
+            <h2 style={{ fontSize: '2.5rem', fontWeight: 500, lineHeight: 1.1, marginBottom: '24px' }}>What our customers say</h2>
+            <p style={{ color: COLORS.textMuted, fontSize: '1rem', lineHeight: 1.5, marginBottom: '40px' }}>
+              Real stories from people who made the switch to eco-friendly living with EcoZero products.
+            </p>
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button style={{ backgroundColor: COLORS.white, border: 'none', padding: '12px 24px', borderRadius: '30px', fontSize: '0.9rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
+                Global Study
+                <div style={{ backgroundColor: COLORS.accent, width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <ArrowRight size={12} />
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <div style={{ backgroundColor: COLORS.surface, borderRadius: '40px', padding: '60px', width: '60%' }}>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: 500, marginBottom: '16px' }}>"Finally, a brand that truly cares."</h3>
+            <p style={{ color: COLORS.textMuted, fontSize: '1rem', lineHeight: 1.6, marginBottom: '40px' }}>
+              "I switched to EcoZero's bamboo products and I haven't looked back. Everything feels premium, my home smells fresher, and I feel good knowing I'm not harming the environment."
+            </p>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+              <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop" alt="User" style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover' }} />
+                <div>
+                  <p style={{ fontWeight: 600, fontSize: '0.9rem' }}>Priya Sharma</p>
+                  <p style={{ fontSize: '0.8rem', color: COLORS.textMuted }}>Eco Enthusiast, Bangalore</p>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '16px' }}>
+                <span style={{ cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem' }}>Story</span>
+                <span style={{ cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem', color: COLORS.textMuted }}>Career</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA SECTION */}
+        <section className="cta-section scroll-reveal" style={{ marginTop: '120px', marginBottom: '80px', display: 'flex', gap: '20px' }}>
+          <div style={{ backgroundColor: COLORS.accent, borderRadius: '40px', width: '350px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+            <img src="https://images.unsplash.com/photo-1610832958506-aa56368176cf?q=80&w=800&auto=format&fit=crop" alt="Fresh Organic Juice" style={{ width: '100%', height: '100%', objectFit: 'cover', mixBlendMode: 'multiply', opacity: 0.8 }} />
+          </div>
           
-          /* Ensuring the body isn't accidentally overridden heavily by dark themes */
-          body { 
-            background-color: var(--bg-color) !important; 
-            color: var(--text-primary) !important;
-          }
-        `}</style>
+          <div style={{ flex: 1, backgroundColor: COLORS.surface, borderRadius: '40px', padding: '80px', position: 'relative' }}>
+            <h2 style={{ fontSize: '3.5rem', fontWeight: 500, lineHeight: 1.1, letterSpacing: '-1px', marginBottom: '24px', maxWidth: '600px' }}>
+              Your Journey to Sustainable Living Starts Here.
+            </h2>
+            <p style={{ color: COLORS.textMuted, fontSize: '1.1rem', marginBottom: '40px', maxWidth: '500px' }}>
+              Browse our full range of eco-certified, plastic-free products — made with love for people and the planet.
+            </p>
+            <button onClick={() => router.push('/products')} style={{ backgroundColor: COLORS.white, color: COLORS.text, border: 'none', borderRadius: '40px', padding: '12px 24px', fontSize: '1rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '16px', cursor: 'pointer' }}>
+              Shop All Products
+              <div style={{ backgroundColor: COLORS.text, color: COLORS.white, borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <ArrowRight size={16} />
+              </div>
+            </button>
+            <div style={{ position: 'absolute', bottom: '60px', right: '60px', backgroundColor: COLORS.accent, width: '48px', height: '48px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <ArrowUpRight size={24} />
+            </div>
+          </div>
+        </section>
+        </div>
+
       </main>
-    </>
+    </div>
   );
 }
-

@@ -6,8 +6,8 @@ import Footer from './Footer';
 const PageFooter = () => {
   const pathname = usePathname();
   
-  // Define routes where the footer should be hidden
-  if (pathname !== '/') {
+  // Hide footer on admin pages
+  if (pathname?.startsWith('/admin')) {
     return null;
   }
 
