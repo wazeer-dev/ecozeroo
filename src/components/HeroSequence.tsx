@@ -23,12 +23,12 @@ export default function HeroSequence() {
         const imgs: HTMLImageElement[] = [];
         const { frames, baseUrl, suffix } = CONFIG;
 
-        for (let i = 1; i <= frames; i++) {
+        for (let i = 0; i < frames; i++) {
             const img = new Image();
-            const frameNum = String(i).padStart(4, '0');
+            const frameNum = String(i + 1).padStart(4, '0');
             img.src = `${baseUrl}${frameNum}${suffix}`;
             img.onload = () => setImagesLoaded(prev => prev + 1);
-            img.onerror = () => console.warn(`Failed to load frame ${i}`);
+            img.onerror = () => console.warn(`Failed to load frame ${i + 1}`);
             imgs.push(img);
         }
         return imgs;

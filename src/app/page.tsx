@@ -102,7 +102,7 @@ export default function Home() {
           .marquee-track:hover { animation-play-state: paused; }
 
           @media (max-width: 768px) {
-            main { padding: 80px 0 0 !important; }
+            main { padding: 0 !important; }
             section { margin-top: 60px !important; }
             
             /* Features */

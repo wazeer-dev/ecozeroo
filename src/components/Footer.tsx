@@ -7,45 +7,44 @@ import { Twitter, Facebook, Instagram, Youtube, ArrowUpRight, Mail, MapPin, Phon
 const Footer = () => {
   return (
     <footer style={{ 
-      backgroundColor: '#041c0b', 
-      padding: '100px 8% 40px',
+      backgroundColor: '#0a2a16', 
+      padding: '120px 8% 60px',
       color: '#ffffff',
       position: 'relative',
       zIndex: 10,
       fontFamily: "'Inter', sans-serif",
-      borderRadius: '100px 100px 0 0',
-      boxShadow: '0 -20px 60px rgba(0, 0, 0, 0.2)',
-      borderTop: '1px solid rgba(255, 255, 255, 0.05)'
+      borderRadius: '80px 80px 0 0',
+      boxShadow: '0 -20px 60px rgba(0, 0, 0, 0.4)',
+      borderTop: '1px solid rgba(205, 220, 57, 0.1)'
     }}>
       <div className="container" style={{ maxWidth: '1400px', margin: '0 auto' }}>
         
         <div className="footer-grid" style={{ 
           display: 'grid', 
           gridTemplateColumns: 'repeat(12, 1fr)', 
-          gap: '40px',
-          marginBottom: '80px'
+          gap: '60px',
+          marginBottom: '100px'
         }}>
           {/* BRAND COLUMN */}
           <div className="footer-brand-col" style={{ gridColumn: 'span 5' }}>
             <img 
-              src="/logo.png" 
+              src="/photo_2026-03-13_20-14-52 (1).png" 
               alt="ecozero" 
               style={{ 
-                height: '50px', 
+                height: '60px', 
                 objectFit: 'contain', 
-                marginBottom: '20px',
-                filter: 'brightness(0) invert(1)' /* Making it white to match existing design */
+                marginBottom: '32px'
               }} 
             />
             <p style={{ 
-              maxWidth: '350px', 
-              fontSize: '1rem', 
-              lineHeight: 1.7, 
+              maxWidth: '400px', 
+              fontSize: '1.1rem', 
+              lineHeight: 1.8, 
               color: 'rgba(255, 255, 255, 0.7)',
-              fontWeight: 500,
-              marginBottom: '30px'
+              fontWeight: 400,
+              marginBottom: '40px'
             }}>
-              Discover premium organic smoothies, cold-pressed juices, and eco-friendly blends crafted for your body and the planet. Join the zero-waste revolution.
+              ECOZERO — redefining sustainable luxury with organic blends, cold-pressed purity, and a zero-waste commitment for the modern world.
             </p>
             <div style={{ display: 'flex', gap: '15px' }}>
               <a href="#" style={socialBadgeStyle}><Instagram size={18} /></a>

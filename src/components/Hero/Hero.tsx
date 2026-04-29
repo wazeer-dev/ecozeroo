@@ -1,15 +1,30 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useScrollProgress } from '@/hooks/useScrollProgress';
 import styles from './Hero.module.css';
 
 // Configuration
 const HERO_CONFIG = {
-    frames: 216,
-    baseUrl: 'https://sgqbfywdccgmsaakfoqc.supabase.co/storage/v1/object/public/ecozero/',
-    suffix: '.jpg'
+    desktop: {
+        frames: 216,
+        baseUrl: 'https://sgqbfywdccgmsaakfoqc.supabase.co/storage/v1/object/public/ecozero/',
+        prefix: '',
+        suffix: '.jpg',
+        padding: 4,
+        start: 1
+    },
+    mobile: {
+        frames: 192,
+        baseUrl: 'https://sgqbfywdccgmsaakfoqc.supabase.co/storage/v1/object/public/mobile%20animation/',
+        prefix: 'frame_',
+        suffix: '_delay-0.041s.webp',
+        padding: 3,
+        start: 0
+    }
 };
 
 export default function Hero() {
+    const router = useRouter();
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [imagesLoaded, setImagesLoaded] = useState(0);
@@ -41,20 +56,21 @@ export default function Hero() {
     useEffect(() => {
         let isMounted = true;
         setImagesLoaded(0);
+        const activeConfig = isMobile ? HERO_CONFIG.mobile : HERO_CONFIG.desktop;
+        const { frames, baseUrl, suffix, prefix, padding, start } = activeConfig;
         const imgs: HTMLImageElement[] = [];
-        const { frames, baseUrl, suffix } = HERO_CONFIG;
 
-        for (let i = 1; i <= frames; i++) {
+        for (let i = 0; i < frames; i++) {
             const img = new Image();
-            const frameNum = String(i).padStart(4, '0');
-            img.src = `${baseUrl}${frameNum}${suffix}`;
+            const frameNum = String(i + start).padStart(padding, '0');
+            img.src = `${baseUrl}${prefix}${frameNum}${suffix}`;
 
             img.onload = () => {
                 if (isMounted) {
                     setImagesLoaded(prev => prev + 1);
                 }
             };
-            img.onerror = () => console.warn(`Failed to load frame ${i}`);
+            img.onerror = () => console.warn(`Failed to load frame ${i + start}`);
             imgs.push(img);
         }
         
@@ -65,16 +81,15 @@ export default function Hero() {
         return () => {
             isMounted = false;
         };
-    }, []);
+    }, [isMobile]); // Re-preload when switching devices
 
     // 3. Robust Rendering Loop
-    // We use a ref to store the latest state and an empty dependency array []
-    // for the useEffect to definitively solve the "changed size" HMR error.
-    const renderStateRef = useRef({ progress, images, imagesLoaded, dimensions });
+    const renderStateRef = useRef({ progress, images, imagesLoaded, dimensions, isMobile });
+    const smoothedProgressRef = useRef(0);
     
     useEffect(() => {
-        renderStateRef.current = { progress, images, imagesLoaded, dimensions };
-    }, [progress, images, imagesLoaded, dimensions]);
+        renderStateRef.current = { progress, images, imagesLoaded, dimensions, isMobile };
+    }, [progress, images, imagesLoaded, dimensions, isMobile]);
 
     useEffect(() => {
         let frameId: number;
@@ -84,10 +99,22 @@ export default function Hero() {
         if (!ctx) return;
 
         const render = () => {
-            const { progress: currentProgress, images: currentImages, imagesLoaded: currentLoaded } = renderStateRef.current;
+            const { 
+                progress: targetProgress, 
+                images: currentImages, 
+                imagesLoaded: currentLoaded,
+                isMobile: currentIsMobile 
+            } = renderStateRef.current;
             
-            if (currentImages.length > 0 && currentLoaded > 0) {
-                const totalFrames = HERO_CONFIG.frames;
+            // Linear Interpolation for smooth scrolling
+            // 0.1 is the smoothing factor (lower = smoother/slower, higher = faster/snappier)
+            smoothedProgressRef.current += (targetProgress - smoothedProgressRef.current) * 0.1;
+            const currentProgress = smoothedProgressRef.current;
+            
+            const activeConfig = currentIsMobile ? HERO_CONFIG.mobile : HERO_CONFIG.desktop;
+            
+            if (currentImages.length >= activeConfig.frames && currentLoaded > 0) {
+                const totalFrames = activeConfig.frames;
                 const frameIndex = Math.floor(currentProgress * (totalFrames - 1));
                 const currentImage = currentImages[frameIndex];
 
@@ -106,8 +133,7 @@ export default function Hero() {
                     }
 
                     const offsetX = (width - drawWidth) / 2;
-                    const isCurrentlyMobile = window.innerWidth < 768;
-                    const desktopOffset = !isCurrentlyMobile ? 120 : 0;
+                    const desktopOffset = 0; // Removed offset to full fill frame
                     const offsetY = ((height - drawHeight) / 2) + desktopOffset;
                     
                     ctx.clearRect(0, 0, width, height);
@@ -136,43 +162,16 @@ export default function Hero() {
                     </h1>
 
                     <p className={styles.subHeadline}>
-                        Discover sustainable products crafted for everyday living.
+                        Experience the purest organic blends crafted for your body and the planet.
                     </p>
 
                     <div className={styles.buttonGroup}>
                         <button 
                             className={styles.btnPrimary} 
-                            onClick={() => document.getElementById('features-section')?.scrollIntoView({ behavior: 'smooth' })}
+                            onClick={() => router.push('/menu')}
                         >
-                            Explore Collection
+                            EXPLORE COLLECTION
                         </button>
-                        <button 
-                            className={styles.btnSecondary} 
-                            onClick={() => document.getElementById('story-section')?.scrollIntoView({ behavior: 'smooth' })}
-                        >
-                            Our Story
-                        </button>
-                        <div 
-                            className={styles.playWrapper} 
-                            onClick={() => document.getElementById('story-section')?.scrollIntoView({ behavior: 'smooth' })}
-                            style={{ cursor: 'pointer' }}
-                        >
-                            <div className={styles.rotatingText}>
-                                <svg viewBox="0 0 100 100">
-                                    <defs>
-                                        <path id="circle" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" />
-                                    </defs>
-                                    <text>
-                                        <textPath xlinkHref="#circle">
-                                            PLAY VIDEO • PLAY VIDEO •
-                                        </textPath>
-                                    </text>
-                                </svg>
-                            </div>
-                            <div className={styles.playCenter}>
-                                <span className={styles.playIcon}>▶</span>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>

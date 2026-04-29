@@ -1,6 +1,6 @@
 .heroContainer {
     height: 400vh;
-    background: transparent;
+    background: #0A2A16;
     position: relative;
     font-family: var(--font-heading), sans-serif;
 }
@@ -34,6 +34,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    padding-top: 15vh;
     align-items: flex-start;
     text-align: left;
     padding-left: 5vw;
@@ -234,11 +235,11 @@
     }
 
     .overlayContent {
-        top: 55%; /* Push down slightly on mobile */
-        padding-left: 20px;
-        padding-right: 20px;
-        align-items: center;
-        text-align: center;
+        top: 58%; /* Shifted down from 45% */
+        padding-left: 24px;
+        padding-right: 24px;
+        align-items: flex-start;
+        text-align: left;
     }
 
     .topBadge {
@@ -261,7 +262,7 @@
         flex-direction: column;
         gap: 1.2rem;
         width: 100%;
-        align-items: center;
+        align-items: flex-start;
     }
 
     .btnPrimary, .btnSecondary {

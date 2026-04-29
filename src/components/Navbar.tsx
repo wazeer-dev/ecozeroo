@@ -95,7 +95,7 @@ export default function Navbar() {
           width: 92%;
           max-width: 1400px;
           height: 72px;
-          background: rgba(10, 42, 22, 0.75);
+          background: rgba(10, 42, 22, 0.1); /* Very subtle tint */
           backdrop-filter: blur(20px) saturate(180%);
           -webkit-backdrop-filter: blur(20px) saturate(180%);
           border: 1px solid rgba(205, 220, 57, 0.1);
@@ -114,7 +114,7 @@ export default function Navbar() {
           top: 10px;
           width: 85%;
           height: 64px;
-          background: rgba(10, 42, 22, 0.9);
+          background: rgba(10, 42, 22, 0.2);
           box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
         }
 
@@ -216,7 +216,7 @@ export default function Navbar() {
           justify-content: center;
           border-radius: 50%;
           color: #e0f2f1;
-          background: transparent;
+          background: #0A2A16;
           border: 1px solid transparent;
           transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
           cursor: pointer;
