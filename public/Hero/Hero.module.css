@@ -1,0 +1,393 @@
+.heroContainer {
+    height: 400vh;
+    background: #ffffff;
+    position: relative;
+    font-family: 'Outfit', sans-serif;
+}
+
+.stickyWrapper {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.heroCanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 1.5;
+    border-bottom-left-radius: 40px;
+    border-bottom-right-radius: 40px;
+}
+
+.overlayContent {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 100%;
+    max-width: 1200px;
+    height: 100%;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    /* Kept left as per revert */
+    text-align: left;
+    padding-left: 5vw;
+    padding-right: 0;
+    z-index: 10;
+}
+
+/* Right Slip / Bookmark */
+.rightSlip {
+    position: absolute;
+    top: -10px;
+    /* Slightly offscreen top to look attached */
+    right: 5%;
+    /* Adjust distance from right edge */
+    width: 60px;
+    height: 70vh;
+    /* Length of the slip */
+    /* Length of the slip */
+    /* Real Paper Texture & 3D Cylinder Lighting */
+    background:
+        linear-gradient(90deg, #e6e6e6 0%, #ffffff 15%, #ffffff 85%, #d9d9d9 100%),
+        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.01) 2px, rgba(0, 0, 0, 0.01) 3px);
+    background-blend-mode: multiply;
+    filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.4));
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 20;
+    /* Sawtooth / Receipt Edge */
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%,
+            95% 98.5%, 90% 100%, 85% 98.5%, 80% 100%,
+            75% 98.5%, 70% 100%, 65% 98.5%, 60% 100%,
+            55% 98.5%, 50% 100%, 45% 98.5%, 40% 100%,
+            35% 98.5%, 30% 100%, 25% 98.5%, 20% 100%,
+            15% 98.5%, 10% 100%, 5% 98.5%, 0% 100%);
+    pointer-events: none;
+    overflow: hidden;
+    /* Clip scrolling text */
+    animation: slideDown 1s cubic-bezier(1.5, 1.5, 1.5, 1.5) forwards;
+}
+
+.slipText {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    white-space: nowrap;
+    color: var(--color-main);
+    text-shadow: 0 1px 2px rgba(39, 170, 225, 0.3);
+    /* Subtle glow/depth */
+    font-weight: 900;
+    font-size: 1.5rem;
+    letter-spacing: 4px;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    height: 100%;
+    /* padding-bottom removed for seamless loop */
+    /* Space from point */
+
+    /* Animation */
+    will-change: transform;
+    animation: scrollText 9s linear infinite;
+}
+
+/* Add dot separator */
+.slipDot {
+    font-size: 2rem;
+    color: var(--color-main);
+}
+
+.topBadge {
+    display: inline-block;
+    border: 1px solid #ddd;
+    border-radius: 50px;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #666;
+    margin-bottom: 2rem;
+    pointer-events: auto;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(5px);
+    opacity: 0;
+    animation: fadeIn 0.8s ease-out forwards;
+}
+
+
+
+/* Updated repeating animation */
+.mainTitle {
+    font-size: clamp(3rem, 8vw, 6rem);
+    line-height: 1;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: #fff;
+    margin-bottom: 1rem;
+    opacity: 0;
+    /* Cinematic Reveal */
+    animation: premiumReveal 6s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+}
+
+/* Premium Keyframes */
+@keyframes premiumReveal {
+    0% {
+        opacity: 0;
+        transform: translateY(40px) scale(0.95);
+        filter: blur(10px);
+    }
+
+
+    15% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+
+
+    85% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+
+
+    100% {
+        opacity: 0;
+        transform: translateY(-20px) scale(1.02);
+        filter: blur(5px);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Gradient Text Effect for "ON BITE" */
+.mainTitle span.highlight {
+    background: linear-gradient(135deg, var(--color-main) 0%, var(--color-main) 50%, var(--color-main) 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: block;
+    animation: shine 3s linear infinite;
+}
+
+@keyframes shine {
+    to {
+        background-position: 200% center;
+    }
+}
+
+.subHeadline {
+    font-size: 1.2rem;
+    color: #fff;
+    margin-bottom: 3rem;
+    font-weight: 500;
+    opacity: 0;
+    animation: slideUp 0.8s ease-out 0.4s forwards;
+}
+
+.buttonGroup {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    pointer-events: auto;
+    opacity: 0;
+    animation: fadeIn 0.8s ease-out 0.6s forwards;
+}
+
+.btnPrimary {
+    background: #000;
+    color: #fff;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: transform 0.2s;
+    border: none;
+    cursor: pointer;
+}
+
+.btnPrimary:hover {
+    transform: scale(1.05);
+}
+
+.btnSecondary {
+    background: #fff;
+    color: #000;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    text-decoration: none;
+    border: 1px solid #000;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.btnSecondary:hover {
+    background: #f0f0f0;
+}
+
+/* New Rotating Play Button */
+.playWrapper {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.playWrapper:hover {
+    transform: scale(1.1);
+}
+
+.rotatingText {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    animation: spin 10s linear infinite;
+}
+
+.rotatingText svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.rotatingText text {
+    font-size: 14px;
+    font-family: monospace;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    fill: #fff;
+}
+
+.playCenter {
+    width: 40px;
+    height: 40px;
+    background: #000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    color: white;
+}
+
+.playIcon {
+    font-size: 16px;
+    margin-left: 2px;
+    /* Visual balance */
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 768px) {
+    .mainTitle {
+        font-size: 3.5rem;
+    }
+
+    .overlayContent {
+        top: 40%;
+        /* Move text up on mobile */
+    }
+
+    .buttonGroup {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+        /* Match left alignment */
+    }
+
+    .btnPrimary,
+    .btnSecondary {
+        width: 100%;
+        max-width: 250px;
+    }
+
+    /* Hide the slip on mobile as requested */
+    .rightSlip {
+        display: none;
+    }
+}
+
+/* Animations */
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+@keyframes scrollText {
+    0% {
+        transform: translateY(0);
+    }
+
+    100% {
+        transform: translateY(-50%);
+    }
+}
+
+/* Keyframes for Hero Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

@@ -130,8 +130,13 @@ export default function Navbar() {
 
         @media (max-width: 768px) {
           .premium-nav-island {
-            top: 15px;
+            top: 12px;
+            width: 94%;
             height: 60px;
+            border-radius: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0 20px;
           }
           .nav-actions-right .hide-mobile {
             display: none !important;

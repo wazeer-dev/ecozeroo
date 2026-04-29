@@ -1,0 +1,293 @@
+.heroContainer {
+    height: 400vh;
+    background: transparent;
+    position: relative;
+    font-family: var(--font-heading), sans-serif;
+}
+
+.stickyWrapper {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.heroCanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 1;
+}
+
+.overlayContent {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 100%;
+    max-width: 1200px;
+    height: 100%;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    text-align: left;
+    padding-left: 5vw;
+    padding-right: 0;
+    z-index: 10;
+}
+
+.topBadge {
+    display: inline-block;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50px;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #fff;
+    margin-bottom: 2rem;
+    pointer-events: auto;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    animation: fadeIn 0.8s ease-out forwards;
+}
+
+.mainTitle {
+    font-size: clamp(3rem, 8vw, 6rem);
+    line-height: 1;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: #fff;
+    margin-bottom: 1rem;
+    opacity: 0;
+    animation: premiumReveal 6s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+}
+
+@keyframes premiumReveal {
+    0% {
+        opacity: 0;
+        transform: translateY(40px) scale(0.95);
+        filter: blur(10px);
+    }
+    15% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+    85% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-20px) scale(1.02);
+        filter: blur(5px);
+    }
+}
+
+.mainTitle span.highlight {
+    background: linear-gradient(135deg, #cddc39 0%, #cddc39 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: block;
+}
+
+.subHeadline {
+    font-size: 1.2rem;
+    color: #fff;
+    margin-bottom: 3rem;
+    font-weight: 500;
+    opacity: 0;
+    animation: slideUp 0.8s ease-out 0.4s forwards;
+}
+
+.buttonGroup {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    pointer-events: auto;
+    opacity: 0;
+    animation: fadeIn 0.8s ease-out 0.6s forwards;
+}
+
+.btnPrimary {
+    background: #ffffff;
+    color: #000000;
+    padding: 1.2rem 3rem;
+    border-radius: 100px;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.btnPrimary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.btnSecondary {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    color: #ffffff;
+    padding: 1.2rem 3rem;
+    border-radius: 100px;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.btnSecondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.playWrapper {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.playWrapper:hover {
+    transform: scale(1.1);
+}
+
+.rotatingText {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    animation: spin 10s linear infinite;
+}
+
+.rotatingText text {
+    font-size: 14px;
+    font-family: monospace;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    fill: #fff;
+}
+
+.playCenter {
+    width: 40px;
+    height: 40px;
+    background: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    color: #000;
+}
+
+.playIcon {
+    font-size: 16px;
+    margin-left: 2px;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .heroContainer {
+        height: 300vh; /* Shorter scroll for mobile */
+    }
+
+    .overlayContent {
+        top: 55%; /* Push down slightly on mobile */
+        padding-left: 20px;
+        padding-right: 20px;
+        align-items: center;
+        text-align: center;
+    }
+
+    .topBadge {
+        font-size: 0.7rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .mainTitle {
+        font-size: clamp(2.5rem, 12vw, 3.5rem);
+        margin-bottom: 1rem;
+    }
+
+    .subHeadline {
+        font-size: 1rem;
+        margin-bottom: 2.5rem;
+        max-width: 90%;
+    }
+
+    .buttonGroup {
+        flex-direction: column;
+        gap: 1.2rem;
+        width: 100%;
+        align-items: center;
+    }
+
+    .btnPrimary, .btnSecondary {
+        width: 100%;
+        max-width: 300px;
+        padding: 1rem 2rem;
+    }
+
+    .playWrapper {
+        margin-top: 1rem;
+        width: 80px;
+        height: 80px;
+    }
+
+    .playCenter {
+        width: 32px;
+        height: 32px;
+    }
+}
+
+@media (max-width: 480px) {
+    .mainTitle {
+        font-size: 2.2rem;
+    }
+    
+    .overlayContent {
+        top: 50%;
+    }
+}

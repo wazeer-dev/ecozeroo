@@ -35,7 +35,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${outfit.variable} ${fraunces.variable} theme-dark`}
         suppressHydrationWarning
-        style={{ backgroundColor: '#0a2a16', color: '#ffffff', margin: 0, padding: 0, overflowX: 'hidden' }}
+        style={{ backgroundColor: '#0a2a16', color: '#ffffff', margin: 0, padding: 0 }}
       >
         <Navbar />
         {children}
