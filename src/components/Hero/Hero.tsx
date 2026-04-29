@@ -113,12 +113,11 @@ export default function Hero() {
             
             const activeConfig = currentIsMobile ? HERO_CONFIG.mobile : HERO_CONFIG.desktop;
             
-            if (currentImages.length >= activeConfig.frames && currentLoaded > 0) {
-                const totalFrames = activeConfig.frames;
-                const frameIndex = Math.floor(currentProgress * (totalFrames - 1));
-                const currentImage = currentImages[frameIndex];
+            const totalFrames = activeConfig.frames;
+            const frameIndex = Math.floor(currentProgress * (totalFrames - 1));
+            const currentImage = currentImages[frameIndex];
 
-                if (currentImage && currentImage.complete && currentImage.naturalWidth > 0) {
+            if (currentImage && currentImage.complete && currentImage.naturalWidth > 0) {
                     const { width, height } = canvas;
                     const imgRatio = currentImage.naturalWidth / currentImage.naturalHeight;
                     const canvasRatio = width / height;
@@ -139,7 +138,6 @@ export default function Hero() {
                     ctx.clearRect(0, 0, width, height);
                     ctx.drawImage(currentImage, offsetX, offsetY, drawWidth, drawHeight);
                 }
-            }
             frameId = requestAnimationFrame(render);
         };
 
