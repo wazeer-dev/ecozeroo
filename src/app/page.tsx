@@ -106,25 +106,144 @@ export default function Home() {
             section { margin-top: 60px !important; }
             
             /* Features */
-            .features-grid { grid-template-columns: 1fr !important; grid-template-rows: auto !important; }
-            .features-grid > div { grid-column: auto !important; grid-row: auto !important; min-height: 250px; }
-            .features-grid h3 { font-size: 3rem !important; }
+            .features-grid { 
+              grid-template-columns: 1fr 1fr !important; 
+              grid-template-rows: auto !important; 
+              gap: 12px !important;
+              padding: 0 !important;
+            }
+            .features-grid > div { 
+              grid-column: auto !important; 
+              grid-row: auto !important; 
+              aspect-ratio: 4 / 5 !important;
+              min-height: auto !important;
+              border-radius: 20px !important;
+            }
+            .features-grid h3 { font-size: 1.2rem !important; }
+            .features-grid p { font-size: 0.85rem !important; line-height: 1.4 !important; }
             .features-grid-header h2 { font-size: 2.2rem !important; }
 
-            /* Quote & Stats */
-            .quote-stats { 
-              padding: 40px 24px !important; 
-              gap: 40px !important; 
-              background: linear-gradient(135deg, rgba(18, 53, 31, 0.8) 0%, rgba(10, 42, 22, 0.95) 100%) !important;
-              backdrop-filter: blur(20px);
-              border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            /* Fix text overlays inside unified cards */
+            .features-grid > div > div {
+              padding: 0 !important; /* Remove padding to allow strip to touch bottom */
+              justify-content: flex-end !important;
+              background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 40%) !important;
             }
-            .quote-top { flex-direction: column !important; gap: 24px !important; text-align: center; }
-            .quote-top img { width: 80px !important; height: 80px !important; margin: 0 auto; border: 2px solid var(--primary-color) !important; }
-            .quote-top p:last-child { font-size: 1.35rem !important; line-height: 1.5 !important; font-weight: 500 !important; color: #ffffff !important; }
-            .quote-top > div:nth-child(2) { width: 60px !important; height: 2px !important; margin: 0 auto !important; background: var(--primary-color) !important; opacity: 0.5; }
-            .stats-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
-            .stats-grid > div { padding: 24px !important; gap: 20px !important; }
+            /* Target both div-wrapped and direct p-tag overlays */
+            .features-grid > div > div > div,
+            .features-grid > div > div > p {
+              position: absolute !important;
+              bottom: 0 !important;
+              left: 0 !important;
+              right: 0 !important;
+              width: 100% !important;
+              height: auto !important;
+              min-height: 40px !important;
+              padding: 10px 4px !important;
+              border-radius: 0 0 20px 20px !important;
+              backdrop-filter: blur(10px) !important;
+              -webkit-backdrop-filter: blur(10px) !important;
+              background: rgba(10, 42, 22, 0.7) !important;
+              border: none !important;
+              border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+              box-shadow: none !important;
+              margin: 0 !important;
+              transform: none !important; /* Remove any translateX(-50%) from inline styles */
+            }
+            .features-grid > div > div > div p,
+            .features-grid > div > div > p {
+              font-size: 0.65rem !important;
+              margin: 0 !important;
+              text-align: center !important;
+              font-weight: 800 !important;
+              text-transform: uppercase !important;
+              letter-spacing: 0.8px !important;
+              color: #ffffff !important;
+            }
+            /* Hide all extra elements (arrows, icons) */
+            .features-grid [class*="Arrow"], 
+            .features-grid svg, 
+            .features-grid i,
+            .features-grid > div > div > div > div {
+              display: none !important;
+            }
+            /* Editorial Premium Quote Section */
+            .quote-stats { 
+              padding: 0 !important; 
+              overflow: hidden !important;
+              border-radius: 40px !important;
+              position: relative !important;
+              min-height: 800px !important;
+              background: #0a2a16 !important;
+            }
+            .quote-top { 
+              height: 100% !important;
+              position: relative !important;
+              padding: 50px 40px 180px !important; /* Huge bottom padding to protect stats */
+              display: flex !important;
+              flex-direction: column !important;
+              justify-content: flex-start !important;
+              align-items: flex-start !important; 
+              gap: 40px !important;
+              z-index: 2;
+              text-align: left !important;
+            }
+            .quote-top > div:nth-child(2) { display: none !important; } /* Hide the desktop separator line */
+            .quote-top img { 
+              width: 70px !important; 
+              height: 70px !important; 
+              border: 2px solid var(--primary-color) !important;
+              border-radius: 12px !important; /* Squircle */
+              object-fit: cover !important;
+              margin-bottom: 24px !important;
+              box-shadow: 0 20px 40px rgba(0,0,0,0.5) !important;
+            }
+            .quote-top p:first-of-type { 
+              text-transform: uppercase;
+              letter-spacing: 3px;
+              font-size: 0.75rem !important;
+              color: var(--primary-color) !important;
+              margin-bottom: 8px !important;
+              font-weight: 800;
+            }
+            .quote-top p:last-child { 
+              font-size: 1.8rem !important; 
+              line-height: 1.3 !important; 
+              font-weight: 600 !important; 
+              color: #ffffff !important;
+              letter-spacing: -0.5px !important;
+              max-width: 100% !important;
+              text-transform: none !important;
+              margin: 0 !important; 
+            }
+            /* Highlight 'sustainable living' and 'accessible' with color if I could, but it's one block */
+            
+            .stats-grid { 
+              position: absolute !important;
+              bottom: 30px !important;
+              left: 20px !important;
+              right: 20px !important;
+              width: auto !important;
+              display: grid !important;
+              grid-template-columns: repeat(3, 1fr) !important;
+              gap: 10px !important;
+              background: rgba(255, 255, 255, 0.05) !important;
+              backdrop-filter: blur(20px) !important;
+              padding: 16px 10px !important;
+              border-radius: 20px !important;
+              border: 1px solid rgba(255, 255, 255, 0.1) !important;
+              z-index: 5;
+            }
+            .stats-grid > div { 
+              padding: 0 !important; 
+              background: transparent !important;
+              text-align: center !important;
+              display: flex !important;
+              flex-direction: column !important;
+              align-items: center !important;
+            }
+            .stats-grid h3 { font-size: 1rem !important; color: var(--primary-color) !important; margin: 0 !important; }
+            .stats-grid p { font-size: 0.55rem !important; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2; }
 
             /* Logos */
             .logo-grid { grid-template-columns: 1fr 1fr !important; }
@@ -200,9 +319,6 @@ export default function Home() {
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                     boxShadow: '0 20px 40px rgba(0,0,0,0.3)'
                   }}>
-                    <div style={{ position: 'absolute', top: '-24px', left: '50%', transform: 'translateX(-50%)', backgroundColor: COLORS.accent, color: '#111', width: '48px', height: '48px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 20px rgba(205, 220, 57, 0.3)' }}>
-                      <ArrowUpRight size={24} />
-                    </div>
                     <p style={{ color: '#ffffff', fontSize: '1.2rem', textAlign: 'center', fontWeight: 600, letterSpacing: '-0.2px' }}>100% natural ingredients, zero harmful chemicals.</p>
                   </div>
                 </div>
@@ -245,10 +361,7 @@ export default function Home() {
                 ) : (
                   <img src={(featuredProducts[2 % featuredProducts.length]?.images?.[0] || featuredProducts[2 % featuredProducts.length]?.image || "/toothbrush_eco.png")} alt="Abstract" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.6 }} />
                 )}
-                <div style={{ position: 'absolute', inset: 0, padding: '30px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <div style={{ backgroundColor: COLORS.accent, color: '#111', width: '48px', height: '48px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', alignSelf: 'flex-end', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }}>
-                    <ArrowUpRight size={24} />
-                  </div>
+                <div style={{ position: 'absolute', inset: 0, padding: '30px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end' }}>
                   <div style={{ 
                     textAlign: 'center', 
                     background: 'rgba(10, 42, 22, 0.4)', 
@@ -268,13 +381,15 @@ export default function Home() {
               {/* Bottom Right 1 - Glass Effect Card */}
               <div style={{ 
                 borderRadius: '32px', 
-                background: 'linear-gradient(135deg, rgba(205, 220, 57, 0.15) 0%, rgba(205, 220, 57, 0.05) 100%)',
+                background: 'linear-gradient(135deg, rgba(205, 220, 57, 0.1) 0%, rgba(205, 220, 57, 0.05) 100%)',
                 backdropFilter: 'blur(24px)',
                 WebkitBackdropFilter: 'blur(24px)',
-                padding: '40px', 
+                padding: '32px', 
                 display: 'flex', 
                 flexDirection: 'column', 
-                justifyContent: 'space-between', 
+                justifyContent: 'center', 
+                alignItems: 'center',
+                textAlign: 'center',
                 color: '#ffffff',
                 border: '1px solid rgba(205, 220, 57, 0.2)',
                 boxShadow: '0 20px 40px rgba(0, 0, 0, 0.25)',
@@ -284,10 +399,12 @@ export default function Home() {
                 {/* Subtle Glowing Pulse in background */}
                 <div style={{ position: 'absolute', top: '-20%', right: '-20%', width: '100px', height: '100px', background: COLORS.accent, filter: 'blur(60px)', opacity: 0.3, borderRadius: '50%' }} />
                 
-                <ShieldCheck size={36} color={COLORS.accent} />
-                <p style={{ fontSize: '1.4rem', fontWeight: 600, textAlign: 'left', lineHeight: 1.2, color: '#ffffff' }}>
+                <div style={{ marginBottom: '20px', backgroundColor: 'rgba(205, 220, 57, 0.1)', padding: '20px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <ShieldCheck size={40} color={COLORS.accent} />
+                </div>
+                <h3 style={{ fontSize: '1.4rem', fontWeight: 700, lineHeight: 1.3, color: '#ffffff', margin: 0 }}>
                   Certified <span style={{ color: COLORS.accent }}>Organic</span> & Safe
-                </p>
+                </h3>
               </div>
 
             </div>
